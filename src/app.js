@@ -39,61 +39,89 @@ Events.on(engine, "afterUpdate", ()=>{
     }
 })
 
-
-
-const ChairAPI = {
-    rotate : velocity => {boxAngularVelocity = velocity * Math.PI/6},
-    forward: velocity => Body.setVelocity( boxA, {x: 0, y: velocity * 10}),
-    stop: () => boxAngularVelocity = 0
+class ChairAPI {
+    constructor(body, angularVelocity) {
+        this.body = body;
+        this.angularVelocity = angularVelocity;
+    }
+    rotate(velocity) {
+        this.angularVelocity = (velocity * (Math.PI/6));
+    }
+    forward(velocity) {
+        Matter.Body.setVelocity(body, { x: 0, y: velocity * 10 });
+    }
+    stop() {
+        this.angularVelocity = 0;
+    }
 }
 
-const chair1 = {
-    move: ({motionType, velocity}) => {
+class Chair {
+    constructor(readyState, batteryState, motionState) {
+        this.readyState = readyState;
+        this.batteryState = batteryState;
+        this.motionState = motionState;
+    }
+
+    ready() {
+        return this.readyState;
+    }
+
+    getStatus() {
+        return this.batteryState;
+    }
+
+    move({motionType, velocity}) {
         switch(motionType) {
             case 'Rotation':
                 boxAngularVelocity = velocity * Math.PI/6
                 return;
             case 'Straight':
-                let alpha = 90 + (chair1.getPosition().b - 45) - 180;
+                let alpha = 90 + (this.getPosition().b - 45) - 180;
                 let a = velocity * Math.sin(alpha);
                 let b = velocity * Math.cos(alpha);
                 console.log(alpha);
-                console.log(chair1.getPosition().b);
-                Body.setVelocity( boxA, {x: b, y: a})
+                console.log(this.getPosition().b);
+                Body.setVelocity( boxA, {x: b, y: a});
                 return a + ' ' + b;
         }
-        // c * sin alpha = a
-        // c * cos alpha = b
-    },
-    stop: () => {
+    }
+
+    stop() {
         boxAngularVelocity = 0;
-    },
-    getPosition: () => {
-        let position = {
+    }
+
+    getPosition() {
+        return {
             x: boxA.position.x,
             y: boxA.position.y,
             b: (boxA.angle * 57.3 + 270)  % 360,
             // b: (boxA.angle - 45) % 360,
         }
-        return position;
-
     }
 }
 
-const ChairControl = {
-    getChairs: () => {
-        return [chair1];
-    },
-    getMousePosition: () => {
-        let mousePosition = {
-            x: event.clientX,
-            y: event.clientY
+class ChairControl {
+    constructor(chair) {
+        this.chair = chair;
+    }
+
+    getChairs() {
+        return [this.chair];
+    }
+
+    getMousePosition(e) {
+        return {
+            x: e.clientX,
+            y: e.clientY
         }
-        return mousePosition;
-    },
-    moveToTarget: () => {
+    }
+
+    moveToTarget(e) {
+        let chair = this.chair;
+
         let start = chair.getPosition();
-        let end = ChairControl.getMousePosition();
+        let end = this.getMousePosition(e);
+
         console.log(start);
         console.log('end: ');
         console.log(end);
@@ -104,10 +132,6 @@ const ChairControl = {
             console.log('timeout');
 
             start = chair.getPosition();
-            // end = ChairControl.getMousePosition();
-
-            // console.log(chair.getPosition().b);
-            // chair.move({motionType: 'Rotation', velocity: .02});
 
             if(start.x > end.x) {
                 console.log('start.x > end.x');
@@ -115,6 +139,7 @@ const ChairControl = {
                 chair.move({motionType: 'Straight', velocity: 2});
 
             }
+
             else if(start.x <= end.x) {
                 console.log('start.x <= end.x');
 
@@ -125,49 +150,44 @@ const ChairControl = {
                 if(chair.getPosition().b > 80 && chair.getPosition().b <= 100) {
                     chair.stop();
                 }
-                // chair.move({motionType: 'Straight', velocity: 5});
             }
 
             if(start.y > end.y) {
                 console.log('start.y > end.y');
 
                 chair.move({motionType: 'Straight', velocity: 5});
-                // chair.stop();
-                // chair.move({motionType: 'Straight', velocity: 5});
-            }
-            else {
-
             }
 
-            if(i++ == 100) clearInterval(intr);
+            else if(i++ == 100) {
+                clearInterval(intr);
+            }
+
         }, 200);
 
-        // while(start.x > end.x) {
-        // for(var i = 0; i < 100; i++) {
-        //     console.log(i);
-        //     if(start.x > end.x) {
-        //         console.log('start.x > end.x');
-        //
-        //         chair.move({motionType: 'Straight', velocity: 5});
-        //
-        //     }
-        //     else {
-        //         console.log('start.x <= end.x');
-        //     }
-        // }
-
     }
-}
+};
 
-// function moveToTarget() {
-//
-// }
+let myChairAPI = new ChairAPI(boxA, boxAngularVelocity);
 
+let chair = new Chair(
+    true,
+    {
+        battery: 1.0
+    },
+    "Straight"
+);
+
+let chairControl = new ChairControl(chair);
 
 // window.ChairAPI = ChairAPI;
-window.ChairControl = ChairControl;
+window.chairControl = chairControl;
+
 // add event listener for mouse position
-document.addEventListener("click", window.ChairControl.moveToTarget);
+document.addEventListener("click", function(e) {
+    window.chairControl.moveToTarget(e)
+});
 
 // create sample instance of chair
-const [chair] = ChairControl.getChairs();
+// const [chair] = ChairControl.getChairs();
+
+window.chair = chair;
