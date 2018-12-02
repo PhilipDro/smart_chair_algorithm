@@ -67,12 +67,13 @@ const chair1 = {
     },
     stop: () => {
         boxAngularVelocity = 0;
+        return true;
     },
     getPosition: () => {
         let position = {
             x: boxA.position.x,
             y: boxA.position.y,
-            b: (boxA.angle * 57.3 + 270)  % 360,
+            b: (boxA.angle * 60)  % 360,
             // b: (boxA.angle - 45) % 360,
         }
         return position;
@@ -86,8 +87,8 @@ const ChairControl = {
     },
     getMousePosition: () => {
         let mousePosition = {
-            x: event.clientX,
-            y: event.clientY
+            x: Math.round(event.clientX),
+            y: Math.round(event.clientY)
         }
         return mousePosition;
     },
@@ -100,8 +101,9 @@ const ChairControl = {
 
         let i = 0;
 
+        // var runActive = true;
+
         let intr = setInterval(function() {
-            console.log('timeout');
 
             start = chair.getPosition();
             // end = ChairControl.getMousePosition();
@@ -109,35 +111,69 @@ const ChairControl = {
             // console.log(chair.getPosition().b);
             // chair.move({motionType: 'Rotation', velocity: .02});
 
+            // when object is on the right of the clicked stop
             if(start.x > end.x) {
-                console.log('start.x > end.x');
+                // console.log('start.x > end.x');
+                console.log('now!!!!!!!!!!!!!');
+                console.log(start.x + ' !!!!!! ' + end.x);
 
-                chair.move({motionType: 'Straight', velocity: 2});
+                chair.move({motionType: 'Straight', velocity: .8});
+
+
 
             }
-            else if(start.x <= end.x) {
-                console.log('start.x <= end.x');
-
+            else if(start.y > end.y) {
+                console.log('KLJDÖLFSAJDLAJD');
                 chair.move({motionType: 'Rotation', velocity: .03});
+                console.log(chair.getPosition().b);
 
-                console.log('POSITION: ' + chair.getPosition().b );
 
-                if(chair.getPosition().b > 80 && chair.getPosition().b <= 100) {
+                // stop at 90 degrees
+                if(chair.getPosition().b > 85 && chair.getPosition().b <= 95) {
+
+
                     chair.stop();
+
+
+                    // if(runActive == true) {
+                    //     chair.stop();
+                    //     runActive = false;
+                    // }
+
+
+                    chair.move({motionType: 'Straight', velocity: .8});
+
                 }
-                // chair.move({motionType: 'Straight', velocity: 5});
-            }
-
-            if(start.y > end.y) {
-                console.log('start.y > end.y');
-
-                chair.move({motionType: 'Straight', velocity: 5});
-                // chair.stop();
-                // chair.move({motionType: 'Straight', velocity: 5});
             }
             else {
-
+                console.log('FIIIIIIINIIIIIIIIISHHHHH!!!');
+                chair.stop();
             }
+            // else if(start.x < end.x) {
+            //     console.log('start.x < end.x');
+            //
+            //     chair.move({motionType: 'Rotation', velocity: .03});
+            //
+            //     console.log('POSITION: ' + chair.getPosition().b );
+            //
+            //     if(chair.getPosition().b > 80 && chair.getPosition().b <= 100) {
+            //         chair.stop();
+            //
+            //
+            //     }
+            //     // chair.move({motionType: 'Straight', velocity: 5});
+            // }
+
+            // if(start.y > end.y) {
+            //     console.log('start.y > end.y');
+            //
+            //     chair.move({motionType: 'Straight', velocity: 5});
+            //     // chair.stop();
+            //     // chair.move({motionType: 'Straight', velocity: 5});
+            // }
+            // else {
+            //
+            // }
 
             if(i++ == 100) clearInterval(intr);
         }, 200);
