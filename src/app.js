@@ -47,6 +47,8 @@ const ChairAPI = {
     stop: () => boxAngularVelocity = 0
 }
 
+//
+
 const chair1 = {
     move: ({motionType, velocity}) => {
         switch(motionType) {
@@ -57,8 +59,6 @@ const chair1 = {
                 let alpha = 90 + (chair1.getPosition().b - 45) - 180;
                 let a = velocity * Math.sin(alpha);
                 let b = velocity * Math.cos(alpha);
-                console.log(alpha);
-                console.log(chair1.getPosition().b);
                 Body.setVelocity( boxA, {x: b, y: a})
                 return a + ' ' + b;
         }
@@ -114,8 +114,7 @@ const ChairControl = {
             // when object is on the right of the clicked stop
             if(start.x > end.x) {
                 // console.log('start.x > end.x');
-                console.log('now!!!!!!!!!!!!!');
-                console.log(start.x + ' !!!!!! ' + end.x);
+                console.log(start.x + ' : ' + end.x);
 
                 chair.move({motionType: 'Straight', velocity: .8});
 
@@ -123,7 +122,7 @@ const ChairControl = {
 
             }
             else if(start.y > end.y) {
-                console.log('KLJDÖLFSAJDLAJD');
+                // console.log('KLJDÖLFSAJDLAJD');
                 chair.move({motionType: 'Rotation', velocity: .03});
                 console.log(chair.getPosition().b);
 
@@ -146,17 +145,17 @@ const ChairControl = {
                 }
             }
             else {
-                console.log('FIIIIIIINIIIIIIIIISHHHHH!!!');
+                console.log('Finish');
                 chair.stop();
             }
-            // else if(start.x < end.x) {
+            // else if(start.x < end.x + 300) {
             //     console.log('start.x < end.x');
             //
             //     chair.move({motionType: 'Rotation', velocity: .03});
             //
             //     console.log('POSITION: ' + chair.getPosition().b );
             //
-            //     if(chair.getPosition().b > 80 && chair.getPosition().b <= 100) {
+            //     if(chair.getPosition().b > 170 && chair.getPosition().b <= 190) {
             //         chair.stop();
             //
             //
