@@ -65,9 +65,9 @@ export default class Simulation {
                         let { x, y } = position;
                         x = Math.round((x / 100));
                         y = Math.round((y / 100));
-                        graph.nodes[y][x]
-                        // return [y, x];
-                        return graph.nodes;
+                        // graph.nodes[y][x];
+                        // return graph.nodes;
+                        return [y, x];
                     }
                 }))
             },
