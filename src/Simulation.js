@@ -5,6 +5,12 @@ import { astar, Graph } from './astar';
 
 const DEFAULT_FRICTION = .1;
 
+let graph = new Graph([
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+]);
+
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
 }
@@ -57,15 +63,11 @@ export default class Simulation {
                     },
                     getGridPosition(position) {
                         let { x, y } = position;
-                        let graph = new Graph([
-                            [1, 1, 1],
-                            [1, 1, 1],
-                            [1, 1, 1],
-                        ]);
                         x = Math.round((x / 100));
                         y = Math.round((y / 100));
                         graph.nodes[y][x]
-                        console.log(graph);
+                        // return [y, x];
+                        return graph.nodes;
                     }
                 }))
             },
@@ -81,8 +83,6 @@ export default class Simulation {
                         height: 500
                     }
                 });
-
-                console.log(render);
 
                 World.add(engine.world, simulation.chairs.map(({shape}) => shape));
 
