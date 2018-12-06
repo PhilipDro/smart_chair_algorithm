@@ -5,15 +5,17 @@ import { astar, Graph } from './astar';
 
 const DEFAULT_FRICTION = .1;
 
-let graph = new Graph([
-    [1, 1, 1],
-    [1, 1, 1],
-    [1, 1, 1],
-]);
-
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
 }
+
+let graph = new Graph([
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1]
+]);
+
+window.graph = graph;
 
 export default class Simulation {
 
@@ -37,6 +39,7 @@ export default class Simulation {
         return {
             getChairs: () => {
                 return simulation.chairs.map(chair => ({
+                    position: [],
                     move({motionType, velocity}) {
                         this.stop();
                         switch (motionType) {
@@ -61,13 +64,12 @@ export default class Simulation {
                             bearing: angle < 0 ? angle + 270 : angle  - 90
                         }
                     },
-                    getGridPosition(position) {
-                        let { x, y } = position;
+                    getGridPosition() {
+                        let { x, y } = this.getPosition();
                         x = Math.round((x / 100));
                         y = Math.round((y / 100));
-                        // graph.nodes[y][x];
-                        // return graph.nodes;
-                        return [y, x];
+                        this.position = graph.grid[x][y];
+                        return graph.grid[x][y];
                     }
                 }))
             },
@@ -101,6 +103,15 @@ export default class Simulation {
                         }
                     })
                 });
+            }
+        }
+    }
+
+    path() {
+        return {
+            findPath(graph, start, end) {
+                // path.findPath(graph, chairs[0].getGridPosition(), graph.grid[1][1]);
+                return astar.search(graph, start, end);
             }
         }
     }
