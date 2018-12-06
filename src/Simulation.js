@@ -1,6 +1,15 @@
 import {Engine, Render, World, Bodies, Body, Events} from 'matter-js';
+import { astar, Graph } from './astar';
+
+// import MatterWorld from './MatterWorld';
 
 const DEFAULT_FRICTION = .1;
+
+let graph = new Graph([
+    [1, 1, 1],
+    [1, 1, 1],
+    [1, 1, 1],
+]);
 
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
@@ -9,12 +18,12 @@ function toDegrees(angle) {
 export default class Simulation {
 
     constructor({element, chairCount = 1} = {}) {
-        this.element = element || document.body;
+        this.element = element || document.querySelector('.simulation');
         this.chairs = [...Array(chairCount).keys()].map(index => ({
             velocity: {x: 0, y: 0},
             angularVelocity: 0,
             shape: (() => {
-                const box = Bodies.rectangle(100 + 100 * index, 100 + 100 * index, 80, 80);
+                const box = Bodies.rectangle(120 + 120 * index, 170 + 170 * index, 50, 50);
                 box.frictionAir = DEFAULT_FRICTION;
                 return box;
             })()
@@ -40,30 +49,38 @@ export default class Simulation {
                                 chair.velocity = {x, y};
                         }
                     },
-                    stop(){
+                    stop() {
                         chair.angularVelocity = 0;
                         chair.velocity = {x: 0, y: 0};
                     },
-                    getPosition () {
+                    getPosition() {
                         const angle = toDegrees(chair.shape.angle) % 360;
                         return {
                             x: chair.shape.position.x,
                             y: chair.shape.position.y,
                             bearing: angle < 0 ? angle + 270 : angle  - 90
                         }
+                    },
+                    getGridPosition(position) {
+                        let { x, y } = position;
+                        x = Math.round((x / 100));
+                        y = Math.round((y / 100));
+                        // graph.nodes[y][x];
+                        // return graph.nodes;
+                        return [y, x];
                     }
                 }))
             },
             start: () => {
-                // create an engine
                 const engine = Engine.create();
                 engine.world.gravity.y = 0;
-
                 const render = Render.create({
                     element: this.element,
                     engine: engine,
                     options: {
-                        showAngleIndicator: true
+                        showAngleIndicator: true,
+                        width: 500,
+                        height: 500
                     }
                 });
 
@@ -83,7 +100,7 @@ export default class Simulation {
                             Body.setVelocity(shape, velocity);
                         }
                     })
-                })
+                });
             }
         }
     }
