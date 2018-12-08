@@ -102,6 +102,9 @@ export default class Simulation {
                         moveToTarget(dest) {
                             const that = this;
 
+                            /**
+                             * Calculate path using A* algorithm.
+                             */
                             this.getPath();
 
                             let start = that.getGridPosition();
@@ -109,7 +112,11 @@ export default class Simulation {
 
                             let i = 0;
 
-                            // determine current vector
+                            /**
+                             * Determine current vector.
+                             *
+                             * @type {number[]}
+                             */
                             let vector = [0, 0];
 
                             let intr = setInterval(function() {
@@ -117,9 +124,13 @@ export default class Simulation {
                                 start = that.getGridPosition();
                                 target = that.getNextNode();
 
-                                // Set vectors for x and y axis to determine the direction.
-                                // Vector values are derived from the difference between the position of the chair
-                                // and the position of the next node. Vertically such as horizontally.
+                                /**
+                                 * Set vectors for x and y axis to determine the direction.
+                                 * Vector values are derived from the difference between the position of the chair
+                                 * and the position of the next node. Vertically such as horizontally.
+                                 *
+                                 * @type {{x: number, y: number}}
+                                 */
                                 vector = {
                                     x: that.getNextNode() !== undefined ? (that.getNextNode().x - start.x) : 0,
                                     y: that.getNextNode() !== undefined ? (that.getNextNode().y - start.y) : 0
@@ -144,7 +155,9 @@ export default class Simulation {
                                 }
 
                                 switch(direction) {
-                                    // drive to the right
+                                    /**
+                                     * Drive to the right.
+                                     */
                                     case 'right':
                                         console.log('drive to the right');
 
@@ -156,7 +169,9 @@ export default class Simulation {
 
                                         break;
 
-                                    // drive to the top
+                                    /**
+                                     * Drive to the top.
+                                     */
                                     case 'top':
                                         console.log('drive to the top');
 
@@ -168,7 +183,9 @@ export default class Simulation {
 
                                         break;
 
-                                    // drive to the bottom
+                                    /**
+                                     * Drive to the bottom.
+                                     */
                                     case 'bottom':
                                         console.log('drive to the bottom');
 
@@ -180,9 +197,11 @@ export default class Simulation {
 
                                         break;
 
-                                    // // drive to the left
+                                    /**
+                                     * Drive to the left.
+                                     */
                                     case 'left':
-                                        console.log('drive to the bottom');
+                                        console.log('drive to the left');
 
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
@@ -199,6 +218,9 @@ export default class Simulation {
                                         break;
                                 }
 
+                                /**
+                                 * TODO change stopping condition
+                                 */
                                 if(i++ == 1000) {
                                     clearInterval(intr);
                                     console.log('stop interval');
@@ -233,7 +255,9 @@ export default class Simulation {
                             Body.setAngularVelocity(shape, angularVelocity);
                         }
 
-                        // without test here we would kill the slippage immediately
+                        /**
+                         * Without test here we would kill the slippage immediately.
+                         */
                         if (velocity.x != 0 || velocity.y != 0) {
                             Body.setVelocity(shape, velocity);
                         }
