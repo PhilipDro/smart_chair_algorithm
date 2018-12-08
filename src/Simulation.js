@@ -99,16 +99,22 @@ export default class Simulation {
                         setNextNode() {
                             this.nextNode = simulation.path().getNextNode(this.path);
                         },
+                        getMousePosition(e) {
+                            this.setMousePosition(e);
+                            return this.mousePosition;
+                        },
+                        setMousePosition(e) {
+                            this.mousePosition = simulation.path().getMousePosition(e);
+                        },
                         moveToTarget(dest) {
                             const that = this;
-
                             /**
                              * Calculate path using A* algorithm.
                              */
                             this.getPath();
 
                             let start = that.getGridPosition();
-                            let target = that.getNextNode();
+                            let target = dest || that.getNextNode();
 
                             let i = 0;
 
@@ -309,6 +315,12 @@ export default class Simulation {
                 return {
                     x: (x * 100),
                     y: (y * 100)
+                }
+            },
+            getMousePosition(event) {
+                return {
+                    x: Math.round(event.clientX),
+                    y: Math.round(event.clientY)
                 }
             }
         }
