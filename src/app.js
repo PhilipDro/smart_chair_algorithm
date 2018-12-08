@@ -22,3 +22,9 @@ window.chairs = sim.getChairControl().getChairs();
 for (var i = 0; i < chairs.length; i++) {
     chairs[i].moveToTarget();
 }
+// mouse position
+
+document.addEventListener('click', function (e) {
+    let mousePos = chairs[0].getMousePosition(e);
+    chairs[0].moveToTarget(mousePos);
+});
