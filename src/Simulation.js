@@ -15,7 +15,7 @@ let graph = new Graph([
     [1, 1, 1, 1, 1]
 ]);
 
-let destination = graph.grid[4][4];
+let destination = graph.grid[2][3];
 
 window.graph = graph;
 window.destination = destination;
@@ -100,8 +100,10 @@ export default class Simulation {
                         moveToTarget(dest) {
                             const that = this;
 
-                            let start = this.getPosition();
-                            let end = simulation.path().convertNodeToPx(this.getNextNode());
+                            this.getPath();
+
+                            let start = that.getGridPosition();
+                            let target = that.getNextNode();
 
                             let i = 0;
 
@@ -110,62 +112,87 @@ export default class Simulation {
 
                             let intr = setInterval(function() {
 
-                                start = that.getPosition();
-                                console.log('end: ', end);
+                                start = that.getGridPosition();
+                                target = that.getNextNode();
 
-                                let switchCase;
-
-                                if(start.x > end.x) {
-                                    switchCase = 'A';
-                                } else if(start.x < end.x) {
-                                    switchCase = 'B';
-                                } else if(start.y > end.y) {
-                                    switchCase = 'C';
-                                } else if (start.y < end.y){
-                                    switchCase = 'D';
-                                } else {
-                                    switchCase = 'E';
+                                // set vectors for x and y axis to determine the direction.
+                                // vector values are derived from the difference between the position of the chair
+                                // and the position of the next node. Vertically such as horizontally.
+                                vector = {
+                                    x: that.getNextNode() !== undefined ? (that.getNextNode().x - start.x) : 0,
+                                    y: that.getNextNode() !== undefined ? (that.getNextNode().y - start.y) : 0
                                 }
 
-                                switch(switchCase) {
-                                    case 'A':
-                                        console.log('Case A start.x > end.x');
-                                        console.log('start.x: ', start.x, ' end.x: ', end.x);
+                                console.log(vector);
 
-                                        if(Math.abs(start.x - end.x) <= 5) {
-                                            that.move({motionType: 'Straight', velocity: 0.01});
-                                        } else {
-                                            that.move({motionType: 'Straight', velocity: 0.8});
+                                let direction;
+
+                                if(vector.x === 1) {
+                                    direction = 'right';
+                                } else if(vector.x === -1) {
+                                    direction = 'top';
+                                } else if(vector.y === 1) {
+                                    direction = 'bottom';
+                                } else if (vector.y === -1){
+                                    direction = 'left';
+                                } else {
+                                    direction = 'none';
+                                }
+
+                                switch(direction) {
+                                    // drive to the right
+                                    case 'right':
+                                        console.log('drive to the right');
+
+                                        that.move({motionType: 'Rotation', velocity: 0.3});
+
+                                        if(that.getPosition().bearing > 85 && that.getPosition().bearing < 95) {
+                                            that.move({motionType: 'Straight', velocity: 0.3});
                                         }
+
                                         break;
 
-                                    case 'B':
-                                        console.log('Case B start.x < end.x');
-                                        console.log('start.x: ', start.x, ' end.x: ', end.x);
-                                        if(Math.abs(start.x - end.x) <= 5) {
-                                            that.move({motionType: 'Straight', velocity: -0.01});
-                                        } else {
-                                            that.move({motionType: 'Straight', velocity: -0.8});
+                                    case 'top':
+                                        console.log('drive to the top');
+
+                                        that.move({motionType: 'Rotation', velocity: 0.3});
+
+                                        if(that.getPosition().bearing < 15) {
+                                            that.move({motionType: 'Straight', velocity: 0.3});
                                         }
+
                                         break;
 
-                                    case 'C':
-                                        that.move({motionType: 'Rotation', velocity: 0.03});
-                                        console.log('Case C');
+                                    case 'bottom':
+                                        console.log('drive to the bottom');
+
+                                        that.move({motionType: 'Rotation', velocity: 0.3});
+
+                                        if(that.getPosition().bearing > 170 && that.getPosition().bearing < 190) {
+                                            that.move({motionType: 'Straight', velocity: 0.3});
+                                        }
+
                                         break;
 
-                                    case 'D':
-                                        that.move({motionType: 'Rotation', velocity: -0.03});
-                                        console.log('Case D');
+                                    case 'left':
+                                        console.log('drive to the bottom');
+
+                                        that.move({motionType: 'Rotation', velocity: 0.3});
+
+                                        if(that.getPosition().bearing > 260 && that.getPosition().bearing < 280) {
+                                            that.move({motionType: 'Straight', velocity: 0.3});
+                                        }
+
                                         break;
 
-                                    case 'E':
+                                    case 'none':
                                         console.log('Finish');
                                         that.stop();
+                                        that.getPath();
                                         break;
                                 }
 
-                                if(i++ == 100) {
+                                if(i++ == 1000) {
                                     clearInterval(intr);
                                     console.log('stop interval');
                                     that.stop();

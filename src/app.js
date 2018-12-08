@@ -17,3 +17,5 @@ window.path = sim.path();
 // make chairs available
 
 window.chairs = sim.getChairControl().getChairs();
+
+chairs[0].moveToTarget();
