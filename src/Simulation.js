@@ -8,9 +8,11 @@ function toDegrees(angle) {
 }
 
 let graph = new Graph([
-    [1, 1, 1],
-    [1, 1, 1],
-    [1, 1, 1]
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
 ]);
 
 let destination = graph.grid[2][2];

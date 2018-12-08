@@ -12,9 +12,9 @@ table {
 }
 table tr {
     border: 1px solid white;
-    height: 83px;
+    height: 100px;
 }
 table th {
-    min-width: 80px;
+    min-width: 96px;
     border: 1px solid white;
 }
