@@ -7,14 +7,14 @@ table {
     position: absolute;
     top: 0;
     left: 0;
+    /*background: red;*/
     opacity: .2;
-
 }
 table tr {
     border: 1px solid white;
-    height: 100px;
+    height: 83px;
 }
 table th {
-    min-width: 98px;
+    min-width: 80px;
     border: 1px solid white;
 }

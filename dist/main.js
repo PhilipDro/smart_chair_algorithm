@@ -93,7 +93,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/lib/css-base.js */ \"./node_modules/css-loader/lib/css-base.js\")(false);\n// imports\n\n\n// module\nexports.push([module.i, \"main {\\n    position: relative;\\n    width: 100%;\\n    height: 80vh;\\n}\\ntable {\\n    position: absolute;\\n    top: 0;\\n    left: 0;\\n    opacity: .2;\\n\\n}\\ntable tr {\\n    border: 1px solid white;\\n    height: 100px;\\n}\\ntable th {\\n    min-width: 98px;\\n    border: 1px solid white;\\n}\\n\", \"\"]);\n\n// exports\n\n\n//# sourceURL=webpack:///./src/app.css?./node_modules/css-loader??ref--4-1");
+eval("exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/lib/css-base.js */ \"./node_modules/css-loader/lib/css-base.js\")(false);\n// imports\n\n\n// module\nexports.push([module.i, \"main {\\n    position: relative;\\n    width: 100%;\\n    height: 80vh;\\n}\\ntable {\\n    position: absolute;\\n    top: 0;\\n    left: 0;\\n    /*background: red;*/\\n    opacity: .2;\\n}\\ntable tr {\\n    border: 1px solid white;\\n    height: 83px;\\n}\\ntable th {\\n    min-width: 80px;\\n    border: 1px solid white;\\n}\\n\", \"\"]);\n\n// exports\n\n\n//# sourceURL=webpack:///./src/app.css?./node_modules/css-loader??ref--4-1");
 
 /***/ }),
 
