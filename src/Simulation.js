@@ -2,6 +2,8 @@ import {Engine, Render, World, Bodies, Body, Events} from 'matter-js';
 import { astar, Graph } from './astar';
 
 const DEFAULT_FRICTION = .1;
+const DRIVE_SPEED = 1.1;
+const ROTATION_SPEED = 0.3;
 
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
@@ -15,7 +17,7 @@ let graph = new Graph([
     [1, 1, 1, 1, 1]
 ]);
 
-let destination = graph.grid[2][3];
+let destination = graph.grid[4][4];
 
 window.graph = graph;
 window.destination = destination;
@@ -144,10 +146,10 @@ export default class Simulation {
                                     case 'right':
                                         console.log('drive to the right');
 
-                                        that.move({motionType: 'Rotation', velocity: 0.3});
+                                        that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
                                         if(that.getPosition().bearing > 85 && that.getPosition().bearing < 95) {
-                                            that.move({motionType: 'Straight', velocity: 0.3});
+                                            that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
                                         }
 
                                         break;
@@ -155,10 +157,10 @@ export default class Simulation {
                                     case 'top':
                                         console.log('drive to the top');
 
-                                        that.move({motionType: 'Rotation', velocity: 0.3});
+                                        that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
                                         if(that.getPosition().bearing < 15) {
-                                            that.move({motionType: 'Straight', velocity: 0.3});
+                                            that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
                                         }
 
                                         break;
@@ -166,10 +168,10 @@ export default class Simulation {
                                     case 'bottom':
                                         console.log('drive to the bottom');
 
-                                        that.move({motionType: 'Rotation', velocity: 0.3});
+                                        that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
                                         if(that.getPosition().bearing > 170 && that.getPosition().bearing < 190) {
-                                            that.move({motionType: 'Straight', velocity: 0.3});
+                                            that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
                                         }
 
                                         break;
@@ -177,10 +179,10 @@ export default class Simulation {
                                     case 'left':
                                         console.log('drive to the bottom');
 
-                                        that.move({motionType: 'Rotation', velocity: 0.3});
+                                        that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
                                         if(that.getPosition().bearing > 260 && that.getPosition().bearing < 280) {
-                                            that.move({motionType: 'Straight', velocity: 0.3});
+                                            that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
                                         }
 
                                         break;
