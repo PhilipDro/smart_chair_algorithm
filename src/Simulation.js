@@ -17,7 +17,7 @@ let graph = new Graph([
     [1, 1, 1, 1, 1]
 ]);
 
-let destination = graph.grid[4][4];
+let destination = graph.grid[4][3];
 
 window.graph = graph;
 window.destination = destination;
@@ -134,7 +134,7 @@ export default class Simulation {
                                 vector = {
                                     x: that.getNextNode() !== undefined ? (that.getNextNode().x - start.x) : 0,
                                     y: that.getNextNode() !== undefined ? (that.getNextNode().y - start.y) : 0
-                                }
+                                };
 
                                 let direction;
 
@@ -214,6 +214,17 @@ export default class Simulation {
                                     case 'none':
                                         console.log('Finish');
                                         that.stop();
+
+                                        /**
+                                         * Set obstacles in every iteration. Obstacles are nodes that are populated by other
+                                         * chairs so that collision will be avoided.
+                                         *
+                                         * TODO right now all node are cleared but the remove function should only
+                                         * remove obstacles from the last wave of iterations.
+                                         */
+                                        simulation.path().removeAllObstacles();
+                                        simulation.path().setObstacle(that.getGridPosition());
+
                                         that.getPath();
                                         break;
                                 }
@@ -278,10 +289,20 @@ export default class Simulation {
                 return path[0];
             },
             setObstacle(node) {
+                console.log('obstacle set');
                 node.weight = 0;
             },
             removeObstacle(node) {
                 node.weight = 1;
+            },
+            removeAllObstacles() {
+                graph.grid.forEach(function(element) {
+                    // simulation.path().removeObstacle(element);
+                    element.forEach(function(elem) {
+                        console.log('removed');
+                        elem.weight = 1;
+                    });
+                });
             },
             convertNodeToPx(node) {
                 let { x, y } = node;
