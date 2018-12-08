@@ -1,4 +1,5 @@
 import Simulation from './Simulation';
+import './app.css';
 
 window.Simulation = Simulation;
 

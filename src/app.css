@@ -1,4 +1,20 @@
 main {
+    position: relative;
     width: 100%;
     height: 80vh;
+}
+table {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: .2;
+
+}
+table tr {
+    border: 1px solid white;
+    height: 100px;
+}
+table th {
+    min-width: 98px;
+    border: 1px solid white;
 }
