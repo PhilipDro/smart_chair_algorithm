@@ -13,7 +13,7 @@ let graph = new Graph([
     [1, 1, 1]
 ]);
 
-let destination = graph.grid[2][1];
+let destination = graph.grid[2][2];
 
 window.graph = graph;
 window.destination = destination;
@@ -64,8 +64,8 @@ export default class Simulation {
                         setPosition() {
                             const angle = toDegrees(chair.shape.angle) % 360;
                             this.position = {
-                                x: chair.shape.position.x,
-                                y: chair.shape.position.y,
+                                x: Math.round(chair.shape.position.x),
+                                y: Math.round(chair.shape.position.y),
                                 bearing: angle < 0 ? angle + 270 : angle  - 90
                             }
                         },
@@ -95,43 +95,76 @@ export default class Simulation {
                         setNextNode() {
                             this.nextNode = simulation.path().getNextNode(this.path);
                         },
-                        moveToTarget() {
+                        moveToTarget(dest) {
+                            const that = this;
+
                             let start = this.getPosition();
-                            let end = destination;
+                            let end = simulation.path().convertNodeToPx(this.getNextNode());
 
                             let i = 0;
 
                             let intr = setInterval(function() {
 
-                                start = this.getPosition();
+                                start = that.getPosition();
+                                console.log('end: ', end);
+
+                                let switchCase;
 
                                 if(start.x > end.x) {
-
-                                    this.move({motionType: 'Straight', velocity: .8});
-
+                                    switchCase = 'A';
+                                } else if(start.x < end.x) {
+                                    switchCase = 'B';
+                                } else if(start.y > end.y) {
+                                    switchCase = 'C';
+                                } else if (start.y < end.y){
+                                    switchCase = 'D';
+                                } else {
+                                    switchCase = 'E';
                                 }
 
-                                else if(start.y > end.y) {
+                                switch(switchCase) {
+                                    case 'A':
+                                        console.log('Case A start.x > end.x');
+                                        console.log('start.x: ', start.x, ' end.x: ', end.x);
 
-                                    this.move({motionType: 'Rotation', velocity: .03});
+                                        if(Math.abs(start.x - end.x) <= 5) {
+                                            that.move({motionType: 'Straight', velocity: 0.01});
+                                        } else {
+                                            that.move({motionType: 'Straight', velocity: 0.8});
+                                        }
+                                        break;
 
+                                    case 'B':
+                                        console.log('Case B start.x < end.x');
+                                        console.log('start.x: ', start.x, ' end.x: ', end.x);
+                                        if(Math.abs(start.x - end.x) <= 5) {
+                                            that.move({motionType: 'Straight', velocity: -0.01});
+                                        } else {
+                                            that.move({motionType: 'Straight', velocity: -0.8});
+                                        }
+                                        break;
 
-                                    if(
-                                        this.getPosition().bearing > 85 &&
-                                        this.getPosition().bearing <= 95) {
+                                    case 'C':
+                                        that.move({motionType: 'Rotation', velocity: 0.03});
+                                        console.log('Case C');
+                                        break;
 
-                                        this.stop();
-                                        this.move({motionType: 'Straight', velocity: .8});
+                                    case 'D':
+                                        that.move({motionType: 'Rotation', velocity: -0.03});
+                                        console.log('Case D');
+                                        break;
 
-                                    }
+                                    case 'E':
+                                        console.log('Finish');
+                                        that.stop();
+                                        break;
                                 }
 
-                                else {
-                                    console.log('Finish');
-                                    this.stop();
+                                if(i++ == 100) {
+                                    clearInterval(intr);
+                                    console.log('stop interval');
+                                    that.stop();
                                 }
-
-                                if(i++ == 100) clearInterval(intr);
                             }, 200);
                         }
                     }
