@@ -97,11 +97,18 @@ export default class Simulation {
                         setNextNode() {
                             this.nextNode = simulation.path().getNextNode(this.path);
                         },
+                        getMousePosition(e) {
+                            this.setMousePosition(e);
+                            return this.mousePosition;
+                        },
+                        setMousePosition(e) {
+                            this.mousePosition = simulation.path().getMousePosition(e);
+                        },
                         moveToTarget(dest) {
                             const that = this;
 
                             let start = this.getPosition();
-                            let end = simulation.path().convertNodeToPx(this.getNextNode());
+                            let end = dest || simulation.path().convertNodeToPx(this.getNextNode());
 
                             let i = 0;
 
@@ -227,6 +234,12 @@ export default class Simulation {
                 return {
                     x: (x * 100),
                     y: (y * 100)
+                }
+            },
+            getMousePosition(event) {
+                return {
+                    x: Math.round(event.clientX),
+                    y: Math.round(event.clientY)
                 }
             }
         }

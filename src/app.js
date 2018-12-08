@@ -17,3 +17,10 @@ window.path = sim.path();
 // make chairs available
 
 window.chairs = sim.getChairControl().getChairs();
+
+// mouse position
+
+document.addEventListener('click', function (e) {
+    let mousePos = chairs[0].getMousePosition(e);
+    chairs[0].moveToTarget(mousePos);
+});
