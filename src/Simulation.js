@@ -30,7 +30,7 @@ export default class Simulation {
             velocity: {x: 0, y: 0},
             angularVelocity: 0,
             shape: (() => {
-                const box = Bodies.rectangle(120 + 120 * index, 170 + 170 * index, 50, 50);
+                const box = Bodies.rectangle(90 + 90 * index, 90 + 90 * index, 50, 50);
                 box.frictionAir = DEFAULT_FRICTION;
                 return box;
             })()
@@ -117,27 +117,29 @@ export default class Simulation {
                                 start = that.getGridPosition();
                                 target = that.getNextNode();
 
-                                // set vectors for x and y axis to determine the direction.
-                                // vector values are derived from the difference between the position of the chair
+                                // Set vectors for x and y axis to determine the direction.
+                                // Vector values are derived from the difference between the position of the chair
                                 // and the position of the next node. Vertically such as horizontally.
                                 vector = {
                                     x: that.getNextNode() !== undefined ? (that.getNextNode().x - start.x) : 0,
                                     y: that.getNextNode() !== undefined ? (that.getNextNode().y - start.y) : 0
                                 }
 
-                                console.log(vector);
-
                                 let direction;
 
                                 if(vector.x === 1) {
                                     direction = 'right';
-                                } else if(vector.x === -1) {
+                                }
+                                else if(vector.x === -1) {
                                     direction = 'top';
-                                } else if(vector.y === 1) {
+                                }
+                                else if(vector.y === 1) {
                                     direction = 'bottom';
-                                } else if (vector.y === -1){
+                                }
+                                else if (vector.y === -1){
                                     direction = 'left';
-                                } else {
+                                }
+                                else {
                                     direction = 'none';
                                 }
 
@@ -148,12 +150,13 @@ export default class Simulation {
 
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
-                                        if(that.getPosition().bearing > 85 && that.getPosition().bearing < 95) {
+                                        if(that.getPosition().bearing > 80 && that.getPosition().bearing < 100) {
                                             that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
                                         }
 
                                         break;
 
+                                    // drive to the top
                                     case 'top':
                                         console.log('drive to the top');
 
@@ -165,6 +168,7 @@ export default class Simulation {
 
                                         break;
 
+                                    // drive to the bottom
                                     case 'bottom':
                                         console.log('drive to the bottom');
 
@@ -176,6 +180,7 @@ export default class Simulation {
 
                                         break;
 
+                                    // // drive to the left
                                     case 'left':
                                         console.log('drive to the bottom');
 

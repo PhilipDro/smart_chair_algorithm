@@ -5,7 +5,7 @@ window.Simulation = Simulation;
 
 // start the simulation
 
-let sim = new Simulation();
+let sim = new Simulation({chairCount: 2});
 window.sim = sim;
 
 sim.getChairControl().start();
@@ -18,4 +18,7 @@ window.path = sim.path();
 
 window.chairs = sim.getChairControl().getChairs();
 
-chairs[0].moveToTarget();
+// move all chairs to set position
+for (var i = 0; i < chairs.length; i++) {
+    chairs[i].moveToTarget();
+}
