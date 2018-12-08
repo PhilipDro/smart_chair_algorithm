@@ -15,7 +15,7 @@ let graph = new Graph([
     [1, 1, 1, 1, 1],
 ]);
 
-let destination = graph.grid[2][2];
+let destination = graph.grid[4][4];
 
 window.graph = graph;
 window.destination = destination;
@@ -104,6 +104,9 @@ export default class Simulation {
                             let end = simulation.path().convertNodeToPx(this.getNextNode());
 
                             let i = 0;
+
+                            // determine current vector
+                            let vector = [0, 0];
 
                             let intr = setInterval(function() {
 
