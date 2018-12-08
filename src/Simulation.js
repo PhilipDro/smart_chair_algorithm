@@ -16,6 +16,7 @@ let graph = new Graph([
 let destination = graph.grid[2][1];
 
 window.graph = graph;
+window.destination = destination;
 
 export default class Simulation {
 
@@ -40,7 +41,6 @@ export default class Simulation {
             getChairs: () => {
                 return simulation.chairs.map(function(chair){
                     return {
-                        position: [],
                         move({motionType, velocity}) {
                             this.stop();
                             switch (motionType) {
@@ -58,27 +58,81 @@ export default class Simulation {
                             chair.velocity = {x: 0, y: 0};
                         },
                         getPosition() {
+                            this.setPosition();
+                            return this.position;
+                        },
+                        setPosition() {
                             const angle = toDegrees(chair.shape.angle) % 360;
-                            return {
+                            this.position = {
                                 x: chair.shape.position.x,
                                 y: chair.shape.position.y,
                                 bearing: angle < 0 ? angle + 270 : angle  - 90
                             }
                         },
                         getGridPosition() {
+                            this.setGridPosition();
+                            return this.positionInGrid;
+                        },
+                        setGridPosition() {
                             let { x, y } = this.getPosition();
                             x = Math.round((x / 100));
                             y = Math.round((y / 100));
-                            this.position = graph.grid[x][y];
-                            return graph.grid[x][y];
+                            this.positionInGrid = graph.grid[x][y];
+                        },
+                        getPath() {
+                            this.setPath();
+                            return this.path;
                         },
                         setPath() {
                             this.path = simulation
                                 .path()
-                                .findPath(graph, this.getGridPosition(), destination)
+                                .findPath(graph, this.getGridPosition(), destination);
+                        },
+                        getNextNode() {
+                            this.setNextNode();
+                            return this.nextNode;
                         },
                         setNextNode() {
                             this.nextNode = simulation.path().getNextNode(this.path);
+                        },
+                        moveToTarget() {
+                            let start = this.getPosition();
+                            let end = destination;
+
+                            let i = 0;
+
+                            let intr = setInterval(function() {
+
+                                start = this.getPosition();
+
+                                if(start.x > end.x) {
+
+                                    this.move({motionType: 'Straight', velocity: .8});
+
+                                }
+
+                                else if(start.y > end.y) {
+
+                                    this.move({motionType: 'Rotation', velocity: .03});
+
+
+                                    if(
+                                        this.getPosition().bearing > 85 &&
+                                        this.getPosition().bearing <= 95) {
+
+                                        this.stop();
+                                        this.move({motionType: 'Straight', velocity: .8});
+
+                                    }
+                                }
+
+                                else {
+                                    console.log('Finish');
+                                    this.stop();
+                                }
+
+                                if(i++ == 100) clearInterval(intr);
+                            }, 200);
                         }
                     }
                 });
@@ -126,6 +180,13 @@ export default class Simulation {
             },
             getNextNode(path) {
                 return path[0];
+            },
+            convertNodeToPx(node) {
+                let { x, y } = node;
+                return {
+                    x: (x * 100),
+                    y: (y * 100)
+                }
             }
         }
     }
