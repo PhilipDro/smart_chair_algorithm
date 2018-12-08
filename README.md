@@ -46,5 +46,11 @@ All methods are accessible with the path Object
 - `getNextNode(path)`
 > returns first element of a given path
 
+- `setObstacle(node)`
+> turns given node into an obstacle
+
+- `removeObstacle(node)`
+> turns given node into an obstacle free node
+
 - `convertNodeToPx(node)`
 > converts a given node in x, y coordinates and returns them as an object
