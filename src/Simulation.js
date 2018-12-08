@@ -12,10 +12,10 @@ let graph = new Graph([
     [1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1]
 ]);
 
-let destination = graph.grid[2][2];
+let destination = graph.grid[4][4];
 
 window.graph = graph;
 window.destination = destination;
@@ -215,6 +215,12 @@ export default class Simulation {
             },
             getNextNode(path) {
                 return path[0];
+            },
+            setObstacle(node) {
+                node.weight = 0;
+            },
+            removeObstacle(node) {
+                node.weight = 1;
             },
             convertNodeToPx(node) {
                 let { x, y } = node;
