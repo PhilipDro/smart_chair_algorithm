@@ -3,7 +3,7 @@ import { astar, Graph } from './astar';
 import Visualisation from './Visualisation';
 
 const DEFAULT_FRICTION = .1;
-const DRIVE_SPEED = 1.3;
+const DRIVE_SPEED = 1;
 const ROTATION_SPEED = 0.3;
 const ITERATION_TIME = 220;
 
@@ -126,12 +126,18 @@ export default class Simulation {
                             this.mousePosition = simulation.path().getMousePosition(e);
                         },
                         adjustToNodes() {
+                            /**
+                             * This funktion is called once for every chair as soon as the moveToTarget() function
+                             * finished. All chairs will be moved to the exact position of the nodes they belong to.
+                             *
+                             * @type {adjustToNodes}
+                             *
+                             * TODO refactor code to make it reusable.
+                             */
                             const that = this;
 
                             let start = that.getPosition();
                             let target = that.getGridPosition();
-
-                            // intervall
 
                             let adjust = setInterval(function() {
                                 start = that.getPosition();
@@ -333,7 +339,7 @@ export default class Simulation {
                                 if(i++ == 100) {
                                     clearInterval(actualizeObstacles);
                                 }
-                            }, ITERATION_TIME * 2);
+                            }, ITERATION_TIME * 3);
                         }
                     }
                 });
