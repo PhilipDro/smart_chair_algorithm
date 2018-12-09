@@ -5,7 +5,7 @@ import Visualisation from './Visualisation';
 const DEFAULT_FRICTION = .1;
 const DRIVE_SPEED = 1;
 const ROTATION_SPEED = 0.3;
-const ITERATION_TIME = 200;
+const ITERATION_TIME = 100;
 
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
@@ -54,8 +54,6 @@ export default class Simulation {
     getChairControl() {
 
         const simulation = this;
-
-        let previousVector = {x: 0, y: 0};
 
         return {
             getChairs: () => {
@@ -138,9 +136,6 @@ export default class Simulation {
                              */
                             const that = this;
 
-
-                            console.log('adjust');
-
                             let start = that.getPosition();
                             let target = that.getGridPosition();
 
@@ -181,13 +176,12 @@ export default class Simulation {
                                     if(that.getPosition().bearing > 80 && that.getPosition().bearing < 100) {
                                         that.move({motionType: 'Straight', velocity: DRIVE_SPEED / 3});
                                     }
+
                                 }
                                 else {
                                     clearInterval(adjust);
-                                    console.log('Adjustment finished.');
+                                    console.log('ADJUSTMENT FINISHED');
                                     that.stop();
-
-                                    that.moveToTarget();
                                 }
                             }, ITERATION_TIME);
                         },
@@ -243,101 +237,85 @@ export default class Simulation {
                                     y: that.getNextNode() !== undefined ? (that.getNextNode().y - start.y) : 0
                                 };
 
-                                if (previousVector.x === vector.x && previousVector.y === vector.y) {
-                                    /**
-                                     * blablbalala
-                                     */
-                                    console.log('IS EQUAL');
+                                let direction;
 
-                                    let direction;
-
-                                    if(vector.x === 1) {
-                                        direction = 'right';
-                                    }
-                                    else if(vector.x === -1) {
-                                        direction = 'left';
-                                    }
-                                    else if(vector.y === 1) {
-                                        direction = 'bottom';
-                                    }
-                                    else if (vector.y === -1){
-                                        direction = 'top';
-                                    }
-                                    else {
-                                        direction = 'none';
-                                    }
-
-                                    console.log('Chair ' + that.getId() + ' moves to ' + direction + '.')
-
-                                    switch(direction) {
-                                        /**
-                                         * Drive to the right.
-                                         */
-                                        case 'right':
-                                            that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
-
-                                            if(that.getPosition().bearing > 170 && that.getPosition().bearing < 190) {
-                                                that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
-                                            }
-
-                                            break;
-
-                                        /**
-                                         * Drive to the top.
-                                         */
-                                        case 'top':
-                                            that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
-
-                                            if(that.getPosition().bearing > 80 && that.getPosition().bearing < 100) {
-                                                that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
-                                            }
-
-                                            break;
-
-                                        /**
-                                         * Drive to the bottom.
-                                         */
-                                        case 'bottom':
-                                            that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
-
-                                            if(that.getPosition().bearing > 260 && that.getPosition().bearing < 280) {
-                                                that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
-                                            }
-
-                                            break;
-
-                                        /**
-                                         * Drive to the left.
-                                         */
-                                        case 'left':
-                                            that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
-
-                                            if(that.getPosition().bearing > 340) {
-                                                that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
-                                            }
-
-                                            break;
-
-                                        case 'none':
-                                            that.stop();
-
-                                            /**
-                                             * Move chairs to exact nodes.
-                                             */
-                                            // that.adjustToNodes();
-                                            clearInterval(moveTo);
-                                            break;
-                                    }
+                                if(vector.x === 1) {
+                                    direction = 'right';
                                 }
-
+                                else if(vector.x === -1) {
+                                    direction = 'left';
+                                }
+                                else if(vector.y === 1) {
+                                    direction = 'bottom';
+                                }
+                                else if (vector.y === -1){
+                                    direction = 'top';
+                                }
                                 else {
-                                    console.log('IS NOOOOOOOOOOT');
-                                    previousVector = vector;
-                                    clearInterval(moveTo);
-                                    that.stop();
-                                    that.adjustToNodes();
+                                    direction = 'none';
                                 }
 
+                                console.log('Chair ' + that.getId() + ' moves to ' + direction + '.');
+
+                                switch(direction) {
+                                    /**
+                                     * Drive to the right.
+                                     */
+                                    case 'right':
+                                        that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
+
+                                        if(that.getPosition().bearing > 170 && that.getPosition().bearing < 190) {
+                                            that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
+                                        }
+
+                                        break;
+
+                                    /**
+                                     * Drive to the top.
+                                     */
+                                    case 'top':
+                                        that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
+
+                                        if(that.getPosition().bearing > 80 && that.getPosition().bearing < 100) {
+                                            that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
+                                        }
+
+                                        break;
+
+                                    /**
+                                     * Drive to the bottom.
+                                     */
+                                    case 'bottom':
+                                        that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
+
+                                        if(that.getPosition().bearing > 260 && that.getPosition().bearing < 280) {
+                                            that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
+                                        }
+
+                                        break;
+
+                                    /**
+                                     * Drive to the left.
+                                     */
+                                    case 'left':
+                                        that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
+
+                                        if(that.getPosition().bearing > 340) {
+                                            that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
+                                        }
+
+                                        break;
+
+                                    case 'none':
+                                        that.stop();
+
+                                        /**
+                                         * Move chairs to exact nodes.
+                                         */
+                                        that.adjustToNodes();
+                                        clearInterval(moveTo);
+                                        break;
+                                }
 
                             }, ITERATION_TIME);
 
@@ -351,7 +329,7 @@ export default class Simulation {
 
                                 if (that.getId() === 0) {
                                     simulation.path().removeAllObstacles();
-                                    // visualisation.removeActiveAll();
+                                    visualisation.removeActiveAll();
                                 }
 
                                 if(i++ == 100) {

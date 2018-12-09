@@ -32,13 +32,3 @@ for (var i = 0; i < chairs.length; i++) {
 //     let mousePos = chairs[0].getMousePosition(e);
 //     chairs[0].moveToTarget(mousePos);
 // });
-//
-// class Route {
-//     constructor() {
-//
-//     }
-//
-//     CalcRoute() {
-//
-//     }
-// }
