@@ -26,11 +26,12 @@ export default class Visualisation {
     removeActiveAll() {
         let activeAll = this.document.querySelectorAll('.active');
         Array.prototype.forEach.call(activeAll, function(el) {
-            el.parentNode.removeChild(el);
+            el.classList.remove('active');
         });
     }
 
     toggleActive(position, callingChair) {
+
         let positionClass = this.positionToClass(position);
         let element = this.document.querySelector('.' + positionClass);
         let idClass = typeof callingChair !== 'undefined'
@@ -46,9 +47,9 @@ export default class Visualisation {
         element.classList.toggle('active');
     }
 
-    toggleActiveAll(path) {
+    toggleActiveAll(path, callingChair) {
         path.forEach(position => {
-            this.toggleActive(position);
+            this.toggleActive(position, callingChair);
         });
     }
 
