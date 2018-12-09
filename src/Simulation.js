@@ -4,6 +4,7 @@ import { astar, Graph } from './astar';
 const DEFAULT_FRICTION = .1;
 const DRIVE_SPEED = 1.1;
 const ROTATION_SPEED = 0.3;
+const ITERATION_TIME = 200;
 
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
@@ -17,7 +18,7 @@ let graph = new Graph([
     [1, 1, 1, 1, 1]
 ]);
 
-let destination = graph.grid[4][3];
+let destination = [graph.grid[4][4], graph.grid[4][3]];
 
 window.graph = graph;
 window.destination = destination;
@@ -29,6 +30,7 @@ export default class Simulation {
         this.chairs = [...Array(chairCount).keys()].map(index => ({
             velocity: {x: 0, y: 0},
             angularVelocity: 0,
+            id: index,
             shape: (() => {
                 const box = Bodies.rectangle(90 + 90 * index, 90 + 90 * index, 50, 50);
                 box.frictionAir = DEFAULT_FRICTION;
@@ -61,6 +63,10 @@ export default class Simulation {
                             chair.angularVelocity = 0;
                             chair.velocity = {x: 0, y: 0};
                         },
+                        getId() {
+                          let id = chair.id;
+                          return id;
+                        },
                         getPosition() {
                             this.setPosition();
                             return this.position;
@@ -70,7 +76,8 @@ export default class Simulation {
                             this.position = {
                                 x: Math.round(chair.shape.position.x),
                                 y: Math.round(chair.shape.position.y),
-                                bearing: angle < 0 ? angle + 270 : angle  - 90
+                                // bearing: angle < 0 ? angle + 270 : angle  - 90
+                                bearing: angle
                             }
                         },
                         getGridPosition() {
@@ -83,14 +90,14 @@ export default class Simulation {
                             y = Math.round((y / 100));
                             this.positionInGrid = graph.grid[x][y];
                         },
-                        getPath() {
-                            this.setPath();
+                        getPath(index) {
+                            this.setPath(index);
                             return this.path;
                         },
-                        setPath() {
+                        setPath(index) {
                             this.path = simulation
                                 .path()
-                                .findPath(graph, this.getGridPosition(), destination);
+                                .findPath(graph, chairs[index].getGridPosition(), destination[index]);
                         },
                         getNextNode() {
                             this.setNextNode();
@@ -108,10 +115,29 @@ export default class Simulation {
                         },
                         moveToTarget(dest) {
                             const that = this;
+
                             /**
-                             * Calculate path using A* algorithm.
+                             * Calculate path using A* algorithm initially.
                              */
-                            this.getPath();
+                            that.getPath(that.getId());
+
+
+                            // let thisPath = that.getPath(that.getId());
+                            //
+                            // for(let i = 0; i < chairs.length; i++) {
+                            //     console.log('cjaor');
+                            //     let otherPath = that.getPath(i);
+                            //
+                            //     for(let c = 0; c < otherPath.length; c++) {
+                            //         simulation.path().setObstacle(otherPath[c]);
+                            //         console.log('obstacle set');
+                            //     }
+                            // }
+                            //
+                            // for(let t = 0; t < thisPath.length; t++) {
+                            //     console.log('obstacle removed');
+                            //     simulation.path().removeObstacle(thisPath[t]);
+                            // }
 
                             let start = that.getGridPosition();
                             let target = dest || that.getNextNode();
@@ -121,14 +147,31 @@ export default class Simulation {
                             /**
                              * Determine current vector.
                              *
-                             * @type {number[]}
+                             * @type {{x: number, y: number}}
                              */
-                            let vector = [0, 0];
+                            let vector = {x: 0, y: 0};
 
                             let intr = setInterval(function() {
 
+                                /**
+                                 * Set obstacles in every iteration. Obstacles are nodes that are populated by other
+                                 * chairs so that collision will be avoided.
+                                 *
+                                 * TODO right now all node are cleared but the remove function should only
+                                 * remove obstacles from the last wave of iterations.
+                                 */
+                                if (that.getId() === 0) {
+                                    simulation.path().removeAllObstacles();
+                                }
+
+                                simulation.path().setObstacle(that.getGridPosition());
+
+                                that.getPath(that.getId());
+
                                 start = that.getGridPosition();
                                 target = that.getNextNode();
+
+                                that.getPath(that.getId());
 
                                 /**
                                  * Set vectors for x and y axis to determine the direction.
@@ -142,19 +185,22 @@ export default class Simulation {
                                     y: that.getNextNode() !== undefined ? (that.getNextNode().y - start.y) : 0
                                 };
 
+                                console.log('x: ' + vector.x + ' | y: ' + vector.y);
+
+
                                 let direction;
 
                                 if(vector.x === 1) {
                                     direction = 'right';
                                 }
                                 else if(vector.x === -1) {
-                                    direction = 'top';
+                                    direction = 'left';
                                 }
                                 else if(vector.y === 1) {
                                     direction = 'bottom';
                                 }
                                 else if (vector.y === -1){
-                                    direction = 'left';
+                                    direction = 'top';
                                 }
                                 else {
                                     direction = 'none';
@@ -169,7 +215,7 @@ export default class Simulation {
 
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
-                                        if(that.getPosition().bearing > 80 && that.getPosition().bearing < 100) {
+                                        if(that.getPosition().bearing > 170 && that.getPosition().bearing < 190) {
                                             that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
                                         }
 
@@ -183,7 +229,7 @@ export default class Simulation {
 
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
-                                        if(that.getPosition().bearing < 15) {
+                                        if(that.getPosition().bearing > 80 && that.getPosition().bearing < 100) {
                                             that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
                                         }
 
@@ -197,7 +243,7 @@ export default class Simulation {
 
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
-                                        if(that.getPosition().bearing > 170 && that.getPosition().bearing < 190) {
+                                        if(that.getPosition().bearing > 260 && that.getPosition().bearing < 280) {
                                             that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
                                         }
 
@@ -211,7 +257,7 @@ export default class Simulation {
 
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
-                                        if(that.getPosition().bearing > 260 && that.getPosition().bearing < 280) {
+                                        if(that.getPosition().bearing > 340) {
                                             that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
                                         }
 
@@ -221,17 +267,7 @@ export default class Simulation {
                                         console.log('Finish');
                                         that.stop();
 
-                                        /**
-                                         * Set obstacles in every iteration. Obstacles are nodes that are populated by other
-                                         * chairs so that collision will be avoided.
-                                         *
-                                         * TODO right now all node are cleared but the remove function should only
-                                         * remove obstacles from the last wave of iterations.
-                                         */
-                                        simulation.path().removeAllObstacles();
-                                        simulation.path().setObstacle(that.getGridPosition());
-
-                                        that.getPath();
+                                        // that.getPath();
                                         break;
                                 }
 
@@ -243,7 +279,7 @@ export default class Simulation {
                                     console.log('stop interval');
                                     that.stop();
                                 }
-                            }, 200);
+                            }, ITERATION_TIME);
                         }
                     }
                 });
@@ -299,13 +335,13 @@ export default class Simulation {
                 node.weight = 0;
             },
             removeObstacle(node) {
+                console.log('obstacle removed');
                 node.weight = 1;
             },
             removeAllObstacles() {
+                console.log('removed all');
                 graph.grid.forEach(function(element) {
-                    // simulation.path().removeObstacle(element);
                     element.forEach(function(elem) {
-                        console.log('removed');
                         elem.weight = 1;
                     });
                 });
