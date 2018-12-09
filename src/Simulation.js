@@ -1,5 +1,6 @@
 import {Engine, Render, World, Bodies, Body, Events} from 'matter-js';
 import { astar, Graph } from './astar';
+import Visualisation from './Visualisation';
 
 const DEFAULT_FRICTION = .1;
 const DRIVE_SPEED = 1.1;
@@ -21,6 +22,16 @@ let destination = graph.grid[4][3];
 
 window.graph = graph;
 window.destination = destination;
+
+// init Visualisation
+
+let visualisation = new Visualisation(document);
+window.visualisation = visualisation;
+
+visualisation.setClasses();
+
+visualisation.toggleActive({x: 1, y: 1});
+visualisation.toggleObstacle({x: 4, y: 1});
 
 export default class Simulation {
 

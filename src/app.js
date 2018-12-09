@@ -31,12 +31,3 @@ document.addEventListener('click', function (e) {
     let mousePos = chairs[0].getMousePosition(e);
     chairs[0].moveToTarget(mousePos);
 });
-
-// init Visualisation
-
-let visualisation = new Visualisation(document);
-
-visualisation.setClasses();
-
-visualisation.toggleActive({x: 1, y: 1});
-visualisation.toggleObstacle({x: 4, y: 1});
