@@ -20,6 +20,7 @@ let graph = new Graph([
 ]);
 
 let destination = [graph.grid[4][4], graph.grid[4][3]];
+// let destination = [graph.grid[2][2], graph.grid[1][2]];
 
 window.graph = graph;
 window.destination = destination;
@@ -132,24 +133,6 @@ export default class Simulation {
                              */
                             that.getPath(that.getId());
 
-
-                            // let thisPath = that.getPath(that.getId());
-                            //
-                            // for(let i = 0; i < chairs.length; i++) {
-                            //     console.log('cjaor');
-                            //     let otherPath = that.getPath(i);
-                            //
-                            //     for(let c = 0; c < otherPath.length; c++) {
-                            //         simulation.path().setObstacle(otherPath[c]);
-                            //         console.log('obstacle set');
-                            //     }
-                            // }
-                            //
-                            // for(let t = 0; t < thisPath.length; t++) {
-                            //     console.log('obstacle removed');
-                            //     simulation.path().removeObstacle(thisPath[t]);
-                            // }
-
                             let start = that.getGridPosition();
                             let target = dest || that.getNextNode();
 
@@ -162,7 +145,7 @@ export default class Simulation {
                              */
                             let vector = {x: 0, y: 0};
 
-                            let intr = setInterval(function() {
+                            let moveTo = setInterval(function() {
 
                                 /**
                                  * Set obstacles in every iteration. Obstacles are nodes that are populated by other
@@ -175,14 +158,21 @@ export default class Simulation {
                                 //     simulation.path().removeAllObstacles();
                                 // }
 
-                                simulation.path().setObstacle(that.getGridPosition());
+                                /**
+                                 * Set obstacles at nodes that are current locations of the chairs.
+                                 * So that all chairs will calculate their path without colliding with that nodes.
+                                 */
+                                for(let i = 0; i < chairs.length; i++) {
+                                    let position = that.getGridPosition(chairs[i].getGridPosition());
+                                    simulation.path().setObstacle(position);
+                                }
 
                                 that.getPath(that.getId());
 
                                 start = that.getGridPosition();
                                 target = that.getNextNode();
 
-                                that.getPath(that.getId());
+                                // that.getPath(that.getId());
 
                                 /**
                                  * Set vectors for x and y axis to determine the direction.
@@ -286,11 +276,23 @@ export default class Simulation {
                                  * TODO change stopping condition
                                  */
                                 if(i++ == 1000) {
-                                    clearInterval(intr);
+                                    clearInterval(moveTo);
                                     console.log('stop interval');
                                     that.stop();
                                 }
                             }, ITERATION_TIME);
+
+                            let actualizeObstacles = setInterval(function() {
+
+                                if (that.getId() === 0) {
+                                    simulation.path().removeAllObstacles();
+                                }
+
+                                if(i++ == 100) {
+                                    clearInterval(actualizeObstacles);
+                                    console.log('stop interval');
+                                }
+                            }, ITERATION_TIME * 2);
                         }
                     }
                 });
