@@ -75,8 +75,8 @@ export default class Simulation {
                             chair.velocity = {x: 0, y: 0};
                         },
                         getId() {
-                          let id = chair.id;
-                          return id;
+                            let id = chair.id;
+                            return id;
                         },
                         getPosition() {
                             this.setPosition();
@@ -171,9 +171,9 @@ export default class Simulation {
                                  * TODO right now all node are cleared but the remove function should only
                                  * remove obstacles from the last wave of iterations.
                                  */
-                                if (that.getId() === 0) {
-                                    simulation.path().removeAllObstacles();
-                                }
+                                // if (that.getId() === 0) {
+                                //     simulation.path().removeAllObstacles();
+                                // }
 
                                 simulation.path().setObstacle(that.getGridPosition());
 
@@ -344,19 +344,19 @@ export default class Simulation {
             setObstacle(node) {
                 console.log('obstacle set');
                 node.weight = 0;
-                visualisation.addObstacle({x: node.y, y: node.x});
+                visualisation.addObstacle({x: node.x, y: node.y});
             },
             removeObstacle(node) {
                 console.log('obstacle removed');
                 node.weight = 1;
-                visualisation.removeObstacle({x: node.y, y: node.x});
+                visualisation.removeObstacle({x: node.x, y: node.y});
             },
             removeAllObstacles() {
                 console.log('removed all');
                 graph.grid.forEach(function(element) {
                     element.forEach(function(elem) {
                         elem.weight = 1;
-                        visualisation.removeObstacle({x: elem.y, y: elem.x});
+                        visualisation.removeObstacle({x: elem.x, y: elem.y});
                     });
                 });
             },
