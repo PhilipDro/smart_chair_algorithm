@@ -3,9 +3,9 @@ import { astar, Graph } from './astar';
 import Visualisation from './Visualisation';
 
 const DEFAULT_FRICTION = .1;
-const DRIVE_SPEED = 1.1;
+const DRIVE_SPEED = 1.3;
 const ROTATION_SPEED = 0.3;
-const ITERATION_TIME = 200;
+const ITERATION_TIME = 220;
 
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
@@ -19,7 +19,7 @@ let graph = new Graph([
     [1, 1, 1, 1, 1]
 ]);
 
-let destination = [graph.grid[4][4], graph.grid[4][3]];
+let destination = [graph.grid[4][4], graph.grid[3][4], graph.grid[2][4], graph.grid[1][4]];
 // let destination = [graph.grid[2][2], graph.grid[1][2]];
 
 window.graph = graph;
@@ -44,7 +44,7 @@ export default class Simulation {
             angularVelocity: 0,
             id: index,
             shape: (() => {
-                const box = Bodies.rectangle(90 + 90 * index, 90 + 90 * index, 50, 50);
+                const box = Bodies.rectangle(90 + 90 * index, 90 + 90 * index, 40, 40);
                 box.frictionAir = DEFAULT_FRICTION;
                 return box;
             })()
@@ -125,6 +125,60 @@ export default class Simulation {
                         setMousePosition(e) {
                             this.mousePosition = simulation.path().getMousePosition(e);
                         },
+                        adjustToNodes() {
+                            const that = this;
+
+                            let start = that.getPosition();
+                            let target = that.getGridPosition();
+
+                            // intervall
+
+                            let adjust = setInterval(function() {
+                                start = that.getPosition();
+
+                                let xDifference = (target.x * 100) - start.x;
+                                let yDifference = (target.y * 100) - start.y;
+
+                                if (xDifference > 5) {
+                                    // fahr rechts
+                                    that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
+
+                                    if(that.getPosition().bearing > 170 && that.getPosition().bearing < 190) {
+                                        that.move({motionType: 'Straight', velocity: DRIVE_SPEED / 3});
+                                    }
+                                }
+                                else if (xDifference < -5) {
+                                    // fahr links
+                                    that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
+
+                                    if(that.getPosition().bearing > 340) {
+                                        that.move({motionType: 'Straight', velocity: DRIVE_SPEED / 3});
+                                    }
+                                }
+                                else if (yDifference > 5) {
+                                    // runter
+                                    that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
+
+                                    if(that.getPosition().bearing > 260 && that.getPosition().bearing < 280) {
+                                        that.move({motionType: 'Straight', velocity: DRIVE_SPEED / 3});
+                                    }
+                                }
+                                else if (yDifference < -5) {
+                                    // hoch
+                                    that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
+
+                                    if(that.getPosition().bearing > 80 && that.getPosition().bearing < 100) {
+                                        that.move({motionType: 'Straight', velocity: DRIVE_SPEED / 3});
+                                    }
+
+                                }
+                                else {
+                                    clearInterval(adjust);
+                                    console.log('ADJUSTMENT FINISHED');
+                                    that.stop();
+                                }
+                            }, ITERATION_TIME);
+                        },
                         moveToTarget(dest) {
                             const that = this;
 
@@ -173,8 +227,7 @@ export default class Simulation {
                                     y: that.getNextNode() !== undefined ? (that.getNextNode().y - start.y) : 0
                                 };
 
-                                console.log('x: ' + vector.x + ' | y: ' + vector.y);
-
+                                // console.log('x: ' + vector.x + ' | y: ' + vector.y);
 
                                 let direction;
 
@@ -199,7 +252,7 @@ export default class Simulation {
                                      * Drive to the right.
                                      */
                                     case 'right':
-                                        console.log('drive to the right');
+                                        // console.log('drive to the right');
 
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
@@ -213,7 +266,7 @@ export default class Simulation {
                                      * Drive to the top.
                                      */
                                     case 'top':
-                                        console.log('drive to the top');
+                                        // console.log('drive to the top');
 
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
@@ -227,7 +280,7 @@ export default class Simulation {
                                      * Drive to the bottom.
                                      */
                                     case 'bottom':
-                                        console.log('drive to the bottom');
+                                        // console.log('drive to the bottom');
 
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
@@ -241,7 +294,7 @@ export default class Simulation {
                                      * Drive to the left.
                                      */
                                     case 'left':
-                                        console.log('drive to the left');
+                                        // console.log('drive to the left');
 
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
@@ -252,21 +305,17 @@ export default class Simulation {
                                         break;
 
                                     case 'none':
-                                        console.log('Finish');
+                                        // console.log('Finish');
                                         that.stop();
 
-                                        // that.getPath();
+                                        /**
+                                         * Move chairs to exact nodes.
+                                         */
+                                        that.adjustToNodes();
+                                        clearInterval(moveTo);
                                         break;
                                 }
 
-                                /**
-                                 * TODO change stopping condition
-                                 */
-                                if(i++ == 1000) {
-                                    clearInterval(moveTo);
-                                    console.log('stop interval');
-                                    that.stop();
-                                }
                             }, ITERATION_TIME);
 
                             /**
@@ -283,7 +332,6 @@ export default class Simulation {
 
                                 if(i++ == 100) {
                                     clearInterval(actualizeObstacles);
-                                    console.log('stop interval');
                                 }
                             }, ITERATION_TIME * 2);
                         }
@@ -337,17 +385,17 @@ export default class Simulation {
                 return path[0];
             },
             setObstacle(node) {
-                console.log('obstacle set');
+                // console.log('obstacle set');
                 node.weight = 0;
                 visualisation.addObstacle({x: node.x, y: node.y});
             },
             removeObstacle(node) {
-                console.log('obstacle removed');
+                // console.log('obstacle removed');
                 node.weight = 1;
                 visualisation.removeObstacle({x: node.x, y: node.y});
             },
             removeAllObstacles() {
-                console.log('removed all');
+                // console.log('removed all');
                 graph.grid.forEach(function(element) {
                     element.forEach(function(elem) {
                         elem.weight = 1;

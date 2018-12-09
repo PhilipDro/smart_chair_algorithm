@@ -6,7 +6,7 @@ window.Simulation = Simulation;
 
 // start the simulation
 
-let sim = new Simulation({chairCount: 2});
+let sim = new Simulation({chairCount: 3});
 window.sim = sim;
 
 sim.getChairControl().start();
@@ -23,11 +23,12 @@ window.chairs = sim.getChairControl().getChairs();
 
 for (var i = 0; i < chairs.length; i++) {
     chairs[i].moveToTarget();
+    // chairs[i].adjustToNodes();
 }
 
 // mouse position
 
-document.addEventListener('click', function (e) {
-    let mousePos = chairs[0].getMousePosition(e);
-    chairs[0].moveToTarget(mousePos);
-});
+// document.addEventListener('click', function (e) {
+//     let mousePos = chairs[0].getMousePosition(e);
+//     chairs[0].moveToTarget(mousePos);
+// });
