@@ -40,10 +40,12 @@ table th {
 }
 
 .overlay th.active {
+    transform: scale(0.5);
     background: cornflowerblue;
 }
 
 .overlay th.obstacle {
+    transform: scale(0.5);
     background: #fff;
 }
 
