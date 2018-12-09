@@ -52,6 +52,6 @@ export default class Visualisation {
     }
 
     positionToClass({x, y}) {
-        return 'row-' + x + '_' + 'cell-' + y;
+        return 'row-' + y + '_' + 'cell-' + x;
     }
 }
