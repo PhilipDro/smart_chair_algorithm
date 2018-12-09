@@ -23,6 +23,13 @@ export default class Visualisation {
         });
     }
 
+    removeActiveAll() {
+        let activeAll = this.document.querySelectorAll('.active');
+        Array.prototype.forEach.call(activeAll, function(el) {
+            el.parentNode.removeChild(el);
+        });
+    }
+
     toggleActive(position, callingChair) {
         let positionClass = this.positionToClass(position);
         let element = this.document.querySelector('.' + positionClass);
@@ -37,6 +44,12 @@ export default class Visualisation {
         element.classList.add(positionClass);
         element.classList.add(idClass);
         element.classList.toggle('active');
+    }
+
+    toggleActiveAll(path) {
+        path.forEach(position => {
+            this.toggleActive(position);
+        });
     }
 
     toggleObstacle(position, callingChair) {
@@ -67,6 +80,13 @@ export default class Visualisation {
         let classList = {...element.classList};
 
         element.classList.add('obstacle');
+    }
+
+    removeObstacleAll() {
+        let activeAll = this.document.querySelectorAll('.obstacle');
+        Array.prototype.forEach.call(activeAll, function(el) {
+            el.parentNode.removeChild(el);
+        });
     }
 
     positionToClass({x, y}) {
