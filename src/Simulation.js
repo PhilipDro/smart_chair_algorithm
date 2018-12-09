@@ -5,7 +5,7 @@ import Visualisation from './Visualisation';
 const DEFAULT_FRICTION = .1;
 const DRIVE_SPEED = 1;
 const ROTATION_SPEED = 0.3;
-const ITERATION_TIME = 310;
+const ITERATION_TIME = 200;
 
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
@@ -138,6 +138,9 @@ export default class Simulation {
                              */
                             const that = this;
 
+
+                            console.log('adjust');
+
                             let start = that.getPosition();
                             let target = that.getGridPosition();
 
@@ -210,8 +213,6 @@ export default class Simulation {
 
                             let moveTo = setInterval(function() {
 
-                                that.adjustToNodes();
-
                                 /**
                                  * Set obstacles at nodes that are current locations of the chairs.
                                  * So that all chairs will calculate their path without colliding with that nodes.
@@ -246,6 +247,7 @@ export default class Simulation {
                                     /**
                                      * blablbalala
                                      */
+                                    console.log('IS EQUAL');
 
                                     let direction;
 
@@ -329,8 +331,10 @@ export default class Simulation {
                                 }
 
                                 else {
+                                    console.log('IS NOOOOOOOOOOT');
                                     previousVector = vector;
                                     clearInterval(moveTo);
+                                    that.stop();
                                     that.adjustToNodes();
                                 }
 
