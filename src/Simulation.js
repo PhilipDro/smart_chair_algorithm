@@ -148,17 +148,6 @@ export default class Simulation {
                             let moveTo = setInterval(function() {
 
                                 /**
-                                 * Set obstacles in every iteration. Obstacles are nodes that are populated by other
-                                 * chairs so that collision will be avoided.
-                                 *
-                                 * TODO right now all node are cleared but the remove function should only
-                                 * remove obstacles from the last wave of iterations.
-                                 */
-                                // if (that.getId() === 0) {
-                                //     simulation.path().removeAllObstacles();
-                                // }
-
-                                /**
                                  * Set obstacles at nodes that are current locations of the chairs.
                                  * So that all chairs will calculate their path without colliding with that nodes.
                                  */
@@ -171,8 +160,6 @@ export default class Simulation {
 
                                 start = that.getGridPosition();
                                 target = that.getNextNode();
-
-                                // that.getPath(that.getId());
 
                                 /**
                                  * Set vectors for x and y axis to determine the direction.
@@ -282,6 +269,12 @@ export default class Simulation {
                                 }
                             }, ITERATION_TIME);
 
+                            /**
+                             * Separate interval to actualize obstacles with longer timeout
+                             * to ensure calculation in time.
+                             *
+                             * @type {number}
+                             */
                             let actualizeObstacles = setInterval(function() {
 
                                 if (that.getId() === 0) {
