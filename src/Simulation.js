@@ -362,6 +362,9 @@ export default class Simulation {
                     y: (y * 100)
                 }
             },
+            convertPathToPx(path) {
+                return path.map(node => this.convertNodeToPx(node));
+            },
             getMousePosition(event) {
                 return {
                     x: Math.round(event.clientX),
