@@ -24,16 +24,34 @@ export default class Visualisation {
     }
 
     toggleActive(position, callingChair) {
-        let element = this.document.querySelector('.' + this.positionToClass(position));
+        let positionClass = this.positionToClass(position);
+        let element = this.document.querySelector('.' + positionClass);
+        let idClass = typeof callingChair !== 'undefined'
+            ? 'chair-' + callingChair : '_';
+
         let classList = {...element.classList};
 
+        // reset classList to remove previous chairs, etc.
+        element.className = '';
+
+        element.classList.add(positionClass);
+        element.classList.add(idClass);
         element.classList.toggle('active');
     }
 
     toggleObstacle(position, callingChair) {
-        let element = this.document.querySelector('.' + this.positionToClass(position));
+        let positionClass = this.positionToClass(position);
+        let element = this.document.querySelector('.' + positionClass);
+        let idClass = typeof callingChair !== 'undefined'
+            ? 'chair-' + callingChair : '_';
+
         let classList = {...element.classList};
 
+        // reset classList to remove previous chairs, etc.
+        element.className = '';
+
+        element.classList.add(positionClass);
+        element.classList.add(idClass);
         element.classList.toggle('obstacle');
     }
 
