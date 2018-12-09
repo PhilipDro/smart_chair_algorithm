@@ -37,6 +37,20 @@ export default class Visualisation {
         element.classList.toggle('obstacle');
     }
 
+    removeObstacle(position, callingChair) {
+        let element = this.document.querySelector('.' + this.positionToClass(position));
+        let classList = {...element.classList};
+
+        element.classList.remove('obstacle');
+    }
+
+    addObstacle(position, callingChair) {
+        let element = this.document.querySelector('.' + this.positionToClass(position));
+        let classList = {...element.classList};
+
+        element.classList.add('obstacle');
+    }
+
     positionToClass({x, y}) {
         return 'row-' + x + '_' + 'cell-' + y;
     }

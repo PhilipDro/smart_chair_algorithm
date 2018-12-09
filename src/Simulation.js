@@ -31,8 +31,8 @@ window.visualisation = visualisation;
 
 visualisation.setClasses();
 
-visualisation.toggleActive({x: 1, y: 1});
-visualisation.toggleObstacle({x: 4, y: 1});
+// visualisation.toggleActive({x: 1, y: 1});
+// visualisation.toggleObstacle({x: 4, y: 1});
 
 export default class Simulation {
 
@@ -344,16 +344,19 @@ export default class Simulation {
             setObstacle(node) {
                 console.log('obstacle set');
                 node.weight = 0;
+                visualisation.addObstacle({x: node.y, y: node.x});
             },
             removeObstacle(node) {
                 console.log('obstacle removed');
                 node.weight = 1;
+                visualisation.removeObstacle({x: node.y, y: node.x});
             },
             removeAllObstacles() {
                 console.log('removed all');
                 graph.grid.forEach(function(element) {
                     element.forEach(function(elem) {
                         elem.weight = 1;
+                        visualisation.removeObstacle({x: elem.y, y: elem.x});
                     });
                 });
             },
