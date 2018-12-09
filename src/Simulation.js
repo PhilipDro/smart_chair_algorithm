@@ -5,7 +5,7 @@ import Visualisation from './Visualisation';
 const DEFAULT_FRICTION = .1;
 const DRIVE_SPEED = 1;
 const ROTATION_SPEED = 0.3;
-const ITERATION_TIME = 220;
+const ITERATION_TIME = 310;
 
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
@@ -127,7 +127,7 @@ export default class Simulation {
                         },
                         adjustToNodes() {
                             /**
-                             * This funktion is called once for every chair as soon as the moveToTarget() function
+                             * This function is called once for every chair as soon as the moveToTarget() function
                              * finished. All chairs will be moved to the exact position of the nodes they belong to.
                              *
                              * @type {adjustToNodes}
@@ -217,6 +217,10 @@ export default class Simulation {
                                 }
 
                                 that.getPath(that.getId());
+
+                                for(let i = 0; i < chairs.length; i++) {
+                                    visualisation.toggleActiveAll(chairs[i].path);
+                                }
 
                                 start = that.getGridPosition();
                                 target = that.getNextNode();
@@ -334,6 +338,7 @@ export default class Simulation {
 
                                 if (that.getId() === 0) {
                                     simulation.path().removeAllObstacles();
+                                    visualisation.removeActiveAll();
                                 }
 
                                 if(i++ == 100) {
