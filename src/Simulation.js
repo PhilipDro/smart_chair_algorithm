@@ -223,9 +223,9 @@ export default class Simulation {
 
                                 that.getPath(that.getId());
 
-                                // for(let i = 0; i < chairs.length; i++) {
-                                //     visualisation.toggleActiveAll(chairs[i].path);
-                                // }
+                                for(let i = 0; i < chairs.length; i++) {
+                                    visualisation.toggleActiveAll(chairs[i].path, i);
+                                }
 
                                 start = that.getGridPosition();
                                 target = that.getNextNode();
