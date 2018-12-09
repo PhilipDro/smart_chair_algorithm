@@ -3,7 +3,8 @@ import { astar, Graph } from './astar';
 import Visualisation from './Visualisation';
 
 const DEFAULT_FRICTION = .1;
-const DRIVE_SPEED = 1.1;
+const DRIVE_SPEED = .7;
+// const DRIVE_SPEED = 1.1;
 const ROTATION_SPEED = 0.3;
 const ITERATION_TIME = 200;
 
@@ -133,7 +134,9 @@ export default class Simulation {
                              */
                             that.getPath(that.getId());
 
+                            let id = that.getId();
                             let start = that.getGridPosition();
+                            let startPx = that.getPosition();
                             let target = dest || that.getNextNode();
 
                             let i = 0;
@@ -156,10 +159,17 @@ export default class Simulation {
                                     simulation.path().setObstacle(position);
                                 }
 
+                                let arrayPath = that.getPath(id);
                                 that.getPath(that.getId());
 
                                 start = that.getGridPosition();
+                                startPx = that.getPosition();
                                 target = that.getNextNode();
+
+                                let lastX = arrayPath[arrayPath.length - 1].x * 100;
+                                let lastY = arrayPath[arrayPath.length - 1].y * 100;
+
+                                console.log(lastY);
 
                                 /**
                                  * Set vectors for x and y axis to determine the direction.
@@ -169,25 +179,44 @@ export default class Simulation {
                                  * @type {{x: number, y: number}}
                                  */
                                 vector = {
-                                    x: that.getNextNode() !== undefined ? (that.getNextNode().x - start.x) : 0,
-                                    y: that.getNextNode() !== undefined ? (that.getNextNode().y - start.y) : 0
+                                    // x: that.getNextNode() !== undefined ? (that.getNextNode().x * 100 - startPx.x) : lastX - startPx.x,
+                                    // y: that.getNextNode() !== undefined ? (that.getNextNode().y * 100 - startPx.y) : lastY - startPx.y,
+                                    x: (that.getNextNode().x * 100 - startPx.x) || dest.x,
+                                    y: (that.getNextNode().y * 100 - startPx.y) || dest.y
+                                    // x: that.getNextNode() !== undefined ? (that.getNextNode().x * 100 - startPx.x) : 0,
+                                    // y: that.getNextNode() !== undefined ? (that.getNextNode().y * 100 - startPx.y) : 0
                                 };
 
                                 console.log('x: ' + vector.x + ' | y: ' + vector.y);
 
-
                                 let direction;
 
-                                if(vector.x === 1) {
-                                    direction = 'right';
-                                }
-                                else if(vector.x === -1) {
+                                // if(vector.x === 1) {
+                                //     direction = 'right';
+                                // }
+                                // else if(vector.x === -1) {
+                                //     direction = 'left';
+                                // }
+                                // else if(vector.y === 1) {
+                                //     direction = 'bottom';
+                                // }
+                                // else if (vector.y === -1){
+                                //     direction = 'top';
+                                // }
+                                // else {
+                                //     direction = 'none';
+                                // }
+
+                                if(vector.x < -10) {
                                     direction = 'left';
                                 }
-                                else if(vector.y === 1) {
+                                else if(vector.x > 10) {
+                                    direction = 'right';
+                                }
+                                else if(vector.y > 10) {
                                     direction = 'bottom';
                                 }
-                                else if (vector.y === -1){
+                                else if (vector.y < -10){
                                     direction = 'top';
                                 }
                                 else {
