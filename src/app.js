@@ -1,4 +1,5 @@
 import Simulation from './Simulation';
+import Visualisation from './Visualisation';
 import './app.css';
 
 window.Simulation = Simulation;
@@ -19,12 +20,23 @@ window.path = sim.path();
 window.chairs = sim.getChairControl().getChairs();
 
 // move all chairs to set position
+
 for (var i = 0; i < chairs.length; i++) {
     chairs[i].moveToTarget();
 }
+
 // mouse position
 
 document.addEventListener('click', function (e) {
     let mousePos = chairs[0].getMousePosition(e);
     chairs[0].moveToTarget(mousePos);
 });
+
+// init Visualisation
+
+let visualisation = new Visualisation(document);
+
+visualisation.setClasses();
+
+visualisation.toggleActive({x: 1, y: 1});
+visualisation.toggleObstacle({x: 4, y: 1});
