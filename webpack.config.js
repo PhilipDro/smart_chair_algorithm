@@ -15,7 +15,8 @@ module.exports = {
             }, {
                 loader: 'css-loader',
                 options: {
-                    modules: true
+                    // prevents uglification of classes
+                    modules: false
                 }
             }],
         }]
