@@ -5,7 +5,7 @@ import Visualisation from './Visualisation';
 const DEFAULT_FRICTION = .1;
 const DRIVE_SPEED = 1;
 const ROTATION_SPEED = 0.3;
-const ITERATION_TIME = 100;
+const ITERATION_TIME = 200;
 
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
@@ -19,8 +19,9 @@ let graph = new Graph([
     [1, 1, 1, 1, 1]
 ]);
 
-let destination = [graph.grid[4][4], graph.grid[3][4], graph.grid[2][4], graph.grid[1][4]];
-// let destination = [graph.grid[2][2], graph.grid[1][2]];
+// let destination = [graph.griusd[2][2], graph.grid[3][3]];
+let destination = [graph.grid[4][4], graph.grid[3][4], graph.grid[1][4], graph.grid[2][4]];
+//let destination = [graph.grid[2][1], graph.grid[1][1], graph.grid[1][4], graph.grid[2][4]];
 
 window.graph = graph;
 window.destination = destination;
@@ -31,9 +32,6 @@ let visualisation = new Visualisation(document);
 window.visualisation = visualisation;
 
 visualisation.setClasses();
-
-// visualisation.toggleActive({x: 1, y: 1});
-// visualisation.toggleObstacle({x: 4, y: 1});
 
 export default class Simulation {
 
@@ -131,8 +129,6 @@ export default class Simulation {
                              * finished. All chairs will be moved to the exact position of the nodes they belong to.
                              *
                              * @type {adjustToNodes}
-                             *
-                             * TODO refactor code to make it reusable.
                              */
                             const that = this;
 
@@ -146,7 +142,9 @@ export default class Simulation {
                                 let yDifference = (target.y * 100) - start.y;
 
                                 if (xDifference > 5) {
-                                    // fahr rechts
+                                    /**
+                                     * Right
+                                     */
                                     that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
                                     if(that.getPosition().bearing > 170 && that.getPosition().bearing < 190) {
@@ -154,7 +152,9 @@ export default class Simulation {
                                     }
                                 }
                                 else if (xDifference < -5) {
-                                    // fahr links
+                                    /**
+                                     * Left
+                                     */
                                     that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
                                     if(that.getPosition().bearing > 340) {
@@ -162,7 +162,9 @@ export default class Simulation {
                                     }
                                 }
                                 else if (yDifference > 5) {
-                                    // runter
+                                    /**
+                                     * Bottom
+                                     */
                                     that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
                                     if(that.getPosition().bearing > 260 && that.getPosition().bearing < 280) {
@@ -170,7 +172,9 @@ export default class Simulation {
                                     }
                                 }
                                 else if (yDifference < -5) {
-                                    // hoch
+                                    /**
+                                     * Top
+                                     */
                                     that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
                                     if(that.getPosition().bearing > 80 && that.getPosition().bearing < 100) {
@@ -180,7 +184,7 @@ export default class Simulation {
                                 }
                                 else {
                                     clearInterval(adjust);
-                                    console.log('ADJUSTMENT FINISHED');
+                                    console.log('Adjustment finished.');
                                     that.stop();
                                 }
                             }, ITERATION_TIME);
@@ -313,8 +317,12 @@ export default class Simulation {
                                          * Move chairs to exact nodes.
                                          */
                                         that.adjustToNodes();
-                                        clearInterval(moveTo);
+
                                         break;
+                                }
+
+                                if (i++ > 599) {
+                                    clearInterval(moveTo);
                                 }
 
                             }, ITERATION_TIME);
