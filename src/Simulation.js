@@ -12,16 +12,18 @@ function toDegrees(angle) {
 }
 
 let graph = new Graph([
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1]
+    [1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1]
 ]);
 
 // let destination = [graph.griusd[2][2], graph.grid[3][3]];
-let destination = [graph.grid[4][4], graph.grid[3][4], graph.grid[1][4], graph.grid[2][4]];
+// let destination = [graph.grid[4][4], graph.grid[3][4], graph.grid[1][4], graph.grid[2][4]];
 //let destination = [graph.grid[2][1], graph.grid[1][1], graph.grid[1][4], graph.grid[2][4]];
+let destination = [graph.grid[5][5], graph.grid[4][5], graph.grid[2][5], graph.grid[2][4]];
 
 window.graph = graph;
 window.destination = destination;
@@ -356,8 +358,8 @@ export default class Simulation {
                     engine: engine,
                     options: {
                         showAngleIndicator: true,
-                        width: 500,
-                        height: 500
+                        width: 600,
+                        height: 600
                     }
                 });
 
@@ -431,5 +433,4 @@ export default class Simulation {
             }
         }
     }
-
 }
