@@ -32,3 +32,21 @@ for (var i = 0; i < chairs.length; i++) {
 //     let mousePos = chairs[0].getMousePosition(e);
 //     chairs[0].moveToTarget(mousePos);
 // });
+
+var formationOneButton = document.querySelector('.formation-one');
+var formationTwoButton = document.querySelector('.formation-two');
+var formationThreeButton = document.querySelector('.formation-three');
+var formationFourButton = document.querySelector('.formation-four');
+
+formationOneButton.addEventListener('click', function (e) {
+    sim.formationOne();
+});
+formationTwoButton.addEventListener('click', function (e) {
+    sim.formationTwo();
+});
+formationThreeButton.addEventListener('click', function (e) {
+    sim.formationThree();
+});
+formationFourButton.addEventListener('click', function (e) {
+    sim.formationFour();
+});

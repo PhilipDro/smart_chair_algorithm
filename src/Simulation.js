@@ -22,12 +22,6 @@ let graph = new Graph([
 
 // Formation 1
 let destination = [graph.grid[1][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3]];
-// Formation 2
-// let destination = [graph.grid[1][4], graph.grid[2][2], graph.grid[4][4], graph.grid[5][2]];
-// Formation 3
-// let destination = [graph.grid[3][1], graph.grid[2][2], graph.grid[4][2], graph.grid[2][4], graph.grid[4][4], graph.grid[3][5]];
-// Formation 4
-// let destination = [graph.grid[2][2], graph.grid[3][2], graph.grid[4][2], graph.grid[2][3], graph.grid[3][3], graph.grid[4][3]];
 
 window.graph = graph;
 window.destination = destination;
@@ -54,6 +48,47 @@ export default class Simulation {
                 return box;
             })()
         }));
+    }
+
+    /**
+     * Set starting positions and destination for each formation.
+     *
+     * TODO: refactor code DRY
+     */
+    formationOne() {
+        Body.setPosition(this.chairs[0].shape, {x: 100, y: 100});
+        Body.setPosition(this.chairs[1].shape, {x: 500, y: 100});
+        Body.setPosition(this.chairs[2].shape, {x: 100, y: 500});
+        Body.setPosition(this.chairs[3].shape, {x: 500, y: 500});
+        destination = [graph.grid[1][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3]];
+    }
+
+    formationTwo() {
+        Body.setPosition(this.chairs[0].shape, {x: 200, y: 200});
+        Body.setPosition(this.chairs[1].shape, {x: 400, y: 200});
+        Body.setPosition(this.chairs[2].shape, {x: 200, y: 400});
+        Body.setPosition(this.chairs[3].shape, {x: 400, y: 400});
+        destination = [graph.grid[1][4], graph.grid[2][2], graph.grid[4][4], graph.grid[5][2]];
+    }
+
+    formationThree() {
+        Body.setPosition(this.chairs[0].shape, {x: 300, y: 100});
+        Body.setPosition(this.chairs[1].shape, {x: 400, y: 100});
+        Body.setPosition(this.chairs[2].shape, {x: 500, y: 100});
+        Body.setPosition(this.chairs[3].shape, {x: 400, y: 200});
+        Body.setPosition(this.chairs[3].shape, {x: 500, y: 200});
+        Body.setPosition(this.chairs[3].shape, {x: 500, y: 300});
+        destination = [graph.grid[3][1], graph.grid[2][2], graph.grid[4][2], graph.grid[2][4], graph.grid[4][4], graph.grid[3][5]];
+     }
+
+    formationFour() {
+        Body.setPosition(this.chairs[0].shape, {x: 400, y: 100});
+        Body.setPosition(this.chairs[1].shape, {x: 300, y: 200});
+        Body.setPosition(this.chairs[2].shape, {x: 100, y: 300});
+        Body.setPosition(this.chairs[3].shape, {x: 400, y: 300});
+        Body.setPosition(this.chairs[3].shape, {x: 200, y: 500});
+        Body.setPosition(this.chairs[3].shape, {x: 400, y: 500});
+        destination = [graph.grid[2][2], graph.grid[3][2], graph.grid[4][2], graph.grid[2][3], graph.grid[3][3], graph.grid[4][3]];
     }
 
     getChairControl() {

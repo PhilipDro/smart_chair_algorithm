@@ -82,3 +82,16 @@ table th {
 .overlay th.obstacle.chair-3 {
     background: #add6ff;
 }
+
+/** Buttons **/
+aside {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+aside button {
+    display: block;
+    margin-bottom: 15px;
+}
+.formation-one {
+}
