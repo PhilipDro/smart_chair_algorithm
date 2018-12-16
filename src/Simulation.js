@@ -20,10 +20,14 @@ let graph = new Graph([
     [1, 1, 1, 1, 1, 1]
 ]);
 
-// let destination = [graph.griusd[2][2], graph.grid[3][3]];
-// let destination = [graph.grid[4][4], graph.grid[3][4], graph.grid[1][4], graph.grid[2][4]];
-//let destination = [graph.grid[2][1], graph.grid[1][1], graph.grid[1][4], graph.grid[2][4]];
-let destination = [graph.grid[5][5], graph.grid[4][5], graph.grid[2][5], graph.grid[2][4]];
+// Formation 1
+let destination = [graph.grid[1][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3]];
+// Formation 2
+// let destination = [graph.grid[1][4], graph.grid[2][2], graph.grid[4][4], graph.grid[5][2]];
+// Formation 3
+// let destination = [graph.grid[3][1], graph.grid[2][2], graph.grid[4][2], graph.grid[2][4], graph.grid[4][4], graph.grid[3][5]];
+// Formation 4
+// let destination = [graph.grid[2][2], graph.grid[3][2], graph.grid[4][2], graph.grid[2][3], graph.grid[3][3], graph.grid[4][3]];
 
 window.graph = graph;
 window.destination = destination;
@@ -44,7 +48,8 @@ export default class Simulation {
             angularVelocity: 0,
             id: index,
             shape: (() => {
-                const box = Bodies.rectangle(90 + 90 * index, 90 + 90 * index, 40, 40);
+                const box = Bodies.rectangle(100 + 100 * index, 100, 40, 40);
+                // const box = Bodies.rectangle(100, 100, 40, 40);
                 box.frictionAir = DEFAULT_FRICTION;
                 return box;
             })()
@@ -117,6 +122,14 @@ export default class Simulation {
                         },
                         setNextNode() {
                             this.nextNode = simulation.path().getNextNode(this.path);
+                        },
+                        getLastNode() {
+                            this.setLastNode();
+                            return this.lastNode;
+                        },
+                        setLastNode() {
+                            this.lastNode = this.path[this.path.length - 1];
+                            console.log(this.lastNode);
                         },
                         getMousePosition(e) {
                             this.setMousePosition(e);
@@ -212,7 +225,6 @@ export default class Simulation {
                             let vector = {x: 0, y: 0};
 
                             let moveTo = setInterval(function() {
-
                                 /**
                                  * Set obstacles at nodes that are current locations of the chairs.
                                  * So that all chairs will calculate their path without colliding with that nodes.
@@ -243,6 +255,11 @@ export default class Simulation {
                                     y: that.getNextNode() !== undefined ? (that.getNextNode().y - start.y) : 0
                                 };
 
+                                let lastNode = that.path[that.path.length - 1];
+
+                                // console.log(lastNode.x);
+                                // console.log(start.x);
+                                // console.log(lastNode.x);
                                 let direction;
 
                                 if(vector.x === 1) {
@@ -256,6 +273,11 @@ export default class Simulation {
                                 }
                                 else if (vector.y === -1){
                                     direction = 'top';
+                                }
+                                else if (
+                                    !lastNode
+                                ){
+                                    direction = 'finished';
                                 }
                                 else {
                                     direction = 'none';
@@ -312,18 +334,37 @@ export default class Simulation {
 
                                         break;
 
-                                    case 'none':
+                                    case 'finished':
+                                        /**
+                                         * This state is active if the chair has reached
+                                         * its final position / the last node.
+                                         */
                                         that.stop();
+                                        console.log('finished');
 
                                         /**
-                                         * Move chairs to exact nodes.
+                                         * Move chairs to exact node.
                                          */
                                         that.adjustToNodes();
 
                                         break;
+
+                                    case 'none':
+                                        /**
+                                         * This state is active if the chair does not have
+                                         * a node to go but is not at the last node yet.
+                                         *
+                                         * It waits until another node is available via a new
+                                         * route and then proceeds to keep moving.
+                                         */
+                                        that.stop();
+
+                                        console.log('waiting...')
+
+                                        break;
                                 }
 
-                                if (i++ > 599) {
+                                if (i++ > 1000) {
                                     clearInterval(moveTo);
                                 }
 
@@ -395,6 +436,9 @@ export default class Simulation {
             },
             getNextNode(path) {
                 return path[0];
+            },
+            getLastNode(path) {
+                return
             },
             setObstacle(node) {
                 // console.log('obstacle set');

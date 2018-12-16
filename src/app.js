@@ -6,7 +6,7 @@ window.Simulation = Simulation;
 
 // start the simulation
 
-let sim = new Simulation({chairCount: 3});
+let sim = new Simulation({chairCount: 4});
 window.sim = sim;
 
 sim.getChairControl().start();
