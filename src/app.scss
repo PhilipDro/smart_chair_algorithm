@@ -1,13 +1,6 @@
-main {
-    position: relative;
-    width: 100%;
-    height: 80vh;
-}
+@import "./variables";
 
-.simulation {
-    position: relative;
-}
-
+@import "./scss/general";
 @import "./scss/table";
 @import "./scss/overlay";
 @import "./scss/aside";
