@@ -1,27 +1,3 @@
-main {
-    position: relative;
-    width: 100%;
-    height: 80vh;
-}
-table {
-    position: absolute;
-    top: 0;
-    left: 0;
-    opacity: 0.2;
-}
-table tr {
-    border: 1px solid white;
-    height: 100px;
-}
-table th {
-    min-width: 96px;
-    border: 1px solid white;
-}
-
-.simulation {
-   position: relative;
-}
-
 .overlay {
     position: absolute;
     top: -50px;
@@ -81,17 +57,4 @@ table th {
 
 .overlay th.obstacle.chair-3 {
     background: #add6ff;
-}
-
-/** Buttons **/
-aside {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-}
-aside button {
-    display: block;
-    margin-bottom: 15px;
-}
-.formation-one {
 }

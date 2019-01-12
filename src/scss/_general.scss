@@ -1,0 +1,20 @@
+body {
+    background: $black;
+    font-family: 'Avenir', sans-serif;
+}
+
+main {
+    position: relative;
+    width: 100%;
+    height: 80vh;
+}
+
+.simulation {
+    position: relative;
+}
+
+.title {
+    color: $white;
+    margin-bottom: 10px;
+    font-size: 2em;
+}
