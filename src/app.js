@@ -6,7 +6,7 @@ window.Simulation = Simulation;
 
 // start the simulation
 
-let sim = new Simulation({chairCount: 1});
+let sim = new Simulation({chairCount: 4});
 window.sim = sim;
 
 sim.getChairControl().start();
@@ -20,18 +20,21 @@ window.chairs = sim.getChairControl().getChairs();
 
 // move all chairs to set position
 
-for (var i = 0; i < chairs.length; i++) {
+for (let i = 0; i < chairs.length; i++) {
     chairs[i].moveToTarget();
-    // chairs[i].adjustToNodes();
 }
 
-var formationOneButton = document.querySelector('.formation-one');
-var formationTwoButton = document.querySelector('.formation-two');
-var formationThreeButton = document.querySelector('.formation-three');
-var formationFourButton = document.querySelector('.formation-four');
+let formationOneButton = document.querySelector('.formation-one');
+let formationTwoButton = document.querySelector('.formation-two');
+let formationThreeButton = document.querySelector('.formation-three');
+let formationFourButton = document.querySelector('.formation-four');
 
 formationOneButton.addEventListener('click', function (e) {
     sim.formationOne();
+
+    // for (let i = 0; i < chairs.length; i++) {
+    //     chairs[i].moveToTarget();
+    // }
 });
 
 formationTwoButton.addEventListener('click', function (e) {

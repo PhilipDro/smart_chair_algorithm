@@ -5,7 +5,7 @@ import Visualisation from './Visualisation';
 const DEFAULT_FRICTION = .1;
 const DRIVE_SPEED = 1;
 const ROTATION_SPEED = 0.3;
-const ITERATION_TIME = 200;
+const ITERATION_TIME = 50;
 
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
@@ -21,7 +21,8 @@ let graph = new Graph([
 ]);
 
 // Formation 1
-let destination = [graph.grid[1][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3], graph.grid[1][1], graph.grid[1][2]];
+// let destination = [graph.grid[3][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3], graph.grid[1][1], graph.grid[1][2]];
+let destination = [graph.grid[1][4], graph.grid[2][2], graph.grid[4][4], graph.grid[5][2]];
 
 window.graph = graph;
 window.destination = destination;
@@ -42,16 +43,12 @@ export default class Simulation {
             angularVelocity: 0,
             id: index,
             shape: (() => {
-                const box = Bodies.rectangle(50 + 100 * index, 50, 50, 50);
+                const box = Bodies.rectangle(100 + 100 * index, 100, 50, 50);
                 // const box = Bodies.rectangle(100, 100, 40, 40);
                 box.frictionAir = DEFAULT_FRICTION;
                 return box;
             })()
         }));
-
-        // Body.setPosition(this.chairs[5].shape, {x: 100, y: 200});
-
-
     }
 
     /**
@@ -129,11 +126,11 @@ export default class Simulation {
                         },
                         setPosition() {
                             const angle = toDegrees(chair.shape.angle) % 360;
+                            const normalizedAngle = angle < 0 ? angle + 360 : angle;
                             this.position = {
                                 x: Math.round(chair.shape.position.x),
                                 y: Math.round(chair.shape.position.y),
-                                // bearing: angle < 0 ? angle + 270 : angle  - 90
-                                bearing: angle
+                                bearing: normalizedAngle + 90
                             }
                         },
                         getGridPosition() {
@@ -145,6 +142,15 @@ export default class Simulation {
                             x = Math.round((x / 100));
                             y = Math.round((y / 100));
                             this.positionInGrid = graph.grid[x][y];
+                        },
+                        getAngle({x, y}) {
+                            this.setAngle({x, y});
+                            return this.calculatedAngle;
+                        },
+                        setAngle({x, y}) {
+                            let angle = Math.atan2(y, x);   //radians
+                            let degrees = 180 * angle / Math.PI;  //degrees
+                            this.calculatedAngle = (360 + Math.round(degrees)) % 360;
                         },
                         getPath(index) {
                             this.setPath(index);
@@ -177,78 +183,78 @@ export default class Simulation {
                         setMousePosition(e) {
                             this.mousePosition = simulation.path().getMousePosition(e);
                         },
-                        adjustToNodes() {
-                            /**
-                             * This function is called once for every chair as soon as the moveToTarget() function
-                             * finished. All chairs will be moved to the exact position of the nodes they belong to.
-                             *
-                             * @type {adjustToNodes}
-                             */
-                            const that = this;
-
-                            let start = that.getPosition();
-                            let target = that.getGridPosition();
-
-                            let adjust = setInterval(function() {
-                                start = that.getPosition();
-
-                                let xDifference = (target.x * 100) - start.x;
-                                let yDifference = (target.y * 100) - start.y;
-
-                                if (that.interruptAdjustment === true) {
-                                    clearInterval(adjust);
-                                    that.stop();
-                                    this.interruptAdjustment = false;
-                                }
-
-                                else if (xDifference > 5) {
-                                    /**
-                                     * Right
-                                     */
-                                    that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
-
-                                    if(that.getPosition().bearing > 170 && that.getPosition().bearing < 190) {
-                                        that.move({motionType: 'Straight', velocity: DRIVE_SPEED / 3});
-                                    }
-                                }
-                                else if (xDifference < -5) {
-                                    /**
-                                     * Left
-                                     */
-                                    that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
-
-                                    if(that.getPosition().bearing > 340) {
-                                        that.move({motionType: 'Straight', velocity: DRIVE_SPEED / 3});
-                                    }
-                                }
-                                else if (yDifference > 5) {
-                                    /**
-                                     * Bottom
-                                     */
-                                    that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
-
-                                    if(that.getPosition().bearing > 260 && that.getPosition().bearing < 280) {
-                                        that.move({motionType: 'Straight', velocity: DRIVE_SPEED / 3});
-                                    }
-                                }
-                                else if (yDifference < -5) {
-                                    /**
-                                     * Top
-                                     */
-                                    that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
-
-                                    if(that.getPosition().bearing > 80 && that.getPosition().bearing < 100) {
-                                        that.move({motionType: 'Straight', velocity: DRIVE_SPEED / 3});
-                                    }
-
-                                }
-                                else {
-                                    clearInterval(adjust);
-                                    // console.log('Adjustment finished.');
-                                    that.stop();
-                                }
-                            }, ITERATION_TIME);
-                        },
+                        // adjustToNodes() {
+                        //     /**
+                        //      * This function is called once for every chair as soon as the moveToTarget() function
+                        //      * finished. All chairs will be moved to the exact position of the nodes they belong to.
+                        //      *
+                        //      * @type {adjustToNodes}
+                        //      */
+                        //     const that = this;
+                        //
+                        //     let start = that.getPosition();
+                        //     let target = that.getGridPosition();
+                        //
+                        //     let adjust = setInterval(function() {
+                        //         start = that.getPosition();
+                        //
+                        //         let xDifference = (target.x * 100) - start.x;
+                        //         let yDifference = (target.y * 100) - start.y;
+                        //
+                        //         if (that.interruptAdjustment === true) {
+                        //             clearInterval(adjust);
+                        //             that.stop();
+                        //             this.interruptAdjustment = false;
+                        //         }
+                        //
+                        //         else if (xDifference > 5) {
+                        //             /**
+                        //              * Right
+                        //              */
+                        //             that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
+                        //
+                        //             if(that.getPosition().bearing > 170 && that.getPosition().bearing < 190) {
+                        //                 that.move({motionType: 'Straight', velocity: DRIVE_SPEED / 3});
+                        //             }
+                        //         }
+                        //         else if (xDifference < -5) {
+                        //             /**
+                        //              * Left
+                        //              */
+                        //             that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
+                        //
+                        //             if(that.getPosition().bearing > 340) {
+                        //                 that.move({motionType: 'Straight', velocity: DRIVE_SPEED / 3});
+                        //             }
+                        //         }
+                        //         else if (yDifference > 5) {
+                        //             /**
+                        //              * Bottom
+                        //              */
+                        //             that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
+                        //
+                        //             if(that.getPosition().bearing > 260 && that.getPosition().bearing < 280) {
+                        //                 that.move({motionType: 'Straight', velocity: DRIVE_SPEED / 3});
+                        //             }
+                        //         }
+                        //         else if (yDifference < -5) {
+                        //             /**
+                        //              * Top
+                        //              */
+                        //             that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
+                        //
+                        //             if(that.getPosition().bearing > 80 && that.getPosition().bearing < 100) {
+                        //                 that.move({motionType: 'Straight', velocity: DRIVE_SPEED / 3});
+                        //             }
+                        //
+                        //         }
+                        //         else {
+                        //             clearInterval(adjust);
+                        //             // console.log('Adjustment finished.');
+                        //             that.stop();
+                        //         }
+                        //     }, ITERATION_TIME);
+                        // },
                         moveToTarget(dest) {
                             const that = this;
 
@@ -257,7 +263,8 @@ export default class Simulation {
                              */
                             that.getPath(that.getId());
 
-                            let start = that.getGridPosition();
+                            // let start = that.getGridPosition();
+                            let start = that.getPosition();
                             let target = dest || that.getNextNode();
 
                             let i = 0;
@@ -267,26 +274,43 @@ export default class Simulation {
                              *
                              * @type {{x: number, y: number}}
                              */
-                            let vector = {x: 0, y: 0};
+                            let vector = {x: target.x - start.x, y: target.y - start.y};
+
+                            /**
+                             * Calculate endAngle.
+                             */
+                            let endAngle = 270 + that.getAngle({
+                                x: (that.getNextNode().x * 100) - start.x,
+                                y: (that.getNextNode().y * 100) - start.y
+                            });
+
+                            let dir = Math.abs(endAngle - that.getPosition().bearing) > 180 ? -1 : 1;
+
+                            /**
+                             * Set obstacles at nodes that are current locations of the chairs.
+                             * So that all chairs will calculate their path without colliding with that nodes.
+                             */
+                            for(let i = 0; i < chairs.length; i++) {
+                                let position = that.getGridPosition(chairs[i].getGridPosition());
+                                simulation.path().setObstacle(position);
+                            }
 
                             let moveTo = setInterval(function() {
+
+                                // if(stopMoveTo === true) {
+                                //     clearInterval(moveTo);
+                                //     stopMoveTo = false;
+                                // }
+
                                 /**
-                                 * Set obstacles at nodes that are current locations of the chairs.
-                                 * So that all chairs will calculate their path without colliding with that nodes.
+                                 * Toggle path visualisation
+                                 * TODO: try to move outside of interval
                                  */
-                                for(let i = 0; i < chairs.length; i++) {
-                                    let position = that.getGridPosition(chairs[i].getGridPosition());
-                                    simulation.path().setObstacle(position);
-                                }
-
-                                that.getPath(that.getId());
-
                                 for(let i = 0; i < chairs.length; i++) {
                                     visualisation.toggleActiveAll(chairs[i].path, i);
                                 }
 
-                                start = that.getGridPosition();
-                                target = that.getNextNode();
+                                start = that.getPosition();
 
                                 /**
                                  * Set vectors for x and y axis to determine the direction.
@@ -296,127 +320,87 @@ export default class Simulation {
                                  * @type {{x: number, y: number}}
                                  */
                                 vector = {
-                                    x: that.getNextNode() !== undefined ? (that.getNextNode().x - start.x) : 0,
-                                    y: that.getNextNode() !== undefined ? (that.getNextNode().y - start.y) : 0
+                                    x: that.getNextNode() !== undefined ? ((that.getNextNode().x * 100) - start.x) : 0,
+                                    y: that.getNextNode() !== undefined ? ((that.getNextNode().y * 100) - start.y) : 0
                                 };
 
                                 let lastNode = that.path[that.path.length - 1];
 
-                                // console.log(lastNode.x);
-                                // console.log(start.x);
-                                // console.log(lastNode.x);
-                                let direction;
+                                /**
+                                 *  Calculate distance to next destination.
+                                 *  a² + b² = c²
+                                 *
+                                 * @type {number}
+                                 */
+                                let distance = Math.sqrt(
+                                    Math.pow(vector.x, 2) + Math.pow(vector.y, 2));
 
-                                if(vector.x === 1) {
-                                    direction = 'right';
+                                // console.log('position X : ' + that.getPosition().x);
+                                // console.log('End Position X : ' + (target.x * 100));
+                                // console.log('Distance : ' + distance);
+                                // console.log('+++++++++++++++++');
+                                // console.log('Angle: ' + that.getPosition().bearing);
+                                // console.log('endAngle: ' + endAngle);
+                                // console.log('direction: ' + dir);
+                                // console.log('-------------------------');
+
+                                if (Math.abs(endAngle - that.getPosition().bearing) > 7.5) {
+                                    that.move({motionType: 'Rotation', velocity: 0.5 * dir});
+                                    console.log('rotate fast');
                                 }
-                                else if(vector.x === -1) {
-                                    direction = 'left';
+                                else if (Math.abs(endAngle - that.getPosition().bearing) > 2.5) {
+                                    that.move({motionType: 'Rotation', velocity: 0.05 * dir});
+                                    console.log('rotate slow');
                                 }
-                                else if(vector.y === 1) {
-                                    direction = 'bottom';
+                                else if (distance > 50) {
+                                    that.move({motionType: 'Straight', velocity: 1.0});
+                                    console.log('drive fast');
                                 }
-                                else if (vector.y === -1){
-                                    direction = 'top';
-                                }
-                                else if (
-                                    !lastNode
-                                ){
-                                    direction = 'finished';
+                                else if (distance > 15) {
+                                    that.move({motionType: 'Straight', velocity: 0.5});
+                                    console.log('drive slow');
                                 }
                                 else {
-                                    direction = 'none';
+                                    console.log('Finished');
+                                    that.stop();
+
+                                    /**
+                                     * Remove all obstacles.
+                                     */
+                                    if (that.getId() === 0) {
+                                        simulation.path().removeAllObstacles();
+                                        visualisation.removeActiveAll();
+                                    }
+
+                                    /**
+                                     * Set obstacles at nodes that are current locations of the chairs.
+                                     * So that all chairs will calculate their path without colliding with that nodes.
+                                     */
+                                    for(let i = 0; i < chairs.length; i++) {
+                                        let position = that.getGridPosition(chairs[i].getGridPosition());
+                                        simulation.path().setObstacle(position);
+                                    }
+
+                                    that.getPath(that.getId());
+                                    target = that.getNextNode();
+
+                                    /**
+                                     * Toggle path visualisation
+                                     */
+                                    for(let i = 0; i < chairs.length; i++) {
+                                        visualisation.toggleActiveAll(chairs[i].path, i);
+                                    }
+
+                                    /**
+                                     * Calculate endAngle.
+                                     */
+                                    endAngle = 270 + that.getAngle({
+                                        x: that.getNextNode() !== undefined ? ((that.getNextNode().x * 100) - start.x) : 0,
+                                        y: that.getNextNode() !== undefined ? ((that.getNextNode().y * 100) - start.y) : 0
+                                    });
+
+                                    dir = Math.abs(endAngle - that.getPosition().bearing) > 180 ? -1 : 1;
                                 }
-
-                                // console.log('Chair ' + that.getId() + ' moves to ' + direction + '.');
-
-                                switch(direction) {
-                                    /**
-                                     * Drive to the right.
-                                     */
-                                    case 'right':
-                                        this.interruptAdjustment = true;
-                                        that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
-
-                                        if(that.getPosition().bearing > 170 && that.getPosition().bearing < 190) {
-                                            that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
-                                        }
-
-                                        break;
-
-                                    /**
-                                     * Drive to the top.
-                                     */
-                                    case 'top':
-                                        this.interruptAdjustment = true;
-                                        that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
-
-                                        if(that.getPosition().bearing > 80 && that.getPosition().bearing < 100) {
-                                            that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
-                                        }
-
-                                        break;
-
-                                    /**
-                                     * Drive to the bottom.
-                                     */
-                                    case 'bottom':
-                                        this.interruptAdjustment = true;
-                                        that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
-
-                                        if(that.getPosition().bearing > 260 && that.getPosition().bearing < 280) {
-                                            that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
-                                        }
-
-                                        break;
-
-                                    /**
-                                     * Drive to the left.
-                                     */
-                                    case 'left':
-                                        this.interruptAdjustment = true;
-                                        that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
-
-                                        if(that.getPosition().bearing > 340) {
-                                            that.move({motionType: 'Straight', velocity: DRIVE_SPEED});
-                                        }
-
-                                        break;
-
-                                    case 'finished':
-                                        /**
-                                         * This state is active if the chair has reached
-                                         * its final position / the last node.
-                                         */
-                                        that.stop();
-                                        // console.log('finished');
-
-                                        /**
-                                         * Move chairs to exact node.
-                                         */
-                                        that.adjustToNodes();
-
-                                        break;
-
-                                    case 'none':
-                                        /**
-                                         * This state is active if the chair does not have
-                                         * a node to go but is not at the last node yet.
-                                         *
-                                         * It waits until another node is available via a new
-                                         * route and then proceeds to keep moving.
-                                         */
-                                        that.stop();
-
-                                        console.log('waiting...')
-
-                                        break;
-                                }
-
-                                if (i++ > 1000) {
-                                    clearInterval(moveTo);
-                                }
-
                             }, ITERATION_TIME);
 
                             /**
@@ -427,12 +411,12 @@ export default class Simulation {
                              */
                             let actualizeObstacles = setInterval(function() {
 
-                                if (that.getId() === 0) {
-                                    simulation.path().removeAllObstacles();
-                                    visualisation.removeActiveAll();
-                                }
+                                // if (that.getId() === 0) {
+                                //     simulation.path().removeAllObstacles();
+                                //     visualisation.removeActiveAll();
+                                // }
 
-                                if(i++ == 100) {
+                                if(i++ == 10000) {
                                     clearInterval(actualizeObstacles);
                                 }
                             }, ITERATION_TIME * 3);
