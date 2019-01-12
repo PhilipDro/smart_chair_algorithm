@@ -1,18 +1,17 @@
 import Simulation from './Simulation';
 import Visualisation from './Visualisation';
-import './app.css';
+import './app.scss';
 
 window.Simulation = Simulation;
 
 // start the simulation
 
-let sim = new Simulation({chairCount: 4});
+let sim = new Simulation({chairCount: 1});
 window.sim = sim;
 
 sim.getChairControl().start();
 
 // make astar api available to window
-// path.findPath(graph, chairs[0].getGridPosition(), graph.grid[1][1]);
 window.path = sim.path();
 
 // make chairs available
@@ -26,13 +25,6 @@ for (var i = 0; i < chairs.length; i++) {
     // chairs[i].adjustToNodes();
 }
 
-// mouse position
-
-// document.addEventListener('click', function (e) {
-//     let mousePos = chairs[0].getMousePosition(e);
-//     chairs[0].moveToTarget(mousePos);
-// });
-
 var formationOneButton = document.querySelector('.formation-one');
 var formationTwoButton = document.querySelector('.formation-two');
 var formationThreeButton = document.querySelector('.formation-three');
@@ -41,9 +33,11 @@ var formationFourButton = document.querySelector('.formation-four');
 formationOneButton.addEventListener('click', function (e) {
     sim.formationOne();
 });
+
 formationTwoButton.addEventListener('click', function (e) {
     sim.formationTwo();
 });
+
 formationThreeButton.addEventListener('click', function (e) {
     sim.formationThree();
 });

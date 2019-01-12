@@ -9,7 +9,7 @@ module.exports = {
     },
     module: {
         rules: [{
-            test: /\.css$/,
+            test: /\.scss$/,
             use: [{
                 loader: 'style-loader'
             }, {
@@ -18,7 +18,10 @@ module.exports = {
                     // prevents uglification of classes
                     modules: false
                 }
-            }],
+            }, {
+                loader: "sass-loader",
+                options: {}
+            }]
         }]
     },
     plugins: [
