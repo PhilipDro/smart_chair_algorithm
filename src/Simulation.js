@@ -21,7 +21,7 @@ let graph = new Graph([
 ]);
 
 // Formation 1
-let destination = [graph.grid[1][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3]];
+let destination = [graph.grid[1][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3], graph.grid[1][1], graph.grid[1][2]];
 
 window.graph = graph;
 window.destination = destination;
@@ -42,12 +42,16 @@ export default class Simulation {
             angularVelocity: 0,
             id: index,
             shape: (() => {
-                const box = Bodies.rectangle(100 + 100 * index, 100, 40, 40);
+                const box = Bodies.rectangle(50 + 100 * index, 50, 50, 50);
                 // const box = Bodies.rectangle(100, 100, 40, 40);
                 box.frictionAir = DEFAULT_FRICTION;
                 return box;
             })()
         }));
+
+        // Body.setPosition(this.chairs[5].shape, {x: 100, y: 200});
+
+
     }
 
     /**
@@ -76,8 +80,8 @@ export default class Simulation {
         Body.setPosition(this.chairs[1].shape, {x: 400, y: 100});
         Body.setPosition(this.chairs[2].shape, {x: 500, y: 100});
         Body.setPosition(this.chairs[3].shape, {x: 400, y: 200});
-        Body.setPosition(this.chairs[3].shape, {x: 500, y: 200});
-        Body.setPosition(this.chairs[3].shape, {x: 500, y: 300});
+        Body.setPosition(this.chairs[4].shape, {x: 500, y: 200});
+        Body.setPosition(this.chairs[5].shape, {x: 500, y: 300});
         destination = [graph.grid[3][1], graph.grid[2][2], graph.grid[4][2], graph.grid[2][4], graph.grid[4][4], graph.grid[3][5]];
      }
 
@@ -86,8 +90,8 @@ export default class Simulation {
         Body.setPosition(this.chairs[1].shape, {x: 300, y: 200});
         Body.setPosition(this.chairs[2].shape, {x: 100, y: 300});
         Body.setPosition(this.chairs[3].shape, {x: 400, y: 300});
-        Body.setPosition(this.chairs[3].shape, {x: 200, y: 500});
-        Body.setPosition(this.chairs[3].shape, {x: 400, y: 500});
+        Body.setPosition(this.chairs[4].shape, {x: 200, y: 500});
+        Body.setPosition(this.chairs[5].shape, {x: 400, y: 500});
         destination = [graph.grid[2][2], graph.grid[3][2], graph.grid[4][2], graph.grid[2][3], graph.grid[3][3], graph.grid[4][3]];
     }
 
@@ -191,7 +195,13 @@ export default class Simulation {
                                 let xDifference = (target.x * 100) - start.x;
                                 let yDifference = (target.y * 100) - start.y;
 
-                                if (xDifference > 5) {
+                                if (that.interruptAdjustment === true) {
+                                    clearInterval(adjust);
+                                    that.stop();
+                                    this.interruptAdjustment = false;
+                                }
+
+                                else if (xDifference > 5) {
                                     /**
                                      * Right
                                      */
@@ -234,7 +244,7 @@ export default class Simulation {
                                 }
                                 else {
                                     clearInterval(adjust);
-                                    console.log('Adjustment finished.');
+                                    // console.log('Adjustment finished.');
                                     that.stop();
                                 }
                             }, ITERATION_TIME);
@@ -318,13 +328,14 @@ export default class Simulation {
                                     direction = 'none';
                                 }
 
-                                console.log('Chair ' + that.getId() + ' moves to ' + direction + '.');
+                                // console.log('Chair ' + that.getId() + ' moves to ' + direction + '.');
 
                                 switch(direction) {
                                     /**
                                      * Drive to the right.
                                      */
                                     case 'right':
+                                        this.interruptAdjustment = true;
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
                                         if(that.getPosition().bearing > 170 && that.getPosition().bearing < 190) {
@@ -337,6 +348,7 @@ export default class Simulation {
                                      * Drive to the top.
                                      */
                                     case 'top':
+                                        this.interruptAdjustment = true;
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
                                         if(that.getPosition().bearing > 80 && that.getPosition().bearing < 100) {
@@ -349,6 +361,7 @@ export default class Simulation {
                                      * Drive to the bottom.
                                      */
                                     case 'bottom':
+                                        this.interruptAdjustment = true;
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
                                         if(that.getPosition().bearing > 260 && that.getPosition().bearing < 280) {
@@ -361,6 +374,7 @@ export default class Simulation {
                                      * Drive to the left.
                                      */
                                     case 'left':
+                                        this.interruptAdjustment = true;
                                         that.move({motionType: 'Rotation', velocity: ROTATION_SPEED});
 
                                         if(that.getPosition().bearing > 340) {
@@ -375,7 +389,7 @@ export default class Simulation {
                                          * its final position / the last node.
                                          */
                                         that.stop();
-                                        console.log('finished');
+                                        // console.log('finished');
 
                                         /**
                                          * Move chairs to exact node.
