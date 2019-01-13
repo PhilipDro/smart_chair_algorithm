@@ -1,4 +1,4 @@
-import {Engine, Render, World, Bodies, Body, Events} from 'matter-js';
+import { Engine, Render, World, Bodies, Body, Events } from 'matter-js';
 import { astar, Graph } from './astar';
 import Visualisation from './Visualisation';
 
@@ -28,7 +28,6 @@ window.graph = graph;
 window.destination = destination;
 
 // init Visualisation
-
 let visualisation = new Visualisation(document);
 window.visualisation = visualisation;
 
@@ -43,8 +42,7 @@ export default class Simulation {
             angularVelocity: 0,
             id: index,
             shape: (() => {
-                const box = Bodies.rectangle(100 + 100 * index, 100, 50, 50);
-                // const box = Bodies.rectangle(100, 100, 40, 40);
+                const box = Bodies.rectangle(100 + 100 * index, 100, 40, 40);
                 box.frictionAir = DEFAULT_FRICTION;
                 return box;
             })()
@@ -507,6 +505,27 @@ export default class Simulation {
                     x: Math.round(event.clientX),
                     y: Math.round(event.clientY)
                 }
+            }
+        }
+    }
+
+    marker() {
+        const that = this;
+
+        return {
+            setPosition(marker, chair) {
+                const { x, y } = marker.position;
+                Body.setPosition(chair.shape, {x: x, y: y});
+            },
+
+            setPositions(markers) {
+                let chairs = that.chairs;
+
+                markers.forEach((marker, index) => {
+                    if(typeof chairs[index] !== 'undefined') {
+                        this.setPosition(marker, chairs[index]);
+                    }
+                });
             }
         }
     }
