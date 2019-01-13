@@ -15,15 +15,22 @@ sim.getChairControl().start();
 window.path = sim.path();
 
 // make chairs available
-
 window.chairs = sim.getChairControl().getChairs();
 
 // move all chairs to set position
-
 for (var i = 0; i < chairs.length; i++) {
     chairs[i].moveToTarget();
-    // chairs[i].adjustToNodes();
 }
+
+// set up WebSocket
+let ws = new WebSocket('ws://localhost:3000');
+let response;
+
+ws.onmessage = event => {
+    response = JSON.parse(event.data);
+
+    sim.marker().setPositions(response);
+};
 
 var formationOneButton = document.querySelector('.formation-one');
 var formationTwoButton = document.querySelector('.formation-two');
