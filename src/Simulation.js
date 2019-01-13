@@ -20,8 +20,6 @@ let graph = new Graph([
     [1, 1, 1, 1, 1, 1]
 ]);
 
-// Formation 1
-// let destination = [graph.grid[3][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3], graph.grid[1][1], graph.grid[1][2]];
 let destination = [graph.grid[1][4], graph.grid[2][2], graph.grid[4][4], graph.grid[5][2]];
 
 window.graph = graph;
@@ -35,18 +33,21 @@ visualisation.setClasses();
 
 export default class Simulation {
 
-    constructor({element, chairCount = 1} = {}) {
-        this.element = element || document.querySelector('.simulation');
-        this.chairs = [...Array(chairCount).keys()].map(index => ({
-            velocity: {x: 0, y: 0},
-            angularVelocity: 0,
-            id: index,
-            shape: (() => {
-                const box = Bodies.rectangle(100 + 100 * index, 100, 40, 40);
-                box.frictionAir = DEFAULT_FRICTION;
-                return box;
-            })()
-        }));
+    constructor(markers = []) {
+        this.element = document.querySelector('.simulation');
+        this.chairs = markers.map((marker) => {
+            return {
+                velocity: {x: 0, y: 0},
+                angularVelocity: 0,
+                id: marker.id,
+                shape: (() => {
+                    const { x, y, bearing } = marker.position;
+                    const box = Bodies.rectangle(x, y, 40, 40);
+                    box.frictionAir = DEFAULT_FRICTION;
+                    return box;
+                })()
+            }
+        });
     }
 
     /**
@@ -172,7 +173,6 @@ export default class Simulation {
                         },
                         setLastNode() {
                             this.lastNode = this.path[this.path.length - 1];
-                            console.log(this.lastNode);
                         },
                         getMousePosition(e) {
                             this.setMousePosition(e);
@@ -261,6 +261,10 @@ export default class Simulation {
                              */
                             that.getPath(that.getId());
 
+                            if(typeof that.getNextNode() === 'undefined') {
+                                return;
+                            }
+
                             // let start = that.getGridPosition();
                             let start = that.getPosition();
                             let target = dest || that.getNextNode();
@@ -272,6 +276,7 @@ export default class Simulation {
                              *
                              * @type {{x: number, y: number}}
                              */
+
                             let vector = {x: target.x - start.x, y: target.y - start.y};
 
                             /**
