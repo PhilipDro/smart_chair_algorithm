@@ -42,7 +42,7 @@ Run this command, to start the server
 - `setNextNode()`
 > sets the next node in `this.nextNode`
 
-### Marker API Methods
+### Path API Methods
 All methods are accessible with the marker Object
 
 - `findPath(graph, start, end)`
@@ -60,7 +60,7 @@ All methods are accessible with the marker Object
 - `convertNodeToPx(node)`
 > converts a given node in x, y coordinates and returns them as an object
 
-### Path API Methods
+### Marker API Methods
 All methods are accessible with the path Object
 
 - `setPosition(marker, chair)`
