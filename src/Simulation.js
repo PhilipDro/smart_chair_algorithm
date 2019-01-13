@@ -526,6 +526,8 @@ export default class Simulation {
                         this.setPosition(marker, chairs[index]);
                     }
                 });
+
+                destination = [graph.grid[1][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3]];
             }
         }
     }
