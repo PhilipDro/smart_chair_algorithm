@@ -472,17 +472,14 @@ export default class Simulation {
                 return
             },
             setObstacle(node) {
-                // console.log('obstacle set');
                 node.weight = 0;
                 visualisation.addObstacle({x: node.x, y: node.y});
             },
             removeObstacle(node) {
-                // console.log('obstacle removed');
                 node.weight = 1;
                 visualisation.removeObstacle({x: node.x, y: node.y});
             },
             removeAllObstacles() {
-                // console.log('removed all');
                 graph.grid.forEach(function(element) {
                     element.forEach(function(elem) {
                         elem.weight = 1;
@@ -514,7 +511,8 @@ export default class Simulation {
 
         return {
             setPosition(marker, chair) {
-                const { x, y } = marker.position;
+                const { x, y, bearing } = marker.position;
+                Body.setAngle(chair.shape, bearing);
                 Body.setPosition(chair.shape, {x: x, y: y});
             },
 
@@ -527,7 +525,12 @@ export default class Simulation {
                     }
                 });
 
-                destination = [graph.grid[1][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3]];
+                destination = [
+                    graph.grid[1][3],
+                    graph.grid[2][3],
+                    graph.grid[4][3],
+                    graph.grid[5][3]
+                ];
             }
         }
     }
