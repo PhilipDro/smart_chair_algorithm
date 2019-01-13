@@ -13,8 +13,8 @@ let positionData = [
     {
         id: 1,
         position: {
-            x: 200,
-            y: 200,
+            x: 300,
+            y: 100,
             bearing: 0
         }
     },
