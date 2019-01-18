@@ -33,21 +33,36 @@ visualisation.setClasses();
 
 export default class Simulation {
 
-    constructor(markers = []) {
-        this.element = document.querySelector('.simulation');
-        this.chairs = markers.map((marker) => {
-            return {
-                velocity: {x: 0, y: 0},
-                angularVelocity: 0,
-                id: marker.id,
-                shape: (() => {
-                    const { x, y, bearing } = marker.position;
-                    const box = Bodies.rectangle(x, y, 40, 40);
-                    box.frictionAir = DEFAULT_FRICTION;
-                    return box;
-                })()
-            }
-        });
+    // constructor(markers = []) {
+    //     this.element = document.querySelector('.simulation');
+    //     this.chairs = markers.map((marker) => {
+    //         return {
+    //             velocity: {x: 0, y: 0},
+    //             angularVelocity: 0,
+    //             id: marker.id,
+    //             shape: (() => {
+    //                 const { x, y, bearing } = marker.position;
+    //                 const box = Bodies.rectangle(x, y, 40, 40);
+    //                 box.frictionAir = DEFAULT_FRICTION;
+    //                 return box;
+    //             })()
+    //         }
+    //     });
+    // }
+
+    constructor({element, chairCount = 1} = {}) {
+        this.element = element || document.querySelector('.simulation');
+        this.chairs = [...Array(chairCount).keys()].map(index => ({
+            velocity: {x: 0, y: 0},
+            angularVelocity: 0,
+            id: index,
+            shape: (() => {
+                const box = Bodies.rectangle(100 + 100 * index, 100, 40, 40);
+                // const box = Bodies.rectangle(100, 100, 40, 40);
+                box.frictionAir = DEFAULT_FRICTION;
+                return box;
+            })()
+        }));
     }
 
     /**
