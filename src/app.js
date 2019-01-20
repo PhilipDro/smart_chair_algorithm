@@ -188,7 +188,7 @@ function goTo(that, destination) {
 window.Simulation = Simulation;
 
 // start the simulation
-const sim = new Simulation({chairCount: 2});
+const sim = new Simulation({chairCount: 4});
 const control = sim.getChairControl();
 const path = sim.path();
 window.sim = sim;
