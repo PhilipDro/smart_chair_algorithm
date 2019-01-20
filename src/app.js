@@ -2,7 +2,7 @@ import Simulation from './Simulation';
 import Visualisation from './Visualisation';
 import './app.scss';
 
-let destination = [graph.grid[1][5], graph.grid[2][5], graph.grid[4][5], graph.grid[5][5]];
+let destination = [graph.grid[4][5], graph.grid[2][5], graph.grid[4][5], graph.grid[5][5]];
 
 const DRIVE_SPEED = 1;
 const ROTATION_SPEED = 0.3;
@@ -47,8 +47,14 @@ function goTo(that, destination) {
         path.setObstacle(position);
     }
 
+    that.getPath(that.getId());
+
+    /**
+     * Interval begins.
+     * @type {number}
+     */
     let moveTo = setInterval(function() {
-        that.getPath(that.getId());
+        // that.getPath(that.getId());
         /**
          * Toggle path visualisation
          * TODO: try to move outside of interval
@@ -71,8 +77,6 @@ function goTo(that, destination) {
             y: that.getNextNode() !== undefined ? Math.abs((that.getNextNode().y * 100) - start.y) : 0
         };
 
-        let lastNode = that.path[that.path.length - 1];
-
         /**
          *  Calculate distance to next destination.
          *  a² + b² = c²
@@ -81,10 +85,6 @@ function goTo(that, destination) {
          */
         let distance = Math.sqrt(
             Math.pow(vector.x, 2) + Math.pow(vector.y, 2));
-
-        if(that.getId() === 1) {
-            console.log(distance);
-        }
 
         /**
          * Set obstacles at nodes that are current locations of the chairs.
@@ -95,6 +95,8 @@ function goTo(that, destination) {
             path.setObstacle(position);
         }
 
+        console.log('DISTANCE: ' + distance)
+
         if (Math.abs(endAngle - that.getPosition().bearing) > 7.5) {
             that.move({motionType: 'Rotation', velocity: 0.5 * dir});
             console.log('Bearing: ' + that.getPosition().bearing);
@@ -104,17 +106,23 @@ function goTo(that, destination) {
             that.move({motionType: 'Rotation', velocity: 0.02 * dir});
             console.log('rotate slow');
         }
-        else if (distance > 50) {
-            that.move({motionType: 'Straight', velocity: 1.0});
+        else if (distance > 25) {
+            that.move({motionType: 'Straight', velocity: 1});
             console.log('drive fast');
         }
-        else if (distance > 15) {
-            that.move({motionType: 'Straight', velocity: 0.2});
-            console.log('drive slow');
-        }
+        // else if (distance > 15) {
+        //     that.move({motionType: 'Straight', velocity: 0.2});
+        //     console.log('drive slow');
+        // }
         else {
             console.log('Finished');
-            // clearInterval(moveTo);
+            console.log('Finished');
+            console.log('Finished');
+            console.log('Finished');
+            console.log('Finished');
+            console.log('Finished');
+
+            clearInterval(moveTo);
             that.stop();
 
             /**
@@ -153,6 +161,8 @@ function goTo(that, destination) {
             });
 
             dir = Math.abs(endAngle - that.getPosition().bearing) > 180 ? -1 : 1;
+
+            goTo(that, destination);
         }
     }, ITERATION_TIME);
 
@@ -178,7 +188,7 @@ function goTo(that, destination) {
 window.Simulation = Simulation;
 
 // start the simulation
-const sim = new Simulation({chairCount: 4});
+const sim = new Simulation({chairCount: 2});
 const control = sim.getChairControl();
 const path = sim.path();
 window.sim = sim;
@@ -217,13 +227,3 @@ formationFourButton.addEventListener('click', function (e) {
     sim.formationFour();
 });
 
-// set up WebSocket
-// let ws = new WebSocket('ws://localhost:3000');
-// let response;
-
-// ws.onmessage = event => {
-//
-//     const markers = JSON.parse(event.data);
-//
-//
-// };

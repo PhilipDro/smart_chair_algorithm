@@ -19,7 +19,7 @@ let graph = new Graph([
 
 // Formation 1
 // let destination = [graph.grid[3][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3], graph.grid[1][1], graph.grid[1][2]];
-let destination = [graph.grid[1][5], graph.grid[2][5], graph.grid[4][5], graph.grid[5][5]];
+let destination = [graph.grid[2][5], graph.grid[1][5], graph.grid[4][5], graph.grid[5][5]];
 
 window.graph = graph;
 window.destination = destination;
@@ -32,23 +32,6 @@ window.visualisation = visualisation;
 visualisation.setClasses();
 
 export default class Simulation {
-
-    // constructor(markers = []) {
-    //     this.element = document.querySelector('.simulation');
-    //     this.chairs = markers.map((marker) => {
-    //         return {
-    //             velocity: {x: 0, y: 0},
-    //             angularVelocity: 0,
-    //             id: marker.id,
-    //             shape: (() => {
-    //                 const { x, y, bearing } = marker.position;
-    //                 const box = Bodies.rectangle(x, y, 40, 40);
-    //                 box.frictionAir = DEFAULT_FRICTION;
-    //                 return box;
-    //             })()
-    //         }
-    //     });
-    // }
 
     constructor({element, chairCount = 1} = {}) {
         this.element = element || document.querySelector('.simulation');
