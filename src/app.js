@@ -6,11 +6,9 @@ let destination = [graph.grid[4][5], graph.grid[2][5], graph.grid[4][5], graph.g
 
 const DRIVE_SPEED = 1;
 const ROTATION_SPEED = 0.3;
-const ITERATION_TIME = 10;
+const ITERATION_TIME = 100;
 
 function goTo(that, destination) {
-    // const that = this;
-
     /**
      * Calculate path using A* algorithm initially.
      */
@@ -31,9 +29,9 @@ function goTo(that, destination) {
     /**
      * Calculate endAngle.
      */
-    let endAngle = 180 + that.getAngle({
-        x: (that.getNextNode().x * 100) - start.x,
-        y: (that.getNextNode().y * 100) - start.y
+    let endAngle = 180 + getAngle({
+        x: that.getNextNode() !== undefined ? ((that.getNextNode().x * 100) - start.x) : 0,
+        y: that.getNextNode() !== undefined ? ((that.getNextNode().y * 100) - start.y) : 0
     });
 
     let dir = Math.abs(endAngle - that.getPosition().bearing) > 180 ? -1 : 1;
@@ -54,7 +52,6 @@ function goTo(that, destination) {
      * @type {number}
      */
     let moveTo = setInterval(function() {
-        // that.getPath(that.getId());
         /**
          * Toggle path visualisation
          * TODO: try to move outside of interval
@@ -95,7 +92,9 @@ function goTo(that, destination) {
             path.setObstacle(position);
         }
 
-        console.log('DISTANCE: ' + distance)
+        console.log('Distance: ' + distance);
+        console.log('WantedAngle: ' + endAngle);
+        console.log('Direction: ' + dir);
 
         if (Math.abs(endAngle - that.getPosition().bearing) > 7.5) {
             that.move({motionType: 'Rotation', velocity: 0.5 * dir});
@@ -115,11 +114,6 @@ function goTo(that, destination) {
         //     console.log('drive slow');
         // }
         else {
-            console.log('Finished');
-            console.log('Finished');
-            console.log('Finished');
-            console.log('Finished');
-            console.log('Finished');
             console.log('Finished');
 
             clearInterval(moveTo);
@@ -201,10 +195,7 @@ window.path = sim.path();
 // make chairs available
 window.chairs = sim.getChairControl().getChairs();
 
-// move all chairs to set position
-for (var i = 0; i < chairs.length; i++) {
-    goTo(chairs[i], destination);
-}
+
 
 let formationOneButton = document.querySelector('.formation-one');
 let formationTwoButton = document.querySelector('.formation-two');
@@ -213,17 +204,57 @@ let formationFourButton = document.querySelector('.formation-four');
 
 formationOneButton.addEventListener('click', function (e) {
     sim.formationOne();
+    // move all chairs to set position
+    for (var i = 0; i < chairs.length; i++) {
+        goTo(chairs[i], destination);
+    }
 });
 
 formationTwoButton.addEventListener('click', function (e) {
     sim.formationTwo();
+    for (var i = 0; i < chairs.length; i++) {
+        goTo(chairs[i], destination);
+    }
 });
 
 formationThreeButton.addEventListener('click', function (e) {
     sim.formationThree();
+    for (var i = 0; i < chairs.length; i++) {
+        goTo(chairs[i], destination);
+    }
 });
 
 formationFourButton.addEventListener('click', function (e) {
     sim.formationFour();
+    for (var i = 0; i < chairs.length; i++) {
+        goTo(chairs[i], destination);
+    }
 });
 
+function getAngle({x, y}) {
+    let angle = Math.atan2(y, x);   //radians
+    let degrees = 180 * angle / Math.PI;  //degrees
+    let calculatedAngle = (Math.round(degrees));
+    /**
+     * Temporary workaround to fix issue in
+     * case of calculatedAngle = 360, where
+     * the chair was just driving in small steps.
+     *
+     * TODO: refactor.
+     *
+     * @type {number}
+     */
+    let result;
+    // let result = calculatedAngle === 180 ? 170 : calculatedAngle;
+    // let result = calculatedAngle + 2;
+    if (calculatedAngle === 180) {
+       result = 170;
+    }
+    else if (calculatedAngle === 0) {
+        result = 10;
+    }
+    else {
+        result = calculatedAngle;
+    }
+    return result;
+}

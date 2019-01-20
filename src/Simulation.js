@@ -54,8 +54,8 @@ export default class Simulation {
      * TODO: refactor code DRY
      */
     formationOne() {
-        Body.setPosition(this.chairs[0].shape, {x: 100, y: 100});
-        Body.setPosition(this.chairs[1].shape, {x: 500, y: 100});
+        Body.setPosition(this.chairs[0].shape, {x: 500, y: 100});
+        Body.setPosition(this.chairs[1].shape, {x: 100, y: 100});
         Body.setPosition(this.chairs[2].shape, {x: 100, y: 500});
         Body.setPosition(this.chairs[3].shape, {x: 500, y: 500});
         destination = [graph.grid[3][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3]];
@@ -127,7 +127,7 @@ export default class Simulation {
                             this.position = {
                                 x: Math.round(chair.shape.position.x),
                                 y: Math.round(chair.shape.position.y),
-                                bearing: normalizedAngle + 2
+                                bearing: normalizedAngle
                             }
                         },
                         getGridPosition() {
