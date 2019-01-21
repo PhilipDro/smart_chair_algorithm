@@ -82,8 +82,8 @@ export default class Simulation {
     formationFour() {
         Body.setPosition(this.chairs[0].shape, {x: 400, y: 100});
         Body.setPosition(this.chairs[1].shape, {x: 300, y: 200});
-        Body.setPosition(this.chairs[2].shape, {x: 100, y: 300});
-        Body.setPosition(this.chairs[3].shape, {x: 400, y: 300});
+        Body.setPosition(this.chairs[2].shape, {x: 400, y: 300});
+        Body.setPosition(this.chairs[3].shape, {x: 100, y: 300});
         Body.setPosition(this.chairs[4].shape, {x: 200, y: 500});
         Body.setPosition(this.chairs[5].shape, {x: 400, y: 500});
         destination = [graph.grid[2][2], graph.grid[3][2], graph.grid[4][2], graph.grid[2][3], graph.grid[3][3], graph.grid[4][3]];

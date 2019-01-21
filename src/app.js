@@ -50,9 +50,9 @@ function goTo(that, destination) {
      * @type {number}
      */
     let moveTo = setInterval(function () {
+
         /**
          * Toggle path visualisation
-         * TODO: try to move outside of interval
          */
         for (let i = 0; i < chairs.length; i++) {
             visualisation.toggleActiveAll(chairs[i].path, i);
@@ -191,7 +191,9 @@ function goTo(that, destination) {
 
 window.Simulation = Simulation;
 
-// start the simulation
+/**
+ * Start the simulation.
+ */
 const sim = new Simulation({chairCount: 6});
 const control = sim.getChairControl();
 const path = sim.path();
@@ -200,17 +202,19 @@ window.sim = sim;
 sim.getChairControl().start();
 
 // make astar api available to window
-window.path = sim.path();
+// window.path = sim.path();
 
 // make chairs available
 window.chairs = sim.getChairControl().getChairs();
-
 
 let formationOneButton = document.querySelector('.formation-one');
 let formationTwoButton = document.querySelector('.formation-two');
 let formationThreeButton = document.querySelector('.formation-three');
 let formationFourButton = document.querySelector('.formation-four');
 
+/**
+ * Formation functions for debugging.
+ */
 formationOneButton.addEventListener('click', function (e) {
     sim.formationOne();
     // move all chairs to set position
