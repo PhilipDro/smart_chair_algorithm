@@ -197,6 +197,13 @@ export default class Simulation {
                     }
                 });
 
+                // Create outer walls
+                let topWall = Bodies.rectangle(render.options.width / 2, 1, render.options.width, 1, {isStatic: true});
+                let rightWall = Bodies.rectangle(render.options.width - 1, render.options.height / 2, 1, render.options.height, {isStatic: true});
+                let bottomWall = Bodies.rectangle(render.options.width / 2, render.options.height - 1, render.options.width, 1, {isStatic: true});
+                let leftWall = Bodies.rectangle(1, render.options.height / 2, 1, render.options.height, {isStatic: true});
+
+                World.add(engine.world, [topWall, rightWall, bottomWall, leftWall]);
                 World.add(engine.world, simulation.chairs.map(({shape}) => shape));
 
                 Engine.run(engine);
