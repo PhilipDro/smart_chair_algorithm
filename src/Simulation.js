@@ -40,7 +40,7 @@ export default class Simulation {
             angularVelocity: 0,
             id: index,
             shape: (() => {
-                const box = Bodies.rectangle(100 + 100 * index, 100, 40, 40);
+                const box = Bodies.circle(80 + 100 * index, 100, 40, 40);
                 // const box = Bodies.rectangle(100, 100, 40, 40);
                 box.frictionAir = DEFAULT_FRICTION;
                 return box;

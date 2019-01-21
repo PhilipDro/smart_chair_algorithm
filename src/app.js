@@ -90,6 +90,9 @@ function goTo(that, destination) {
             path.setObstacle(position);
         }
 
+        /**
+         * Calculate direction based on shortest rotation distance.
+         */
         let dir;
         if (that.getPosition().bearing < endAngle) {
             if (Math.abs(that.getPosition().bearing - endAngle) < 180)
@@ -113,7 +116,7 @@ function goTo(that, destination) {
             that.move({motionType: 'Rotation', velocity: 0.05 * dir});
             console.log('id' + that.getId() + ' rotate slow');
 
-        } else if (distance > 25) {
+        } else if (distance > 20) {
             that.move({motionType: 'Straight', velocity: 1});
             console.log('id' + that.getId() + ' drive fast');
         }
@@ -188,7 +191,7 @@ function goTo(that, destination) {
 window.Simulation = Simulation;
 
 // start the simulation
-const sim = new Simulation({chairCount: 4});
+const sim = new Simulation({chairCount: 6});
 const control = sim.getChairControl();
 const path = sim.path();
 window.sim = sim;
@@ -240,15 +243,6 @@ function getAngle({x, y}) {
     let angle = Math.atan2(y, x);   //radians
     let degrees = 180 * angle / Math.PI;  //degrees
     let calculatedAngle = (Math.round(degrees));
-    /**
-     * Temporary workaround to fix issue in
-     * case of calculatedAngle = 360, where
-     * the chair was just driving in small steps.
-     *
-     * TODO: refactor.
-     *
-     * @type {number}
-     */
 
     return calculatedAngle;
 }
