@@ -112,6 +112,7 @@ function goTo(that, destination) {
         } else if (Math.abs(endAngle - that.getPosition().bearing) > 2) {
             that.move({motionType: 'Rotation', velocity: 0.05 * dir});
             console.log('id' + that.getId() + ' rotate slow');
+
         } else if (distance > 25) {
             that.move({motionType: 'Straight', velocity: 1});
             console.log('id' + that.getId() + ' drive fast');
