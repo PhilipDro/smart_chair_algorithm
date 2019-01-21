@@ -15,6 +15,8 @@ export default class Visualisation {
         return clone;
     }
 
+
+
     setClasses() {
         Array.prototype.forEach.call(this.rows, function(el, i) {
             Array.prototype.forEach.call(el.children, function(element, index) {

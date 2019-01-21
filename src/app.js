@@ -1,5 +1,5 @@
 import Simulation from './Simulation';
-import Visualisation from './Visualisation';
+//import Visualisation from './Visualisation';
 import './app.scss';
 
 let destination = [graph.grid[4][5], graph.grid[2][5], graph.grid[4][5], graph.grid[5][5]];
@@ -34,13 +34,11 @@ function goTo(that, destination) {
         y: that.getNextNode() !== undefined ? ((that.getNextNode().y * 100) - start.y) : 0
     });
 
-    let dir = Math.abs(endAngle - that.getPosition().bearing) > 180 ? -1 : 1;
-
     /**
      * Set obstacles at nodes that are current locations of the chairs.
      * So that all chairs will calculate their path without colliding with that nodes.
      */
-    for(let i = 0; i < chairs.length; i++) {
+    for (let i = 0; i < chairs.length; i++) {
         let position = that.getGridPosition(chairs[i].getGridPosition());
         path.setObstacle(position);
     }
@@ -51,12 +49,12 @@ function goTo(that, destination) {
      * Interval begins.
      * @type {number}
      */
-    let moveTo = setInterval(function() {
+    let moveTo = setInterval(function () {
         /**
          * Toggle path visualisation
          * TODO: try to move outside of interval
          */
-        for(let i = 0; i < chairs.length; i++) {
+        for (let i = 0; i < chairs.length; i++) {
             visualisation.toggleActiveAll(chairs[i].path, i);
         }
 
@@ -87,34 +85,43 @@ function goTo(that, destination) {
          * Set obstacles at nodes that are current locations of the chairs.
          * So that all chairs will calculate their path without colliding with that nodes.
          */
-        for(let i = 0; i < chairs.length; i++) {
+        for (let i = 0; i < chairs.length; i++) {
             let position = that.getGridPosition(chairs[i].getGridPosition());
             path.setObstacle(position);
         }
 
-        console.log('Distance: ' + distance);
-        console.log('WantedAngle: ' + endAngle);
-        console.log('Direction: ' + dir);
+        let dir;
+        if (that.getPosition().bearing < endAngle) {
+            if (Math.abs(that.getPosition().bearing - endAngle) < 180)
+                dir = 1;
+            else dir = -1;
+        } else {
+            if (Math.abs(that.getPosition().bearing - endAngle) < 180)
+                dir = -1;
+            else dir = 1;
+        }
 
-        if (Math.abs(endAngle - that.getPosition().bearing) > 7.5) {
+        console.log('id' + that.getId() + ' Distance: ' + distance);
+        console.log('id' + that.getId() + ' WantedAngle: ' + endAngle);
+        console.log('id' + that.getId() + ' Curr angle: ' + that.getPosition().bearing);
+        console.log('id' + that.getId() + ' Direction: ' + dir);
+
+        if (Math.abs(endAngle - that.getPosition().bearing) > 10) {
             that.move({motionType: 'Rotation', velocity: 0.5 * dir});
-            console.log('Bearing: ' + that.getPosition().bearing);
-            console.log('rotate fast');
-        }
-        else if (Math.abs(endAngle - that.getPosition().bearing) > 3.5) {
-            that.move({motionType: 'Rotation', velocity: 0.02 * dir});
-            console.log('rotate slow');
-        }
-        else if (distance > 25) {
+            console.log('id' + that.getId() + ' rotate fast');
+        } else if (Math.abs(endAngle - that.getPosition().bearing) > 2) {
+            that.move({motionType: 'Rotation', velocity: 0.05 * dir});
+            console.log('id' + that.getId() + ' rotate slow');
+        } else if (distance > 25) {
             that.move({motionType: 'Straight', velocity: 1});
-            console.log('drive fast');
+            console.log('id' + that.getId() + ' drive fast');
         }
         // else if (distance > 15) {
         //     that.move({motionType: 'Straight', velocity: 0.2});
         //     console.log('drive slow');
         // }
         else {
-            console.log('Finished');
+            console.log('id' + that.getId() + ' Finished');
 
             clearInterval(moveTo);
             that.stop();
@@ -131,7 +138,7 @@ function goTo(that, destination) {
              * Set obstacles at nodes that are current locations of the chairs.
              * So that all chairs will calculate their path without colliding with that nodes.
              */
-            for(let i = 0; i < chairs.length; i++) {
+            for (let i = 0; i < chairs.length; i++) {
                 let position = that.getGridPosition(chairs[i].getGridPosition());
                 path.setObstacle(position);
             }
@@ -142,7 +149,7 @@ function goTo(that, destination) {
             /**
              * Toggle path visualisation
              */
-            for(let i = 0; i < chairs.length; i++) {
+            for (let i = 0; i < chairs.length; i++) {
                 visualisation.toggleActiveAll(chairs[i].path, i);
             }
 
@@ -154,8 +161,6 @@ function goTo(that, destination) {
                 y: that.getNextNode() !== undefined ? ((that.getNextNode().y * 100) - start.y) : 0
             });
 
-            dir = Math.abs(endAngle - that.getPosition().bearing) > 180 ? -1 : 1;
-
             goTo(that, destination);
         }
     }, ITERATION_TIME);
@@ -166,14 +171,14 @@ function goTo(that, destination) {
      *
      * @type {number}
      */
-    let actualizeObstacles = setInterval(function() {
+    let actualizeObstacles = setInterval(function () {
 
         if (that.getId() === 0) {
             path.removeAllObstacles();
             visualisation.removeActiveAll();
         }
 
-        if(i++ == 1000000) {
+        if (i++ == 1000000) {
             clearInterval(actualizeObstacles);
         }
     }, ITERATION_TIME * 3);
@@ -194,7 +199,6 @@ window.path = sim.path();
 
 // make chairs available
 window.chairs = sim.getChairControl().getChairs();
-
 
 
 let formationOneButton = document.querySelector('.formation-one');
@@ -244,17 +248,6 @@ function getAngle({x, y}) {
      *
      * @type {number}
      */
-    let result;
-    // let result = calculatedAngle === 180 ? 170 : calculatedAngle;
-    // let result = calculatedAngle + 2;
-    if (calculatedAngle === 180) {
-       result = 170;
-    }
-    else if (calculatedAngle === 0) {
-        result = 10;
-    }
-    else {
-        result = calculatedAngle;
-    }
-    return result;
+
+    return calculatedAngle;
 }

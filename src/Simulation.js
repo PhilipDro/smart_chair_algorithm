@@ -192,7 +192,8 @@ export default class Simulation {
                     options: {
                         showAngleIndicator: true,
                         width: 600,
-                        height: 600
+                        height: 600,
+                        showIds: true
                     }
                 });
 

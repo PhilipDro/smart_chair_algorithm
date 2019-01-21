@@ -1,7 +1,7 @@
 node_modules
 dist
 
-.idea
+.idea/
 *.iml
 
 node_modules.zip
