@@ -33,19 +33,21 @@ visualisation.setClasses();
 
 export default class Simulation {
 
-    constructor({element, chairCount = 1} = {}) {
-        this.element = element || document.querySelector('.simulation');
-        this.chairs = [...Array(chairCount).keys()].map(index => ({
-            velocity: {x: 0, y: 0},
-            angularVelocity: 0,
-            id: index,
-            shape: (() => {
-                const box = Bodies.circle(80 + 100 * index, 100, 40, 40);
-                // const box = Bodies.rectangle(100, 100, 40, 40);
-                box.frictionAir = DEFAULT_FRICTION;
-                return box;
-            })()
-        }));
+    constructor(markers = []) {
+        this.element = document.querySelector('.simulation');
+        this.chairs = markers.map((marker) => {
+            return {
+                velocity: {x: 0, y: 0},
+                angularVelocity: 0,
+                id: marker.id,
+                shape: (() => {
+                    const { x, y, bearing } = marker.position;
+                    const box = Bodies.circle(x, y, 40, 40);
+                    box.frictionAir = DEFAULT_FRICTION;
+                    return box;
+                })()
+            }
+        });
     }
 
     /**
@@ -197,17 +199,21 @@ export default class Simulation {
                     }
                 });
 
-                // Create outer walls
+                /**
+                 * Create outer walls.
+                 */
                 let topWall = Bodies.rectangle(render.options.width / 2, 1, render.options.width, 1, {isStatic: true});
                 let rightWall = Bodies.rectangle(render.options.width - 1, render.options.height / 2, 1, render.options.height, {isStatic: true});
                 let bottomWall = Bodies.rectangle(render.options.width / 2, render.options.height - 1, render.options.width, 1, {isStatic: true});
                 let leftWall = Bodies.rectangle(1, render.options.height / 2, 1, render.options.height, {isStatic: true});
 
+                Engine.run(engine);
+                Render.run(render);
+
                 World.add(engine.world, [topWall, rightWall, bottomWall, leftWall]);
                 World.add(engine.world, simulation.chairs.map(({shape}) => shape));
 
-                Engine.run(engine);
-                Render.run(render);
+                // World.add(engine.world, simulation.chairs.map(({shape}) => shape));
 
                 Events.on(engine, "afterUpdate", () => {
                     simulation.chairs.forEach(({shape, velocity, angularVelocity}) => {

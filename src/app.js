@@ -192,57 +192,75 @@ function goTo(that, destination) {
 window.Simulation = Simulation;
 
 /**
- * Start the simulation.
+ * Get position data via websocket from server.js.
+ * @type {WebSocket}
  */
-const sim = new Simulation({chairCount: 6});
-const control = sim.getChairControl();
-const path = sim.path();
-window.sim = sim;
+let ws = new WebSocket('ws://localhost:3000');
+let response;
+ws.onmessage = event => {
+    const markers = JSON.parse(event.data);
 
-sim.getChairControl().start();
+    /**
+     * Start the simulation.
+     */
+    const sim = new Simulation(markers);
+    window.sim = sim;
 
-// make astar api available to window
-// window.path = sim.path();
+    sim.getChairControl().start();
 
-// make chairs available
-window.chairs = sim.getChairControl().getChairs();
+    /**
+     * make astar api available to window
+     * @type {{findPath, getNextNode, getLastNode, setObstacle, removeObstacle, removeAllObstacles, convertNodeToPx, convertPathToPx, getMousePosition}}
+     */
+    window.path = sim.path();
 
-let formationOneButton = document.querySelector('.formation-one');
-let formationTwoButton = document.querySelector('.formation-two');
-let formationThreeButton = document.querySelector('.formation-three');
-let formationFourButton = document.querySelector('.formation-four');
+    /**
+     * make chairs available.
+     */
+    window.chairs = sim.getChairControl().getChairs();
 
-/**
- * Formation functions for debugging.
- */
-formationOneButton.addEventListener('click', function (e) {
-    sim.formationOne();
-    // move all chairs to set position
-    for (var i = 0; i < chairs.length; i++) {
-        goTo(chairs[i], destination);
-    }
-});
+    /**
+     * Set event listeners for formation functions.
+     * @type {Element}
+     */
+    let formationOneButton = document.querySelector('.formation-one');
+    let formationTwoButton = document.querySelector('.formation-two');
+    let formationThreeButton = document.querySelector('.formation-three');
+    let formationFourButton = document.querySelector('.formation-four');
 
-formationTwoButton.addEventListener('click', function (e) {
-    sim.formationTwo();
-    for (var i = 0; i < chairs.length; i++) {
-        goTo(chairs[i], destination);
-    }
-});
+    /**
+     * Formation functions for debugging.
+     */
+    formationOneButton.addEventListener('click', function (e) {
+        sim.formationOne();
+        for (var i = 0; i < chairs.length; i++) {
+            goTo(chairs[i], destination);
+        }
+    });
 
-formationThreeButton.addEventListener('click', function (e) {
-    sim.formationThree();
-    for (var i = 0; i < chairs.length; i++) {
-        goTo(chairs[i], destination);
-    }
-});
+    formationTwoButton.addEventListener('click', function (e) {
+        sim.formationTwo();
+        for (var i = 0; i < chairs.length; i++) {
+            goTo(chairs[i], destination);
+        }
+    });
 
-formationFourButton.addEventListener('click', function (e) {
-    sim.formationFour();
-    for (var i = 0; i < chairs.length; i++) {
-        goTo(chairs[i], destination);
-    }
-});
+    formationThreeButton.addEventListener('click', function (e) {
+        sim.formationThree();
+        for (var i = 0; i < chairs.length; i++) {
+            goTo(chairs[i], destination);
+        }
+    });
+
+    formationFourButton.addEventListener('click', function (e) {
+        sim.formationFour();
+        for (var i = 0; i < chairs.length; i++) {
+            goTo(chairs[i], destination);
+        }
+    });
+};
+
+
 
 function getAngle({x, y}) {
     let angle = Math.atan2(y, x);   //radians

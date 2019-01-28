@@ -5,16 +5,16 @@ let positionData = [
     {
         id: 0,
         position: {
-            x: 400,
-            y: 200,
+            x: 100,
+            y: 100,
             bearing: 0
         }
     },
     {
         id: 1,
         position: {
-            x: 300,
-            y: 100,
+            x: 100,
+            y: 200,
             bearing: 0
         }
     },
@@ -22,15 +22,15 @@ let positionData = [
         id: 2,
         position: {
             x: 100,
-            y: 200,
+            y: 300,
             bearing: 0
         },
     },
     {
         id: 3,
         position: {
-            x: 300,
-            y: 200,
+            x: 100,
+            y: 400,
             bearing: 0
         }
     }
