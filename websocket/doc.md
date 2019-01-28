@@ -2,7 +2,7 @@
 
 Position data of the chairs will be transmitted via a javascript websocket communicating with the hardware.
 The Chairs are moving towards their calculated directions and need to be supervised constantly.
-Because of the information is always changing a websocket would be an appropriate method to solve the issue.
+Because the information is always changing, a websocket would be an appropriate method to solve the issue.
 
 ### Client-side API
 
