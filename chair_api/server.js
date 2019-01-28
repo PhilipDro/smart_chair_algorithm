@@ -22,6 +22,7 @@ wsServer.on('request', function (request) {
     // send the data to the client
     connection.send(JSON.stringify('connected'));
     connection.send(JSON.stringify({motionType: 'Rotation', velocity: 0.5}));
+    connection.send(JSON.stringify({motionType: 'Straight', velocity: 5}));
 
     connection.on('close', function (connection) {
         console.log('connection closed');
