@@ -18,11 +18,11 @@ let graph = new Graph([
 ]);
 
 // Formation 1
-// let destination = [graph.grid[3][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3], graph.grid[1][1], graph.grid[1][2]];
-let destination = [graph.grid[2][5], graph.grid[1][5], graph.grid[4][5], graph.grid[5][5]];
+//let destination = [graph.grid[2][5], graph.grid[1][5], graph.grid[4][5], graph.grid[5][5]];
+let destination;
 
 window.graph = graph;
-window.destination = destination;
+//window.destination = destination;
 
 // init Visualisation
 
@@ -61,6 +61,7 @@ export default class Simulation {
         Body.setPosition(this.chairs[2].shape, {x: 100, y: 500});
         Body.setPosition(this.chairs[3].shape, {x: 500, y: 500});
         destination = [graph.grid[3][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3]];
+        return destination;
     }
 
     formationTwo() {
@@ -69,6 +70,7 @@ export default class Simulation {
         Body.setPosition(this.chairs[2].shape, {x: 200, y: 400});
         Body.setPosition(this.chairs[3].shape, {x: 400, y: 400});
         destination = [graph.grid[1][4], graph.grid[2][2], graph.grid[4][4], graph.grid[5][2]];
+        return destination;
     }
 
     formationThree() {
@@ -79,6 +81,7 @@ export default class Simulation {
         Body.setPosition(this.chairs[4].shape, {x: 500, y: 200});
         Body.setPosition(this.chairs[5].shape, {x: 500, y: 300});
         destination = [graph.grid[3][1], graph.grid[2][2], graph.grid[4][2], graph.grid[2][4], graph.grid[4][4], graph.grid[3][5]];
+        return destination;
     }
 
     formationFour() {
@@ -89,6 +92,7 @@ export default class Simulation {
         Body.setPosition(this.chairs[4].shape, {x: 200, y: 500});
         Body.setPosition(this.chairs[5].shape, {x: 400, y: 500});
         destination = [graph.grid[2][2], graph.grid[3][2], graph.grid[4][2], graph.grid[2][3], graph.grid[3][3], graph.grid[4][3]];
+        return destination;
     }
 
     getChairControl() {

@@ -2,8 +2,6 @@ import Simulation from './Simulation';
 //import Visualisation from './Visualisation';
 import './app.scss';
 
-let destination = [graph.grid[4][5], graph.grid[2][5], graph.grid[4][5], graph.grid[5][5]];
-
 const DRIVE_SPEED = 1;
 const ROTATION_SPEED = 0.3;
 const ITERATION_TIME = 100;
@@ -241,38 +239,37 @@ ws.onmessage = event => {
      * Formation functions for debugging.
      */
     formationOneButton.addEventListener('click', function (e) {
-        sim.formationOne();
-        for (var i = 0; i < chairs.length; i++) {
+        let destination = sim.formationOne();
+        for (let i = 0; i < chairs.length; i++) {
             goTo(chairs[i], destination);
         }
     });
 
     formationTwoButton.addEventListener('click', function (e) {
-        sim.formationTwo();
-        for (var i = 0; i < chairs.length; i++) {
+        let destination = sim.formationTwo();
+        for (let i = 0; i < chairs.length; i++) {
             goTo(chairs[i], destination);
         }
     });
 
     formationThreeButton.addEventListener('click', function (e) {
-        sim.formationThree();
-        for (var i = 0; i < chairs.length; i++) {
+        let destination = sim.formationThree();
+        for (let i = 0; i < chairs.length; i++) {
             goTo(chairs[i], destination);
         }
     });
 
     formationFourButton.addEventListener('click', function (e) {
-        sim.formationFour();
-        for (var i = 0; i < chairs.length; i++) {
+        let destination = sim.formationFour();
+        for (let i = 0; i < chairs.length; i++) {
             goTo(chairs[i], destination);
         }
     });
 };
 
 
-
 function getAngle({x, y}) {
     let angle = Math.atan2(y, x);   //radians
     let degrees = 180 * angle / Math.PI;  //degrees
-    return Math.round(degrees);
+    return degrees;
 }
