@@ -68,7 +68,7 @@ function goTo(that, destination) {
          * @type {{x: number, y: number}}
          */
         vector = {
-            x: that.getNextNode() !== undefined ? Math.abs((that.getNextNode().x * 100) - start.x) : 0,
+            x: that.getNextNode() !== undefined ? Math.abs((that.getNextNode().x * 100) - start.x) : 0, // todo fra gets defined here
             y: that.getNextNode() !== undefined ? Math.abs((that.getNextNode().y * 100) - start.y) : 0
         };
 
@@ -109,22 +109,27 @@ function goTo(that, destination) {
         console.log('id' + that.getId() + ' Curr angle: ' + that.getPosition().bearing);
         console.log('id' + that.getId() + ' Direction: ' + dir);
 
+
+        // Rotate if rotation is wrong
         if (Math.abs(endAngle - that.getPosition().bearing) > 10) {
             that.move({motionType: 'Rotation', velocity: 0.5 * dir});
             console.log('id' + that.getId() + ' rotate fast');
         }
+        // Rotate slower if rotation is wrong but close
         else if (Math.abs(endAngle - that.getPosition().bearing) > 2) {
             that.move({motionType: 'Rotation', velocity: 0.05 * dir});
             console.log('id' + that.getId() + ' rotate slow');
         }
-        else if (distance > 25) {
+        else if (distance > 50) {
             that.move({motionType: 'Straight', velocity: 1});
             console.log('id' + that.getId() + ' drive fast');
         }
-        // else if (distance > 15) {
-        //     that.move({motionType: 'Straight', velocity: 0.2});
-        //     console.log('drive slow');
-        // }
+        // Move if target is not current position
+        else if (distance < 50 && distance > 10) {
+            that.move({motionType: 'Straight', velocity: 0.3});
+            console.log('id' + that.getId() + ' drive slow');
+        }
+        // Is arrived
         else {
             console.log('id' + that.getId() + ' Finished');
 
@@ -161,10 +166,13 @@ function goTo(that, destination) {
             /**
              * Calculate endAngle.
              */
-            endAngle = 180 + that.getAngle({
+            console.log('id' + that.getId() + ' position', that.getPosition());
+            console.log('id' + that.getId() + ' next node', that.getNextNode());
+            let testAngle = 180 + getAngle({
                 x: that.getNextNode() !== undefined ? ((that.getNextNode().x * 100) - start.x) : 0,
                 y: that.getNextNode() !== undefined ? ((that.getNextNode().y * 100) - start.y) : 0
             });
+            console.log('id' + that.getId() + ' angle', testAngle);
 
             goTo(that, destination);
         }
@@ -265,7 +273,5 @@ ws.onmessage = event => {
 function getAngle({x, y}) {
     let angle = Math.atan2(y, x);   //radians
     let degrees = 180 * angle / Math.PI;  //degrees
-    let calculatedAngle = (Math.round(degrees));
-
-    return calculatedAngle;
+    return Math.round(degrees);
 }
