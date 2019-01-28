@@ -120,13 +120,14 @@ function goTo(that, destination) {
             that.move({motionType: 'Rotation', velocity: 0.05 * dir});
             console.log('id' + that.getId() + ' rotate slow');
         }
-        else if (distance > 50) {
+        // Move fast if target is not current position
+        else if (distance > 30) {
             that.move({motionType: 'Straight', velocity: 1});
             console.log('id' + that.getId() + ' drive fast');
         }
-        // Move if target is not current position
-        else if (distance < 50 && distance > 10) {
-            that.move({motionType: 'Straight', velocity: 0.3});
+        // Move slow if target is not current position but close
+        else if (distance < 30 && distance > 5) {
+            that.move({motionType: 'Straight', velocity: 0.2});
             console.log('id' + that.getId() + ' drive slow');
         }
         // Is arrived
