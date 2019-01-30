@@ -199,7 +199,7 @@ function goTo(that, destination) {
 window.Simulation = Simulation;
 
 /**
- * Get position data via websocket from server.js.
+ * Get position data via websocket from _server.js.
  * @type {WebSocket}
  */
 let ws = new WebSocket('ws://localhost:3000');

@@ -5,7 +5,7 @@
 const WebSocket = require('ws');
 let connection = new WebSocket('ws://localhost:1312');
 
-let myId = 1; // Client ID
+let myId = 0; // Client ID
 
 connection.onmessage = event => {
     let message = JSON.parse(event.data);
@@ -31,6 +31,9 @@ connection.onmessage = event => {
             if (message.system === 'stop') {
                 // Stop command
                 console.log('Stopping Chair');
+            } else if(message.system === 'connected') {
+                // Connected
+                console.log('Client Connected');
             } else {
                 // Unknown system command type
                 console.warn('Unknown system command', message.system);
