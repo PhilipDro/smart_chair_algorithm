@@ -8,7 +8,7 @@ Following things are available to you in the browser:
 ### Start the Webserver
 Run this command, to start the server
 
-`node ./websocket/server.js`
+`node ./websocket/_server.js`
 
 ### Chair API Methods
 
