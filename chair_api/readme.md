@@ -16,6 +16,6 @@ System commands are all commands that are not motion commands. Right now that is
 `{id: number, system: string}`
 
 ## Example
-To start the example you have to start the _server.js ``node _server.js`` and then the client.js ``node client.js``.
+Every chair will run a server. The client is the controller, it will look for the chair servers (todo) and they will connect.
 
-The server will wait for a client to connect and then send a bunch of example-commands. The client will interpret them.
+To start the example you have to start the server.js ``node server.js`` and then the client.js ``node client.js``.

@@ -1,49 +1,63 @@
-/*
-    This script runs on
-    all chairs
- */
 const WebSocket = require('ws');
-let connection = new WebSocket('ws://localhost:1312');
+let connections = [new WebSocket('ws://localhost:1312')];
 
-let myId = 0; // Client ID
+class ChairController {
+    constructor() {
+    }
 
-connection.onmessage = event => {
-    let message = JSON.parse(event.data);
+    move(id, command) {
+        connections[id].send(JSON.stringify(command));
+    }
+
+    stop(id) {
+        connections[id].send(JSON.stringify({system: 'stop'}), function (data) {
+            console.log(data);
+        });
+    }
+}
+
+let chairController = new ChairController();
+
+connections[0].onmessage = event => {
+    let message = event.data;
     console.log('RECEIVED DATA:', message);
 
-    // Check if command is for this client
-    if (message.id === myId) {
-        // Motion command
-        if (typeof message.motionType !== 'undefined') {
-            if (message.motionType === 'Rotation') {
-                // Rotation command
-                console.log('Rotate with velocity: ' + message.velocity);
-            } else if (message.motionType === 'Straight') {
-                // Move Straight command
-                console.log('Move straight with velocity: ' + message.velocity);
-            } else {
-                // Unknown motion command type
-                console.warn('Unknown motion type', message.motionType);
-            }
-
-            // System command
-        } else if (typeof message.system !== 'undefined') {
-            if (message.system === 'stop') {
-                // Stop command
-                console.log('Stopping Chair');
-            } else if(message.system === 'connected') {
-                // Connected
-                console.log('Client Connected');
-            } else {
-                // Unknown system command type
-                console.warn('Unknown system command', message.system);
-            }
-        } else {
-            // Unknown command type
-            console.warn('Unknown command', message);
-        }
-    } else {
-        // Message meant for anther client
-        console.log('Message was meant for another client');
-    }
+    chairController.move(0, {id: 0, motionType: 'Rotation', velocity: 0.5});
+    // // Check if command is for this client
+    // if (message.id === myId) {
+    //     // Motion command
+    //     if (typeof message.motionType !== 'undefined') {
+    //         if (message.motionType === 'Rotation') {
+    //             // Rotation command
+    //             console.log('Rotate with velocity: ' + message.velocity);
+    //         } else if (message.motionType === 'Straight') {
+    //             // Move Straight command
+    //             console.log('Move straight with velocity: ' + message.velocity);
+    //         } else {
+    //             // Unknown motion command type
+    //             console.warn('Unknown motion type', message.motionType);
+    //         }
+    //
+    //         // System command
+    //     } else if (typeof message.system !== 'undefined') {
+    //         if (message.system === 'stop') {
+    //             // Stop command
+    //             console.log('Stopping Chair');
+    //         } else if(message.system === 'connected') {
+    //             // Connected
+    //             console.log('Client Connected');
+    //         } else {
+    //             // Unknown system command type
+    //             console.warn('Unknown system command', message.system);
+    //         }
+    //     } else {
+    //         // Unknown command type
+    //         console.warn('Unknown command', message);
+    //     }
+    // } else {
+    //     // Message meant for anther client
+    //     console.log('Message was meant for another client');
+    // }
 };
+
+
