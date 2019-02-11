@@ -1,6 +1,8 @@
+import Astar_api from "./astar_api";
+
+let path = new Astar_api().path();
+
 export default class Route {
-    constructor() {
-    }
     getAngle({x, y}) {
         let angle = Math.atan2(y, x);   //radians
         let degrees = 180 * angle / Math.PI;  //degrees

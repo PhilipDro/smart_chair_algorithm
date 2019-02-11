@@ -1,6 +1,7 @@
 import {Engine, Render, World, Bodies, Body, Events} from 'matter-js';
 import { astar, Graph } from './astar';
 import Visualisation from './Visualisation';
+import Astar_api from './astar_api';
 
 const DEFAULT_FRICTION = .1;
 
@@ -21,6 +22,8 @@ let destination;
 window.graph = graph;
 
 let visualisation = new Visualisation(document);
+let path = new Astar_api();
+
 window.visualisation = visualisation;
 
 visualisation.setClasses();
@@ -132,7 +135,7 @@ export default class Simulation {
                             return this.path;
                         },
                         setPath(index) {
-                            this.path = simulation
+                            this.path = path
                                 .path()
                                 .findPath(graph, chairs[index].getGridPosition(), destination[index]);
                         },
@@ -141,7 +144,7 @@ export default class Simulation {
                             return this.nextNode;
                         },
                         setNextNode() {
-                            this.nextNode = simulation.path().getNextNode(this.path);
+                            this.nextNode = path.path().getNextNode(this.path);
                         },
                         getLastNode() {
                             this.setLastNode();
@@ -149,15 +152,7 @@ export default class Simulation {
                         },
                         setLastNode() {
                             this.lastNode = this.path[this.path.length - 1];
-                            console.log(this.lastNode);
-                        },
-                        getMousePosition(e) {
-                            this.setMousePosition(e);
-                            return this.mousePosition;
-                        },
-                        setMousePosition(e) {
-                            this.mousePosition = simulation.path().getMousePosition(e);
-                        },
+                        }
                     }
                 });
             },
@@ -205,57 +200,6 @@ export default class Simulation {
                         }
                     })
                 });
-            }
-        }
-    }
-
-    path() {
-        const simulation = this;
-
-        return {
-            findPath(graph, start, end) {
-                return astar.search(graph, start, end);
-            },
-            getNextNode(path) {
-                return path[0];
-            },
-            getLastNode(path) {
-                return
-            },
-            setObstacle(node) {
-                // console.log('obstacle set');
-                node.weight = 0;
-                visualisation.addObstacle({x: node.x, y: node.y});
-            },
-            removeObstacle(node) {
-                // console.log('obstacle removed');
-                node.weight = 1;
-                visualisation.removeObstacle({x: node.x, y: node.y});
-            },
-            removeAllObstacles() {
-                // console.log('removed all');
-                graph.grid.forEach(function(element) {
-                    element.forEach(function(elem) {
-                        elem.weight = 1;
-                        visualisation.removeObstacle({x: elem.x, y: elem.y});
-                    });
-                });
-            },
-            convertNodeToPx(node) {
-                let { x, y } = node;
-                return {
-                    x: (x * 100),
-                    y: (y * 100)
-                }
-            },
-            convertPathToPx(path) {
-                return path.map(node => this.convertNodeToPx(node));
-            },
-            getMousePosition(event) {
-                return {
-                    x: Math.round(event.clientX),
-                    y: Math.round(event.clientY)
-                }
             }
         }
     }

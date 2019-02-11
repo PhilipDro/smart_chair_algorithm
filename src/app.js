@@ -27,11 +27,11 @@ ws.onmessage = event => {
 
     sim.getChairControl().start();
 
-    /**
-     * make astar api available to window
-     * @type {{findPath, getNextNode, getLastNode, setObstacle, removeObstacle, removeAllObstacles, convertNodeToPx, convertPathToPx, getMousePosition}}
-     */
-    window.path = sim.path();
+    // /**
+    //  * make astar api available to window
+    //  * @type {{findPath, getNextNode, getLastNode, setObstacle, removeObstacle, removeAllObstacles, convertNodeToPx, convertPathToPx, getMousePosition}}
+    //  */
+    // window.path = sim.path();
 
     /**
      * make chairs available.
