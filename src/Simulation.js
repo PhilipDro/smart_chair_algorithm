@@ -9,22 +9,16 @@ function toDegrees(angle) {
 }
 
 let graph = new Graph([
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1]
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
 ]);
 
-// Formation 1
-//let destination = [graph.grid[2][5], graph.grid[1][5], graph.grid[4][5], graph.grid[5][5]];
 let destination;
 
 window.graph = graph;
-//window.destination = destination;
-
-// init Visualisation
 
 let visualisation = new Visualisation(document);
 window.visualisation = visualisation;
@@ -56,11 +50,11 @@ export default class Simulation {
      * TODO: refactor code DRY
      */
     formationOne() {
-        Body.setPosition(this.chairs[0].shape, {x: 500, y: 100});
+        Body.setPosition(this.chairs[0].shape, {x: 400, y: 100});
         Body.setPosition(this.chairs[1].shape, {x: 100, y: 100});
-        Body.setPosition(this.chairs[2].shape, {x: 100, y: 500});
-        Body.setPosition(this.chairs[3].shape, {x: 500, y: 500});
-        destination = [graph.grid[3][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3]];
+        Body.setPosition(this.chairs[2].shape, {x: 100, y: 400});
+        Body.setPosition(this.chairs[3].shape, {x: 400, y: 400});
+        destination = [graph.grid[3][3], graph.grid[2][3], graph.grid[4][3], graph.grid[4][3]];
         return destination;
     }
 
@@ -69,29 +63,7 @@ export default class Simulation {
         Body.setPosition(this.chairs[1].shape, {x: 400, y: 200});
         Body.setPosition(this.chairs[2].shape, {x: 200, y: 400});
         Body.setPosition(this.chairs[3].shape, {x: 400, y: 400});
-        destination = [graph.grid[1][4], graph.grid[2][2], graph.grid[4][4], graph.grid[5][2]];
-        return destination;
-    }
-
-    formationThree() {
-        Body.setPosition(this.chairs[0].shape, {x: 300, y: 100});
-        Body.setPosition(this.chairs[1].shape, {x: 400, y: 100});
-        Body.setPosition(this.chairs[2].shape, {x: 500, y: 100});
-        Body.setPosition(this.chairs[3].shape, {x: 400, y: 200});
-        Body.setPosition(this.chairs[4].shape, {x: 500, y: 200});
-        Body.setPosition(this.chairs[5].shape, {x: 500, y: 300});
-        destination = [graph.grid[3][1], graph.grid[2][2], graph.grid[4][2], graph.grid[2][4], graph.grid[4][4], graph.grid[3][5]];
-        return destination;
-    }
-
-    formationFour() {
-        Body.setPosition(this.chairs[0].shape, {x: 400, y: 100});
-        Body.setPosition(this.chairs[1].shape, {x: 300, y: 200});
-        Body.setPosition(this.chairs[2].shape, {x: 400, y: 300});
-        Body.setPosition(this.chairs[3].shape, {x: 100, y: 300});
-        Body.setPosition(this.chairs[4].shape, {x: 200, y: 500});
-        Body.setPosition(this.chairs[5].shape, {x: 400, y: 500});
-        destination = [graph.grid[2][2], graph.grid[3][2], graph.grid[4][2], graph.grid[2][3], graph.grid[3][3], graph.grid[4][3]];
+        destination = [graph.grid[1][4], graph.grid[2][2], graph.grid[4][4], graph.grid[4][2]];
         return destination;
     }
 
@@ -197,8 +169,8 @@ export default class Simulation {
                     engine: engine,
                     options: {
                         showAngleIndicator: true,
-                        width: 600,
-                        height: 600,
+                        width: 500,
+                        height: 500,
                         showIds: true
                     }
                 });
