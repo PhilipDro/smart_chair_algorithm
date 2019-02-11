@@ -1,6 +1,5 @@
 export default class Route {
-    test() {
-        this.goTo(that, destination);
+    constructor() {
     }
     getAngle({x, y}) {
         let angle = Math.atan2(y, x);   //radians
@@ -35,6 +34,12 @@ export default class Route {
             y: that.getNextNode() !== undefined ? ((that.getNextNode().y * 100) - start.y) : 0
         });
         let endAngle = 180 + test;
+
+        /**
+         * Save scope to use in the re-run of goTo().
+         * @type {Route}
+         */
+        let self = this;
 
         /**
          * Set obstacles at nodes that are current locations of the chairs.
@@ -166,8 +171,7 @@ export default class Route {
                     visualisation.toggleActiveAll(chairs[i].path, i);
                 }
 
-                // that.test(that, destination);
-                that.goTo(that, destination);
+                self.goTo(that, destination);
             }
         }, iteration_time);
 
