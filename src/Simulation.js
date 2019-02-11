@@ -1,6 +1,7 @@
 import {Engine, Render, World, Bodies, Body, Events} from 'matter-js';
 import { astar, Graph } from './astar';
 import Visualisation from './Visualisation';
+import Astar_api from './astar_api';
 
 const DEFAULT_FRICTION = .1;
 
@@ -9,24 +10,20 @@ function toDegrees(angle) {
 }
 
 let graph = new Graph([
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1]
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
 ]);
 
-// Formation 1
-//let destination = [graph.grid[2][5], graph.grid[1][5], graph.grid[4][5], graph.grid[5][5]];
 let destination;
 
 window.graph = graph;
-//window.destination = destination;
-
-// init Visualisation
 
 let visualisation = new Visualisation(document);
+let path = new Astar_api();
+
 window.visualisation = visualisation;
 
 visualisation.setClasses();
@@ -56,11 +53,11 @@ export default class Simulation {
      * TODO: refactor code DRY
      */
     formationOne() {
-        Body.setPosition(this.chairs[0].shape, {x: 500, y: 100});
+        Body.setPosition(this.chairs[0].shape, {x: 400, y: 100});
         Body.setPosition(this.chairs[1].shape, {x: 100, y: 100});
-        Body.setPosition(this.chairs[2].shape, {x: 100, y: 500});
-        Body.setPosition(this.chairs[3].shape, {x: 500, y: 500});
-        destination = [graph.grid[3][3], graph.grid[2][3], graph.grid[4][3], graph.grid[5][3]];
+        Body.setPosition(this.chairs[2].shape, {x: 100, y: 400});
+        Body.setPosition(this.chairs[3].shape, {x: 400, y: 400});
+        destination = [graph.grid[3][3], graph.grid[2][3], graph.grid[4][3], graph.grid[4][3]];
         return destination;
     }
 
@@ -69,29 +66,7 @@ export default class Simulation {
         Body.setPosition(this.chairs[1].shape, {x: 400, y: 200});
         Body.setPosition(this.chairs[2].shape, {x: 200, y: 400});
         Body.setPosition(this.chairs[3].shape, {x: 400, y: 400});
-        destination = [graph.grid[1][4], graph.grid[2][2], graph.grid[4][4], graph.grid[5][2]];
-        return destination;
-    }
-
-    formationThree() {
-        Body.setPosition(this.chairs[0].shape, {x: 300, y: 100});
-        Body.setPosition(this.chairs[1].shape, {x: 400, y: 100});
-        Body.setPosition(this.chairs[2].shape, {x: 500, y: 100});
-        Body.setPosition(this.chairs[3].shape, {x: 400, y: 200});
-        Body.setPosition(this.chairs[4].shape, {x: 500, y: 200});
-        Body.setPosition(this.chairs[5].shape, {x: 500, y: 300});
-        destination = [graph.grid[3][1], graph.grid[2][2], graph.grid[4][2], graph.grid[2][4], graph.grid[4][4], graph.grid[3][5]];
-        return destination;
-    }
-
-    formationFour() {
-        Body.setPosition(this.chairs[0].shape, {x: 400, y: 100});
-        Body.setPosition(this.chairs[1].shape, {x: 300, y: 200});
-        Body.setPosition(this.chairs[2].shape, {x: 400, y: 300});
-        Body.setPosition(this.chairs[3].shape, {x: 100, y: 300});
-        Body.setPosition(this.chairs[4].shape, {x: 200, y: 500});
-        Body.setPosition(this.chairs[5].shape, {x: 400, y: 500});
-        destination = [graph.grid[2][2], graph.grid[3][2], graph.grid[4][2], graph.grid[2][3], graph.grid[3][3], graph.grid[4][3]];
+        destination = [graph.grid[1][4], graph.grid[2][2], graph.grid[4][4], graph.grid[4][2]];
         return destination;
     }
 
@@ -160,7 +135,7 @@ export default class Simulation {
                             return this.path;
                         },
                         setPath(index) {
-                            this.path = simulation
+                            this.path = path
                                 .path()
                                 .findPath(graph, chairs[index].getGridPosition(), destination[index]);
                         },
@@ -169,7 +144,7 @@ export default class Simulation {
                             return this.nextNode;
                         },
                         setNextNode() {
-                            this.nextNode = simulation.path().getNextNode(this.path);
+                            this.nextNode = path.path().getNextNode(this.path);
                         },
                         getLastNode() {
                             this.setLastNode();
@@ -177,15 +152,7 @@ export default class Simulation {
                         },
                         setLastNode() {
                             this.lastNode = this.path[this.path.length - 1];
-                            console.log(this.lastNode);
-                        },
-                        getMousePosition(e) {
-                            this.setMousePosition(e);
-                            return this.mousePosition;
-                        },
-                        setMousePosition(e) {
-                            this.mousePosition = simulation.path().getMousePosition(e);
-                        },
+                        }
                     }
                 });
             },
@@ -197,8 +164,8 @@ export default class Simulation {
                     engine: engine,
                     options: {
                         showAngleIndicator: true,
-                        width: 600,
-                        height: 600,
+                        width: 500,
+                        height: 500,
                         showIds: true
                     }
                 });
@@ -233,57 +200,6 @@ export default class Simulation {
                         }
                     })
                 });
-            }
-        }
-    }
-
-    path() {
-        const simulation = this;
-
-        return {
-            findPath(graph, start, end) {
-                return astar.search(graph, start, end);
-            },
-            getNextNode(path) {
-                return path[0];
-            },
-            getLastNode(path) {
-                return
-            },
-            setObstacle(node) {
-                // console.log('obstacle set');
-                node.weight = 0;
-                visualisation.addObstacle({x: node.x, y: node.y});
-            },
-            removeObstacle(node) {
-                // console.log('obstacle removed');
-                node.weight = 1;
-                visualisation.removeObstacle({x: node.x, y: node.y});
-            },
-            removeAllObstacles() {
-                // console.log('removed all');
-                graph.grid.forEach(function(element) {
-                    element.forEach(function(elem) {
-                        elem.weight = 1;
-                        visualisation.removeObstacle({x: elem.x, y: elem.y});
-                    });
-                });
-            },
-            convertNodeToPx(node) {
-                let { x, y } = node;
-                return {
-                    x: (x * 100),
-                    y: (y * 100)
-                }
-            },
-            convertPathToPx(path) {
-                return path.map(node => this.convertNodeToPx(node));
-            },
-            getMousePosition(event) {
-                return {
-                    x: Math.round(event.clientX),
-                    y: Math.round(event.clientY)
-                }
             }
         }
     }

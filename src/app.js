@@ -1,10 +1,6 @@
 import Simulation from './Simulation';
 import Route from './route';
-//import Visualisation from './Visualisation';
 import './app.scss';
-
-const DRIVE_SPEED = 1;
-const ROTATION_SPEED = 0.3;
 
 /**
  * Make route calculation methods available.
@@ -31,11 +27,11 @@ ws.onmessage = event => {
 
     sim.getChairControl().start();
 
-    /**
-     * make astar api available to window
-     * @type {{findPath, getNextNode, getLastNode, setObstacle, removeObstacle, removeAllObstacles, convertNodeToPx, convertPathToPx, getMousePosition}}
-     */
-    window.path = sim.path();
+    // /**
+    //  * make astar api available to window
+    //  * @type {{findPath, getNextNode, getLastNode, setObstacle, removeObstacle, removeAllObstacles, convertNodeToPx, convertPathToPx, getMousePosition}}
+    //  */
+    // window.path = sim.path();
 
     /**
      * make chairs available.
@@ -48,8 +44,6 @@ ws.onmessage = event => {
      */
     let formationOneButton = document.querySelector('.formation-one');
     let formationTwoButton = document.querySelector('.formation-two');
-    let formationThreeButton = document.querySelector('.formation-three');
-    let formationFourButton = document.querySelector('.formation-four');
 
     /**
      * Formation functions for debugging.
@@ -64,21 +58,7 @@ ws.onmessage = event => {
     formationTwoButton.addEventListener('click', function (e) {
         let destination = sim.formationTwo();
         for (let i = 0; i < chairs.length; i++) {
-            goTo(chairs[i], destination);
-        }
-    });
-
-    formationThreeButton.addEventListener('click', function (e) {
-        let destination = sim.formationThree();
-        for (let i = 0; i < chairs.length; i++) {
-            goTo(chairs[i], destination);
-        }
-    });
-
-    formationFourButton.addEventListener('click', function (e) {
-        let destination = sim.formationFour();
-        for (let i = 0; i < chairs.length; i++) {
-            goTo(chairs[i], destination);
+            route.goTo(chairs[i], destination);
         }
     });
 };
