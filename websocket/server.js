@@ -34,7 +34,7 @@ let positionData = [
             bearing: 0
         }
     }
-]
+];
 
 const server = http.createServer(function(request, response) {});
 

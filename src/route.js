@@ -8,6 +8,7 @@ export default class Route {
         let degrees = 180 * angle / Math.PI;  //degrees
         return degrees;
     }
+
     goTo(that, destination) {
         let iteration_time = 100;
 
