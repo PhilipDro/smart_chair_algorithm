@@ -1,5 +1,5 @@
 const WebSocket = require('ws');
-let connections = [new WebSocket('ws://localhost:1312')];
+let connections = [new WebSocket('ws://10.51.6.5:5678')];
 
 class ChairController {
     constructor() {
@@ -22,7 +22,7 @@ connections[0].onmessage = event => {
     let message = event.data;
     console.log('RECEIVED DATA:', message);
 
-    chairController.move(0, {id: 0, motionType: 'Rotation', velocity: 0.5});
+    //chairController.move(0, {id: 0, motionType: 'Rotation', velocity: 0.5});
     // // Check if command is for this client
     // if (message.id === myId) {
     //     // Motion command

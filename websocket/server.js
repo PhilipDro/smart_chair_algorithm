@@ -21,7 +21,7 @@ let positionData = [
     {
         id: 2,
         position: {
-            x: 500,
+            x: 400,
             y: 400,
             bearing: 0
         },
@@ -30,15 +30,16 @@ let positionData = [
         id: 3,
         position: {
             x: 100,
-            y: 400,
+            y: 300,
             bearing: 0
         }
     }
-]
+];
 
-const server = http.createServer(function(request, response) {});
+const server = http.createServer(function (request, response) {
+});
 
-server.listen(3000, function() {
+server.listen(3000, function () {
     console.log('Server listens on localhost:3000');
 });
 
@@ -48,15 +49,17 @@ const wsServer = new WebSocketServer({
 });
 
 // WebSocket server
-wsServer.on('request', function(request) {
+wsServer.on('request', function (request) {
 
     const connection = request.accept(null, request.origin);
     console.log('connection opened');
 
     // send the data to the client
+    console.log(positionData);
     connection.send(JSON.stringify(positionData));
 
-    connection.on('close', function(connection) {
+
+    connection.on('close', function (connection) {
         console.log('connection closed');
     });
 });
