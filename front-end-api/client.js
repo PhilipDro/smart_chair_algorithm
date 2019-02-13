@@ -13,3 +13,5 @@ connection.onmessage = event => {
         console.log('No JSON given');
     }
 };
+
+connection.send(JSON.parse({"id":0}));

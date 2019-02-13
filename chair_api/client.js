@@ -1,5 +1,17 @@
+/*
+    This runs on the chair
+    controller unit.
+ */
 const WebSocket = require('ws');
-let connections = [new WebSocket('ws://localhost:1312')];
+
+let chairUrls = [
+    "localhost:1312"
+];
+
+let connections = [];
+
+for (let url in chairUrls)
+    connections.push(new WebSocket(`ws://${url}`));
 
 class ChairController {
     constructor() {
