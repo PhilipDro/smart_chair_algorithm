@@ -1,5 +1,6 @@
-import Simulation from './Simulation';
-import Route from './route';
+import Simulation from './Simulation_for_chairs';
+import Route from './Route';
+import {astar, Graph} from './astar';
 import './app.scss';
 
 /**
@@ -15,8 +16,8 @@ window.Simulation = Simulation;
  * @type {WebSocket}
  */
 let cameraServer = new WebSocket('ws://localhost:3000');
-let feServer = new WebSocket('ws://localhost:9898');
-let sim;
+
+let sim; //todo change to window.sim?
 
 cameraServer.onmessage = event => { //todo einheitlich
     const markers = JSON.parse(event.data);
@@ -40,44 +41,42 @@ cameraServer.onmessage = event => { //todo einheitlich
      * make chairs available.
      */
     window.chairs = sim.getChairControl().getChairs();
-};
 
-feServer.onopen = ws => {
-    console.log(ws);
-    feServer.send('hello');
 
-    feServer.onmessage = event => {
-        console.log(event);
-        if (event.data === 'f1') {
-            let destination = sim.formationOne();
-            for (let i = 0; i < chairs.length; i++) {
-                route.goTo(chairs[i], destination);
+    // FRONT END
+    let feServer = new WebSocket('ws://localhost:9898');
+    feServer.onopen = ws => {
+        console.log(ws);
+
+        feServer.onmessage = event => {
+
+            let message = JSON.parse(event.data);
+            if (message.receiver === "controller") {
+                console.log(message);
+
+                let destinations = sim.setDestination(message.content);
+
+                for (let i = 0; i < chairs.length; i++) {
+                    route.goTo(chairs[i], destinations);
+                }
             }
-        }
+        };
+
+
+        /**
+         * Send chair positions to front end server
+         * @type {Array}
+         */
+        /*setInterval(function () {
+            let response = [];
+            for (let chair of chairs) {
+                response.push({
+                    id: chair.getId(),
+                    position: chair.getPosition(),
+                    arrived: false
+                })
+            }
+            feServer.send(JSON.stringify(response));
+        }, 300);*/
     };
 };
-
-
-/**
- * Set event listeners for formation functions.
- * @type {Element}
- */
-let formationOneButton = document.querySelector('.formation-one');
-let formationTwoButton = document.querySelector('.formation-two');
-
-/**
- * Formation functions for debugging.
- */
-formationOneButton.addEventListener('click', function (e) {
-    let destination = sim.formationOne();
-    for (let i = 0; i < chairs.length; i++) {
-        route.goTo(chairs[i], destination);
-    }
-});
-
-formationTwoButton.addEventListener('click', function (e) {
-    let destination = sim.formationTwo();
-    for (let i = 0; i < chairs.length; i++) {
-        route.goTo(chairs[i], destination);
-    }
-});

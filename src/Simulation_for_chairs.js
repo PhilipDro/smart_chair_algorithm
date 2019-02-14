@@ -1,7 +1,14 @@
 import {Engine, Render, World, Bodies, Body, Events} from 'matter-js';
-import { astar, Graph } from './astar';
+import {astar, Graph} from './astar';
 import Visualisation from './Visualisation';
 import Astar_api from './astar_api';
+
+const chairSocket = new WebSocket('ws://localhost:1312');
+
+let socket;
+chairSocket.onopen = ws => {
+    socket = ws;
+};
 
 const DEFAULT_FRICTION = .1;
 
@@ -38,7 +45,7 @@ export default class Simulation {
                 angularVelocity: 0,
                 id: marker.id,
                 shape: (() => {
-                    const { x, y, bearing } = marker.position;
+                    const {x, y, bearing} = marker.position;
                     const box = Bodies.circle(x, y, 40, 40);
                     box.frictionAir = DEFAULT_FRICTION;
                     return box;
@@ -52,7 +59,7 @@ export default class Simulation {
      *
      * TODO: refactor code DRY
      */
-    setDestination(targets){
+    setDestination(targets) {
         for (let item of targets) {
             destination.push(graph.grid[item.target.x][item.target.y]);
         }
@@ -83,10 +90,11 @@ export default class Simulation {
 
         return {
             getChairs: () => {
-                return simulation.chairs.map(function(chair){
+                return simulation.chairs.map(function (chair) {
                     return {
                         move({motionType, velocity}) {
                             this.stop();
+                            chairSocket.send(JSON.stringify({motionType, velocity}));
                             switch (motionType) {
                                 case 'Rotation' :
                                     chair.angularVelocity = velocity * Math.PI / 72
@@ -123,7 +131,7 @@ export default class Simulation {
                             return this.positionInGrid;
                         },
                         setGridPosition() {
-                            let { x, y } = this.getPosition();
+                            let {x, y} = this.getPosition();
                             x = Math.round((x / 100));
                             y = Math.round((y / 100));
                             this.positionInGrid = graph.grid[x][y];
