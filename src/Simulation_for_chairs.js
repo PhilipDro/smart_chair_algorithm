@@ -3,17 +3,52 @@ import {astar, Graph} from './astar';
 import Visualisation from './Visualisation';
 import Astar_api from './astar_api';
 
-const chairSocket = new WebSocket('ws://10.51.5.57:1312');
+const chairConnection = new WebSocket('ws://10.51.5.57:1312');
+const camConnection = new WebSocket('ws://10.51.6.5:5678');
 
-let socket;
-chairSocket.onopen = ws => {
-    socket = ws;
+chairConnection.onopen = ws => {
+    console.log('connected to chair');
+};
+
+let positions = [];
+camConnection.onopen = ws => {
+    camConnection.onmessage(data => {
+        let newPosition = JSON.parse(data);
+
+        let found = false;
+        for (let i = 0; i < positions.length; i++) {
+            if (positions[i].id === newPosition.id) {
+                positions.splice(i, 1);
+                positions.push(newPosition);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            positions.push(newPosition);
+        }
+    });
 };
 
 const DEFAULT_FRICTION = .1;
 
 function toDegrees(angle) {
     return angle * (180 / Math.PI);
+}
+
+function findInArray(id, array) {
+    let found = false;
+    for (let i = 0; i < array.length; i++) {
+        if (array[i].id === id) {
+            found = true;
+            return {
+                item: array[i],
+                index: i
+            };
+        }
+    }
+    if (!found)
+        return false;
 }
 
 let graph = new Graph([
@@ -37,21 +72,31 @@ visualisation.setClasses();
 
 export default class Simulation {
 
-    constructor(markers = []) {
+    constructor() {
         this.element = document.querySelector('.simulation');
-        this.chairs = markers.map((marker) => {
-            return {
+        this.chairs = [];
+    }
+
+    createChair(marker) {
+        if (!findInArray(marker.id, this.chairs)) {
+            this.chairs.push({
                 velocity: {x: 0, y: 0},
                 angularVelocity: 0,
                 id: marker.id,
                 shape: (() => {
-                    const {x, y, bearing} = marker.position;
-                    const box = Bodies.circle(x, y, 40, 40);
+                    const box = Bodies.circle(marker.x, marker.y, 40, 40);
                     box.frictionAir = DEFAULT_FRICTION;
                     return box;
                 })()
-            }
-        });
+            });
+            console.log('drawing new chair', marker.id);
+            World.add(this.engine.world, this.chairs.map(({shape}) => shape));
+        } else {
+            let index = findInArray(marker.id, this.chairs).index;
+            Body.setPosition(this.chairs[index].shape, {x: marker.x, y: marker.y});
+            console.log('redrawing chair', marker.id);
+        }
+
     }
 
     /**
@@ -66,23 +111,23 @@ export default class Simulation {
         return destination;
     }
 
-    formationOne() {
-        Body.setPosition(this.chairs[0].shape, {x: 400, y: 100});
-        Body.setPosition(this.chairs[1].shape, {x: 100, y: 100});
-        Body.setPosition(this.chairs[2].shape, {x: 100, y: 400});
-        Body.setPosition(this.chairs[3].shape, {x: 400, y: 400});
-        destination = [graph.grid[3][3], graph.grid[2][3], graph.grid[4][3], graph.grid[4][3]];
-        return destination;
-    }
+    /*    formationOne() {
+            Body.setPosition(this.chairs[0].shape, {x: 400, y: 100});
+            Body.setPosition(this.chairs[1].shape, {x: 100, y: 100});
+            Body.setPosition(this.chairs[2].shape, {x: 100, y: 400});
+            Body.setPosition(this.chairs[3].shape, {x: 400, y: 400});
+            destination = [graph.grid[3][3], graph.grid[2][3], graph.grid[4][3], graph.grid[4][3]];
+            return destination;
+        }
 
-    formationTwo() {
-        Body.setPosition(this.chairs[0].shape, {x: 200, y: 200});
-        Body.setPosition(this.chairs[1].shape, {x: 400, y: 200});
-        Body.setPosition(this.chairs[2].shape, {x: 200, y: 400});
-        Body.setPosition(this.chairs[3].shape, {x: 400, y: 400});
-        destination = [graph.grid[1][4], graph.grid[2][2], graph.grid[4][4], graph.grid[4][2]];
-        return destination;
-    }
+        formationTwo() {
+            Body.setPosition(this.chairs[0].shape, {x: 200, y: 200});
+            Body.setPosition(this.chairs[1].shape, {x: 400, y: 200});
+            Body.setPosition(this.chairs[2].shape, {x: 200, y: 400});
+            Body.setPosition(this.chairs[3].shape, {x: 400, y: 400});
+            destination = [graph.grid[1][4], graph.grid[2][2], graph.grid[4][4], graph.grid[4][2]];
+            return destination;
+        }*/
 
     getChairControl() {
 
@@ -94,7 +139,7 @@ export default class Simulation {
                     return {
                         move({motionType, velocity}) {
                             this.stop();
-                            chairSocket.send(JSON.stringify({motionType, velocity}));
+                            chairConnection.send(JSON.stringify({motionType, velocity}));
                             switch (motionType) {
                                 case 'Rotation' :
                                     chair.angularVelocity = velocity * Math.PI / 72
@@ -110,20 +155,34 @@ export default class Simulation {
                             chair.velocity = {x: 0, y: 0};
                         },
                         getId() {
-                            let id = chair.id;
+                             let id = chair.id;
                             return id;
+                        },
+                        getMarkerId() {
+                            console.log(chairs);
+                            return findInArray(chair.id, this.chairs);
                         },
                         getPosition() {
                             this.setPosition();
                             return this.position;
                         },
                         setPosition() {
-                            const angle = toDegrees(chair.shape.angle) % 360;
+                            /*const angle = toDegrees(chair.shape.angle) % 360;
                             const normalizedAngle = angle < 0 ? angle + 360 : angle;
                             this.position = {
                                 x: Math.round(chair.shape.position.x),
                                 y: Math.round(chair.shape.position.y),
                                 bearing: normalizedAngle
+                            }*/
+
+                            const id = this.getId();
+                            const position = this.getMarkerId();
+                            console.log(position);
+                            const angle = 90;
+                            this.position = {
+                                x: Math.round(position.x),
+                                y: Math.round(position.y),
+                                bearing: angle
                             }
                         },
                         getGridPosition() {
@@ -149,10 +208,11 @@ export default class Simulation {
                             this.setPath(index);
                             return this.path;
                         },
-                        setPath(index) {
+                        setPath() {
+                            let i = this.getMarkerId().index;
                             this.path = path
                                 .path()
-                                .findPath(graph, chairs[index].getGridPosition(), destination[index]);
+                                .findPath(graph, chairs[0].getGridPosition(), destination[i]);
                         },
                         getNextNode() {
                             this.setNextNode();
@@ -172,15 +232,15 @@ export default class Simulation {
                 });
             },
             start: () => {
-                const engine = Engine.create();
-                engine.world.gravity.y = 0;
+                this.engine = Engine.create();
+                this.engine.world.gravity.y = 0;
                 const render = Render.create({
                     element: this.element,
-                    engine: engine,
+                    engine: this.engine,
                     options: {
                         showAngleIndicator: true,
-                        width: 500,
-                        height: 500,
+                        width: 400,
+                        height: 400,
                         showIds: true
                     }
                 });
@@ -193,15 +253,14 @@ export default class Simulation {
                 let bottomWall = Bodies.rectangle(render.options.width / 2, render.options.height - 1, render.options.width, 1, {isStatic: true});
                 let leftWall = Bodies.rectangle(1, render.options.height / 2, 1, render.options.height, {isStatic: true});
 
-                Engine.run(engine);
+                Engine.run(this.engine);
                 Render.run(render);
 
-                World.add(engine.world, [topWall, rightWall, bottomWall, leftWall]);
-                World.add(engine.world, simulation.chairs.map(({shape}) => shape));
+                World.add(this.engine.world, [topWall, rightWall, bottomWall, leftWall]);
 
                 // World.add(engine.world, simulation.chairs.map(({shape}) => shape));
 
-                Events.on(engine, "afterUpdate", () => {
+                Events.on(this.engine, "afterUpdate", () => {
                     simulation.chairs.forEach(({shape, velocity, angularVelocity}) => {
                         if (angularVelocity != 0) {
                             Body.setAngularVelocity(shape, angularVelocity);

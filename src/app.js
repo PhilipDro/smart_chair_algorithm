@@ -11,25 +11,44 @@ const route = new Route;
 
 window.Simulation = Simulation;
 
+let sim = new Simulation();
+window.sim = sim;
+sim.getChairControl().start();
 /**
  * Get position data via websocket from _server.js.
  * @type {WebSocket}
  */
-let cameraServer = new WebSocket('ws://localhost:3000');
+let cameraServer = new WebSocket('ws://10.51.6.5:5678');
 
-let sim; //todo change to window.sim?
+// FRONT END
+let feServer = new WebSocket('ws://localhost:9898');
+feServer.onopen = ws => {
+    console.log(ws);
+
+    feServer.onmessage = event => {
+
+        let message = JSON.parse(event.data);
+        if (message.receiver === "controller") {
+            console.log(message);
+
+            let destinations = sim.setDestination(message.content);
+
+            for (let i = 0; i < chairs.length; i++) {
+                route.goTo(chairs[i], destinations);
+            }
+        }
+    };
+};
 
 cameraServer.onmessage = event => { //todo einheitlich
-    const markers = JSON.parse(event.data);
+    const marker = JSON.parse(event.data);
 
-    console.log('> marker:', markers);
+    console.log('> marker:', marker);
     /**
      * Start the simulation.
      */
-    sim = new Simulation(markers);
-    window.sim = sim;
+    sim.createChair(marker);
 
-    sim.getChairControl().start();
 
     // /**
     //  * make astar api available to window
@@ -43,40 +62,19 @@ cameraServer.onmessage = event => { //todo einheitlich
     window.chairs = sim.getChairControl().getChairs();
 
 
-    // FRONT END
-    let feServer = new WebSocket('ws://localhost:9898');
-    feServer.onopen = ws => {
-        console.log(ws);
-
-        feServer.onmessage = event => {
-
-            let message = JSON.parse(event.data);
-            if (message.receiver === "controller") {
-                console.log(message);
-
-                let destinations = sim.setDestination(message.content);
-
-                for (let i = 0; i < chairs.length; i++) {
-                    route.goTo(chairs[i], destinations);
-                }
-            }
-        };
-
-
-        /**
-         * Send chair positions to front end server
-         * @type {Array}
-         */
-        /*setInterval(function () {
-            let response = [];
-            for (let chair of chairs) {
-                response.push({
-                    id: chair.getId(),
-                    position: chair.getPosition(),
-                    arrived: false
-                })
-            }
-            feServer.send(JSON.stringify(response));
-        }, 300);*/
-    };
+    /**
+     * Send chair positions to front end server
+     * @type {Array}
+     */
+    /*setInterval(function () {
+        let response = [];
+        for (let chair of chairs) {
+            response.push({
+                id: chair.getId(),
+                position: chair.getPosition(),
+                arrived: false
+            })
+        }
+        feServer.send(JSON.stringify(response));
+    }, 300);*/
 };

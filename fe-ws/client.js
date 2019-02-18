@@ -23,13 +23,13 @@ const message = {
     receiver: "controller",
     content: [
         {
-            id: 0,
+            id: 2,
             target: {
                 x: 4,
                 y: 1
             }
         },
-        {
+        /*{
             id: 1,
             target: {
                 x: 3,
@@ -49,7 +49,7 @@ const message = {
                 x: 4,
                 y: 4
             }
-        },
+        },*/
     ]
 };
 
