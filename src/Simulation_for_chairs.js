@@ -206,7 +206,6 @@ export default class Simulation {
                         if (angularVelocity != 0) {
                             Body.setAngularVelocity(shape, angularVelocity);
                         }
-
                         /**
                          * Without test here we would kill the slippage immediately.
                          */

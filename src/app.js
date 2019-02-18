@@ -1,4 +1,4 @@
-import Simulation from './Simulation_for_chairs';
+//import Simulation from './Simulation_for_chairs';
 import Route from './Route';
 import {astar, Graph} from './astar';
 import './app.scss';
@@ -7,29 +7,44 @@ import './app.scss';
  * Make route calculation methods available.
  * @type {Route}
  */
-const route = new Route;
+//const route = new Route;
 
-window.Simulation = Simulation;
+//window.Simulation = Simulation;
 
 /**
  * Get position data via websocket from _server.js.
  * @type {WebSocket}
  */
-let cameraServer = new WebSocket('ws://localhost:3000');
+let cameraServer = new WebSocket('ws://10.51.6.5:5678');
 
-let sim; //todo change to window.sim?
+//let sim; //todo change to window.sim?
 
-cameraServer.onmessage = event => { //todo einheitlich
-    const markers = JSON.parse(event.data);
+let chairs = [];
 
-    console.log('> marker:', markers);
+cameraServer.onmessage = event => {
+    const marker = JSON.parse(event.data);
+    console.log('> marker:', marker);
+
+    let found = false;
+    for (let i = 0; i < chairs.length; i++) {
+        if (chairs[i].getId() === marker.id) {
+            chairs[i].setPosition({x: marker.x, y: marker.y, bearing: marker.bearing});
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        chairs.push(new Route(marker));
+    }
+
+    console.log('intern chair pos', chairs[0].getPosition());
     /**
      * Start the simulation.
      */
-    sim = new Simulation(markers);
-    window.sim = sim;
+    /*    sim = new Simulation(markers);
+        window.sim = sim;
 
-    sim.getChairControl().start();
+        sim.getChairControl().start();*/
 
     // /**
     //  * make astar api available to window
@@ -40,43 +55,41 @@ cameraServer.onmessage = event => { //todo einheitlich
     /**
      * make chairs available.
      */
-    window.chairs = sim.getChairControl().getChairs();
+    //window.chairs = sim.getChairControl().getChairs();
 
+    /**
+     * Send chair positions to front end server
+     * @type {Array}
+     */
+    /*setInterval(function () {
+        let response = [];
+        for (let chair of chairs) {
+            response.push({
+                id: chair.getId(),
+                position: chair.getPosition(),
+                arrived: false
+            })
+        }
+        feServer.send(JSON.stringify(response));
+    }, 300);*/
+};
 
-    // FRONT END
-    let feServer = new WebSocket('ws://localhost:9898');
-    feServer.onopen = ws => {
-        console.log(ws);
+// FRONT END
+let feServer = new WebSocket('ws://localhost:9898');
+feServer.onopen = ws => {
+    console.log(ws);
 
-        feServer.onmessage = event => {
+    feServer.onmessage = event => {
 
-            let message = JSON.parse(event.data);
-            if (message.receiver === "controller") {
-                console.log(message);
+        let message = JSON.parse(event.data);
+        if (message.receiver === "controller") {
+            console.log(message);
 
-                let destinations = sim.setDestination(message.content);
-
-                for (let i = 0; i < chairs.length; i++) {
-                    route.goTo(chairs[i], destinations);
-                }
+            //let destinations = sim.setDestination(message.content);
+            let targets = message.content; // todo sync markers and targets array
+            for (let i = 0; i < chairs.length; i++) {
+                chairs[i].goTo(targets[i]);
             }
-        };
-
-
-        /**
-         * Send chair positions to front end server
-         * @type {Array}
-         */
-        /*setInterval(function () {
-            let response = [];
-            for (let chair of chairs) {
-                response.push({
-                    id: chair.getId(),
-                    position: chair.getPosition(),
-                    arrived: false
-                })
-            }
-            feServer.send(JSON.stringify(response));
-        }, 300);*/
-    };
+        }
+    }
 };
