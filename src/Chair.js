@@ -15,7 +15,7 @@ let graph = new Graph([
 /* !!!!!!!todo remove!!!!!!!! */
 const chairSocket = new WebSocket('ws://10.51.5.57:1312');
 
-export default class Route {
+export default class Chair {
     constructor(chair) {
         this.chair = chair;
     }

@@ -1,13 +1,13 @@
 //import Simulation from './Simulation_for_chairs';
-import Route from './Route';
+import Chair from './Chair';
 import {astar, Graph} from './astar';
 import './app.scss';
 
 /**
  * Make route calculation methods available.
- * @type {Route}
+ * @type {Chair}
  */
-//const route = new Route;
+//const route = new Chair;
 
 //window.Simulation = Simulation;
 
@@ -34,7 +34,7 @@ cameraServer.onmessage = event => {
         }
     }
     if (!found) {
-        chairs.push(new Route(marker));
+        chairs.push(new Chair(marker));
     }
 
     console.log('intern chair pos', chairs[0].getPosition());
