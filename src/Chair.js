@@ -211,13 +211,13 @@ export default class Chair {
     }
 
     stop() {
+        chairSocket.send(JSON.stringify({motionType: "stop"}));
         /*chair.angularVelocity = 0;
         chair.velocity = {x: 0, y: 0};*/
     }
 
     /**
      * Returns aruco marcer id.
-     *
      */
     getId() {
         let id = this.chair.id;
@@ -266,12 +266,12 @@ export default class Chair {
     }
 
     getPath(index) {
-        this.path = path.findPath(graph, this.getGridPosition(), graph.grid[1][1]);
+        this.path = path.findPath(graph, this.getGridPosition(), graph.grid[2][1]);
         return this.path;
     }
 
     getNextNode() {
-        this.path = path.findPath(graph, this.getGridPosition(), graph.grid[1][1]);
+        this.path = path.findPath(graph, this.getGridPosition(), graph.grid[2][1]);
         this.nextNode = path.getNextNode(this.path);
     }
 

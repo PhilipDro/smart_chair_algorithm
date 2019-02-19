@@ -3,14 +3,7 @@ import Chair from './Chair';
 import {astar, Graph} from './astar';
 import './app.scss';
 
-/**
- * Make route calculation methods available.
- * @type {Chair}
- */
-//const route = new Chair;
-
-//window.Simulation = Simulation;
-
+const chairs = [];
 /**
  * Get position data via websocket.
  * Switch between mock server and actual camera.
@@ -19,14 +12,14 @@ import './app.scss';
 // let cameraServer = new WebSocket('ws://10.51.6.5:5678');
 let cameraServer = new WebSocket('ws://localhost:3000');
 
-//let sim; //todo change to window.sim?
-
-let chairs = [];
-
 cameraServer.onmessage = event => {
     const marker = JSON.parse(event.data);
     console.log('> marker:', marker);
 
+    /*
+        Add recognized chairs to array.
+        If already stored, update positions.
+     */
     let found = false;
     for (let i = 0; i < chairs.length; i++) {
         if (chairs[i].getId() === marker.id) {
@@ -39,8 +32,6 @@ cameraServer.onmessage = event => {
     if (!found) {
         chairs.push(new Chair(marker));
     }
-
-    console.log('intern chair pos', chairs[0].getPosition());
     /**
      * Start the simulation.
      */
@@ -59,37 +50,23 @@ cameraServer.onmessage = event => {
      * make chairs available.
      */
     //window.chairs = sim.getChairControl().getChairs();
-
-    /**
-     * Send chair positions to front end server
-     * @type {Array}
-     */
-    /*setInterval(function () {
-        let response = [];
-        for (let chair of chairs) {
-            response.push({
-                id: chair.getId(),
-                position: chair.getPosition(),
-                arrived: false
-            })
-        }
-        feServer.send(JSON.stringify(response));
-    }, 300);*/
 };
 
-// FRONT END
+/**
+ * Connect to front end server.
+ * Receive chair targets and send arrived status
+ * @type {WebSocket}
+ */
 let feServer = new WebSocket('ws://localhost:9898');
 feServer.onopen = ws => {
-    console.log(ws);
-
+    console.log("Front-end server connected");
     feServer.onmessage = event => {
 
         let message = JSON.parse(event.data);
         if (message.receiver === "controller") {
             console.log(message);
 
-            //let destinations = sim.setDestination(message.content);
-            let targets = message.content; // todo sync markers and targets array
+            let targets = message.content; //todo: sync markers and targets array
             for (let i = 0; i < chairs.length; i++) {
                 chairs[i].goTo(targets[i]);
             }
