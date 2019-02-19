@@ -216,7 +216,7 @@ export default class Chair {
     }
 
     /**
-     * Returns aruco marcer id
+     * Returns aruco marcer id.
      *
      */
     getId() {

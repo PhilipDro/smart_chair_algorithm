@@ -1,32 +1,13 @@
 const WebSocketServer = require('websocket').server;
 const http = require('http');
 
-let positionData = [
+let positionData =
     {
         id: 0,
         x: 100,
         y: 100,
         bearing: 0
-    },
-    {
-        id: 1,
-        x: 100,
-        y: 200,
-        bearing: 0
-    },
-    {
-        id: 2,
-        x: 100,
-        y: 300,
-        bearing: 0
-    },
-    {
-        id: 3,
-        x: 100,
-        y: 400,
-        bearing: 0
-    }
-];
+    };
 
 const server = http.createServer(function (request, response) {
 });

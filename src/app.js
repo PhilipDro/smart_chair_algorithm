@@ -12,7 +12,8 @@ import './app.scss';
 //window.Simulation = Simulation;
 
 /**
- * Get position data via websocket
+ * Get position data via websocket.
+ * Switch between mock server and actual camera.
  * @type {WebSocket}
  */
 // let cameraServer = new WebSocket('ws://10.51.6.5:5678');
@@ -29,6 +30,7 @@ cameraServer.onmessage = event => {
     let found = false;
     for (let i = 0; i < chairs.length; i++) {
         if (chairs[i].getId() === marker.id) {
+            console.log('set position');
             chairs[i].setPosition({x: marker.x, y: marker.y, bearing: marker.bearing});
             found = true;
             break;
