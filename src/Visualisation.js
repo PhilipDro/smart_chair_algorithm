@@ -1,8 +1,7 @@
 export default class Visualisation {
-    constructor(document) {
-        this.document = document;
-        this.simulation = this.document.querySelector('.simulation');
-        this.grid = this.clone(this.document.querySelector('.grid'));
+    constructor() {
+        this.simulation = document.querySelector('.simulation');
+        this.grid = this.clone(document.querySelector('.grid'));
         this.rows = this.grid.querySelectorAll('tr');
     }
 

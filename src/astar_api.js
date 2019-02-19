@@ -1,4 +1,7 @@
 import {astar} from "./astar";
+import Visualisation from "./Visualisation";
+
+let visualisation = new Visualisation();
 
 export default class Astar_api {
     path() {
@@ -24,7 +27,7 @@ export default class Astar_api {
                 node.weight = 1;
                 visualisation.removeObstacle({x: node.x, y: node.y});
             },
-            removeAllObstacles() {
+            removeAllObstacles(graph) {
                 // console.log('removed all');
                 graph.grid.forEach(function(element) {
                     element.forEach(function(elem) {

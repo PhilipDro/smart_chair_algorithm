@@ -149,7 +149,7 @@ export default class Chair {
                  * Remove all obstacles.
                  */
                 if (self.getId() === 0) {
-                    path.removeAllObstacles();
+                    path.removeAllObstacles(graph);
                     visualisation.removeActiveAll();
                 }
 
@@ -185,7 +185,7 @@ export default class Chair {
         let actualizeObstacles = setInterval(function () {
 
             if (self.getId() === 0) {
-                path.removeAllObstacles();
+                path.removeAllObstacles(graph);
                 visualisation.removeActiveAll();
             }
 
