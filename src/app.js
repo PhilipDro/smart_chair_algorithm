@@ -12,10 +12,11 @@ import './app.scss';
 //window.Simulation = Simulation;
 
 /**
- * Get position data via websocket from _server.js.
+ * Get position data via websocket
  * @type {WebSocket}
  */
-let cameraServer = new WebSocket('ws://10.51.6.5:5678');
+// let cameraServer = new WebSocket('ws://10.51.6.5:5678');
+let cameraServer = new WebSocket('ws://localhost:3000');
 
 //let sim; //todo change to window.sim?
 

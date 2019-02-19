@@ -4,35 +4,27 @@ const http = require('http');
 let positionData = [
     {
         id: 0,
-        position: {
-            x: 100,
-            y: 100,
-            bearing: 0
-        }
+        x: 100,
+        y: 100,
+        bearing: 0
     },
     {
         id: 1,
-        position: {
-            x: 100,
-            y: 200,
-            bearing: 0
-        }
+        x: 100,
+        y: 200,
+        bearing: 0
     },
     {
         id: 2,
-        position: {
-            x: 100,
-            y: 300,
-            bearing: 0
-        },
+        x: 100,
+        y: 300,
+        bearing: 0
     },
     {
         id: 3,
-        position: {
-            x: 100,
-            y: 400,
-            bearing: 0
-        }
+        x: 100,
+        y: 400,
+        bearing: 0
     }
 ];
 
