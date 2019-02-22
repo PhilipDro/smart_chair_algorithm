@@ -3,9 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <title>Simulation</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+
 </head>
 <body>
 <div id="sim" class="title">Simulation</div>
+<style>
+    .chair {
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-color: red;
+        width: 20px;
+        height: 20px;
+    }
+</style>
 <main class="simulation">
     <table class="grid" cellspacing="0">
         <tr>
@@ -44,11 +56,21 @@
             <th></th>
         </tr>
     </table>
+    <div class="chair"></div>
 </main>
 <aside>
     <button class="formation-one">Formation 1</button>
     <button class="formation-two">Formation 2</button>
 </aside>
 
+<script>
+    //let cam = new WebSocket("ws://10.51.6.5:5678");
+    let cam = new WebSocket("ws://10.51.7.228:5678");
+
+    cam.onmessage = function (event) {
+        let message = JSON.parse(event.data);
+        $('.chair').css({left: message.x + "px", top: message.y + "px"});
+    };
+</script>
 </body>
 </html>

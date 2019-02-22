@@ -4,13 +4,19 @@ import {astar, Graph} from './astar';
 import './app.scss';
 
 const chairs = [];
+const ips = [
+    "10.51.5.64",
+    "10.51.5.57"
+];
+
 /**
  * Get position data via websocket.
  * Switch between mock server and actual camera.
  * @type {WebSocket}
  */
-// let cameraServer = new WebSocket('ws://10.51.6.5:5678');
-let cameraServer = new WebSocket('ws://localhost:3000');
+
+let cameraServer = new WebSocket('ws://10.51.7.228:5678');
+//let cameraServer = new WebSocket('ws://localhost:3000');
 
 cameraServer.onmessage = event => {
     const marker = JSON.parse(event.data);
@@ -30,7 +36,7 @@ cameraServer.onmessage = event => {
         }
     }
     if (!found) {
-        chairs.push(new Chair(marker));
+        chairs.push(new Chair(ips[1], marker));
     }
     /**
      * Start the simulation.

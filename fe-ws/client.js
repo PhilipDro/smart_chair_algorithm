@@ -46,8 +46,8 @@ const message = {
         {
             id: 3,
             target: {
-                x: 4,
-                y: 4
+                x: 3,
+                y: 3
             }
         },
     ]
