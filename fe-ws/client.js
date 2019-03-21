@@ -26,7 +26,7 @@ const message = {
             id: 0,
             target: {
                 x: 4,
-                y: 1
+                y: 4
             }
         },
         {

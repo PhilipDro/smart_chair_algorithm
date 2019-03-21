@@ -5,7 +5,7 @@ import './app.scss';
 
 const chairs = [];
 const ips = [
-    "10.51.5.64",
+    //"10.51.5.64",
     "10.51.5.57"
 ];
 
@@ -15,7 +15,7 @@ const ips = [
  * @type {WebSocket}
  */
 
-let cameraServer = new WebSocket('ws://10.51.7.228:5678');
+let cameraServer = new WebSocket('ws://10.51.5.64:5678');
 //let cameraServer = new WebSocket('ws://localhost:3000');
 
 cameraServer.onmessage = event => {
@@ -36,7 +36,7 @@ cameraServer.onmessage = event => {
         }
     }
     if (!found) {
-        chairs.push(new Chair(ips[1], marker));
+        chairs.push(new Chair(ips[0], marker));
     }
     /**
      * Start the simulation.

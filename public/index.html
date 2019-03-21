@@ -64,8 +64,8 @@
 </aside>
 
 <script>
-    //let cam = new WebSocket("ws://10.51.6.5:5678");
-    let cam = new WebSocket("ws://10.51.7.228:5678");
+    let cam = new WebSocket("ws://10.51.5.64:5678");
+    //let cam = new WebSocket("ws://10.51.7.228:5678");
 
     cam.onmessage = function (event) {
         let message = JSON.parse(event.data);

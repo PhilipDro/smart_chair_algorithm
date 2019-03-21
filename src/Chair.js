@@ -140,18 +140,18 @@ export default class Chair {
             console.log('id' + self.getId() + ' Lock bearing: ' + lockBearing);
             console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
 
-            /**
+            /** 
              * Rotate if bearing is wrong.
              */
             if (!lockBearing && (Math.abs(endAngle - self.getPosition().bearing) > 50)) {
-                self.move({motionType: 'Rotation', velocity: 0.8 * dir});
+                self.move({motionType: 'Rotation', velocity: 0.7 * dir});
                 console.log('id' + self.getId() + ' rotate fast');
             }
             /**
              * Rotate slower if bearing is wrong but close.
              */
             else if (!lockBearing && (Math.abs(endAngle - self.getPosition().bearing) > 5)) {
-                self.move({motionType: 'Rotation', velocity: 0.7 * dir});
+                self.move({motionType: 'Rotation', velocity: 0.6 * dir});
                 console.log('id' + self.getId() + ' rotate slow');
             }
             /**
@@ -159,7 +159,7 @@ export default class Chair {
              */
            /* else if (start.x - self.getNextNode().x < 0) {
                 if (self.getPosition().x > (self.getNextNode().x * 100) + 20) {
-                    console.log("recalculate case 1");
+                    console.log("recalculate case 1");  
                     stopAndRecalc();
                 }
             } else if (start.x - self.getNextNode().x > 0) {
