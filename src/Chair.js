@@ -18,7 +18,7 @@ export default class Chair {
     }
 
     goTo(destination) {
-        let iteration_time = 100;
+        let iteration_time = 1000;
 
         /**
          * Calculate path using A* algorithm initially.
@@ -141,19 +141,28 @@ export default class Chair {
             console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
 
             /** 
-             * Rotate if bearing is wrong.
+             * Rotate for the calculated angle if bearing is wrong.
              */
+			if (!lockBearing && (Math.abs(endAngle - self.getPosition().bearing) > 10)) {
+				console.log('EEEEEEEEEEEEEEEND AAAANGLE: ' + endAngle);
+                self.move({motionType: 'Rotation', value: endAngle * dir});
+				//self.move({motionType: 'Straight', velocity: 1 * dir});
+                console.log('id' + self.getId() + ' rotate fast');
+				console.log('NEEEEEEW PAAAAAAAAAAAART');
+            }
+			 
+			 
             if (!lockBearing && (Math.abs(endAngle - self.getPosition().bearing) > 50)) {
                 self.move({motionType: 'Rotation', velocity: 0.7 * dir});
                 console.log('id' + self.getId() + ' rotate fast');
             }
             /**
              * Rotate slower if bearing is wrong but close.
-             */
+             *
             else if (!lockBearing && (Math.abs(endAngle - self.getPosition().bearing) > 5)) {
                 self.move({motionType: 'Rotation', velocity: 0.6 * dir});
                 console.log('id' + self.getId() + ' rotate slow');
-            }
+            }*/
             /**
              * test code
              */
@@ -191,7 +200,7 @@ export default class Chair {
              */
             else if (distance < 30 && distance > 25) {
                 lockBearing = true;
-                self.move({motionType: 'Straight', velocity: 0.5});
+                self.move({motionType: 'Straight', velocity: 0.8});
                 console.log('id' + self.getId() + ' drive slow');
             }
 
@@ -228,7 +237,7 @@ export default class Chair {
                 console.log('id' + self.getId() + ' Finished');
 
                 clearInterval(moveTo);
-                self.stop();
+                //self.stop();
 
                 /**
                  * Remove all obstacles.
@@ -260,10 +269,18 @@ export default class Chair {
         }, iteration_time * 3);
     }
 
-    move({motionType, velocity}) {
+    /*move({motionType, velocity}) {
         this.stop();
         console.log("sending move command to chair", this.chair);
         this.chairSocket.send(JSON.stringify({motionType, velocity}));
+    }*/
+	
+	move({motionType, value}) {
+        //this.stop();
+		let command = JSON.stringify({motionType, value});
+		console.log(command);
+        console.log("sending move command to chair", this.chair);
+        this.chairSocket.send(command);
     }
 
     stop() {
