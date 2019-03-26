@@ -1,13 +1,19 @@
 const WebSocketServer = require('websocket').server;
 const http = require('http');
 
-let positionData =
+let positionData = [
     {
         id: 0,
         x: 100,
         y: 100,
         bearing: 0
-    };
+    }, {
+        id: 1,
+        x: 144,
+        y: 477,
+        bearing: 64
+    }
+];
 
 const server = http.createServer(function (request, response) {
 });
@@ -33,6 +39,6 @@ wsServer.on('request', function (request) {
 
 
     connection.on('close', function (connection) {
-        console.log('connection closed');
+        console.log('connection closed', connection);
     });
 });
