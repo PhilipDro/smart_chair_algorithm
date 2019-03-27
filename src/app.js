@@ -19,19 +19,44 @@ getChairPositions();
  * Receive chair targets and send arrived status
  * @type {WebSocket}
  */
-let feServer = new WebSocket('ws://localhost:9898');
+let feServer = new WebSocket('ws://localhost:9898');// todo put in config
 feServer.onopen = ws => {
     console.log("Front-end server connected");
-    feServer.onmessage = event => {
-        // todo getChairPositions() has to fire before targets are being sent to Chair.js
-        let message = JSON.parse(event.data);
-        if (message.receiver === "controller") {
-            console.log(message);
-            let targets = message.content; //todo: sync markers and targets array
-            for (let i = 0; i < chairs.length; i++) {
-                chairs[i].goTo(targets[i].target);
+    feServer.onmessage = frontEndEvent => {
+        const cameraServer = new WebSocket('ws://localhost:3000'); // todo put in config
+        cameraServer.onmessage = cameraEvent => {
+            let markers = JSON.parse(cameraEvent.data);
+            console.log('> marker:', markers);
+            for (let marker of markers) {
+                /*
+                    Add recognized chairs to array.
+                    If already stored, update positions.
+                 */
+                let found = false;
+                for (let i = 0; i < chairs.length; i++) {
+                    if (chairs[i].getId() === marker.id) {
+                        console.log('set position');
+                        chairs[i].setPosition({x: marker.x, y: marker.y, bearing: marker.bearing});
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    chairs.push(new Chair(ips[marker.id], marker));
+                }
             }
-        }
+            cameraServer.close();
+
+            let message = JSON.parse(frontEndEvent.data);
+            if (message.receiver === "controller") {
+                console.log(message);
+                let targets = message.content; //todo: sync markers and targets array
+                for (let i = 0; i < chairs.length; i++) {
+                    chairs[i].goTo(targets[i].target);
+                }
+
+            }
+        };
     }
 };
 

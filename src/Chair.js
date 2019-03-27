@@ -16,7 +16,7 @@ const cameraServer = new WebSocket('ws://10.51.5.64:5678'); // todo: put in conf
 export default class Chair {
     constructor(ip, chair, port = 1312) {
         this.chair = chair;
-        this.chairSocket = new WebSocket('ws://' + ip + ':' + port);
+        //this.chairSocket = new WebSocket('ws://' + ip + ':' + port);
     }
 
     goTo(target) {
@@ -63,7 +63,7 @@ export default class Chair {
 
     /**
      *
-     * @returns {*}
+     * @returns {{x: number, y: number}}
      */
     getGridPosition() {
         let {x, y} = this.getPosition();
