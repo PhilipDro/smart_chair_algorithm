@@ -1,5 +1,5 @@
 //import Simulation from './Simulation_for_chairs';
-import Chair from './Chair';
+const Chair = require('./Chair');
 import {astar, Graph} from './astar';
 import './app.scss';
 

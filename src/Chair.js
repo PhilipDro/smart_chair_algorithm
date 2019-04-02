@@ -1,5 +1,5 @@
-import Astar_api from "./astar_api";
-import {Graph} from "./astar";
+const Astar_api = require('./astar_api');
+const Graph = require('./astar');
 
 let path = new Astar_api().path();
 
@@ -11,7 +11,7 @@ let graph = new Graph([
     [1, 1, 1, 1, 1],
 ]);
 
-export default class Chair {
+module.exports = class Chair {
     constructor(ip, chair) {
         this.chair = chair;
         this.chairSocket = new WebSocket('ws://' + ip + ':1312');

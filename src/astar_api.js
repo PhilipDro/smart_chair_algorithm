@@ -1,9 +1,9 @@
-import {astar} from "./astar";
-import Visualisation from "./Visualisation";
+const astar = require('./astar');
+const Visualisation = require('./Visualisation');
 
 let visualisation = new Visualisation();
 
-export default class Astar_api {
+module.exports = class Astar_api {
     path() {
         const simulation = this;
 
