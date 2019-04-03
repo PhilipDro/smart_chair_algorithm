@@ -1,5 +1,10 @@
-const WebSocketServer = require('websocket').server;
-const http = require('http');
+const WebSocket = require('ws');
+const wss = new WebSocket.Server({port: 3000});
+
+const readline = require('readline').createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
 let positionData = [
     {
@@ -7,38 +12,49 @@ let positionData = [
         x: 100,
         y: 100,
         bearing: 0
-    }, {
+    }, /*{
         id: 1,
         x: 144,
         y: 377,
         bearing: 64
-    }
+    }*/
 ];
 
-const server = http.createServer(function (request, response) {
-});
 
-server.listen(3000, function () {
-    console.log('Server listens on localhost:3000');
-});
+console.log('Server listens on localhost:3000');
 
-// create the server
-const wsServer = new WebSocketServer({
-    httpServer: server
-});
 
-// WebSocket server
-wsServer.on('request', function (request) {
-
-    const connection = request.accept(null, request.origin);
+wss.on('connection', function connection(ws) {
     console.log('connection opened');
+    askForInput();
+    /*
+    Handle incoming messages
+     */
+    ws.on('message', function incoming(message) {
+        console.log(">", message);
+    });
 
-    // send the data to the client
-    console.log(positionData);
-    connection.send(JSON.stringify(positionData));
+    /*
+    Handle sending messages
+    */
+    setInterval(() => {
+        ws.send(JSON.stringify(positionData));
+    }, 1000);
 
-
-    connection.on('close', function (connection) {
-        console.log('connection closed', connection);
+    /*
+        Handle connection closings
+     */
+    ws.on('close', function (data) {
+        console.log('closed connection', data, '\n');
     });
 });
+
+function askForInput() {
+    readline.question(`send command chair 0 bearing: `, (command) => {
+        positionData[0].bearing = parseInt(command);
+
+        setTimeout(function () {
+            askForInput();
+        }, 100);
+    });
+};

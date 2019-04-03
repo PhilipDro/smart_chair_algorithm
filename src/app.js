@@ -9,12 +9,9 @@ console.log("config", config);
 
 const chairs = [];
 const ips = [
-    "10.51.5.64",
+    "localhost",
     "10.51.5.57"
 ];
-
-
-getChairPositions();
 
 
 /**
@@ -38,7 +35,6 @@ feServer.onopen = ws => {
                 let found = false;
                 for (let i = 0; i < chairs.length; i++) {
                     if (chairs[i].getId() === marker.id) {
-                        console.log('set position');
                         chairs[i].setPosition({x: marker.x, y: marker.y, bearing: marker.bearing});
                         found = true;
                         break;
@@ -48,11 +44,9 @@ feServer.onopen = ws => {
                     chairs.push(new Chair(ips[marker.id], marker));
                 }
             }
-            cameraServer.close();
 
             let message = JSON.parse(frontEndEvent.data);
             if (message.receiver === "controller") {
-                console.log(message);
                 let targets = message.content; //todo: sync markers and targets array
                 for (let i = 0; i < chairs.length; i++) {
                     chairs[i].goTo(targets[i].target);
@@ -63,33 +57,30 @@ feServer.onopen = ws => {
 };
 
 
-function getChairPositions() {
-    /**
-     * Requests current marker positions
-     * from camera websocket
-     * @type {WebSocket}
-     */
-    const cameraServer = new WebSocket("ws://" + config.camera.host);
-    cameraServer.onmessage = event => {
-        let markers = JSON.parse(event.data);
-        console.log('> marker:', markers);
-        for (let marker of markers) {
-            /*
-                Add recognized chairs to array.
-                If already stored, update positions.
-             */
-            let found = false;
-            for (let i = 0; i < chairs.length; i++) {
-                if (chairs[i].getId() === marker.id) {
-                    chairs[i].setPosition({x: marker.x, y: marker.y, bearing: marker.bearing});
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                chairs.push(new Chair(ips[marker.id], marker));
+/**
+ * Requests current marker positions
+ * from camera websocket
+ * @type {WebSocket}
+ */
+const cameraServer = new WebSocket("ws://" + config.camera.host);
+cameraServer.onmessage = event => {
+    let markers = JSON.parse(event.data);
+    console.log('> marker:', markers);
+    for (let marker of markers) {
+        /*
+            Add recognized chairs to array.
+            If already stored, update positions.
+         */
+        let found = false;
+        for (let i = 0; i < chairs.length; i++) {
+            if (chairs[i].getId() === marker.id) {
+                chairs[i].setPosition({x: marker.x, y: marker.y, bearing: marker.bearing});
+                found = true;
+                break;
             }
         }
-        cameraServer.close();
-    };
-}
+        if (!found) {
+            chairs.push(new Chair(ips[marker.id], marker));
+        }
+    }
+};

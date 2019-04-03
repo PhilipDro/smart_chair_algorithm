@@ -1,7 +1,9 @@
 import Astar_api from "./astar_api";
 import {Graph} from "./astar";
+
 let path = new Astar_api().path();
 import Config from './Config';
+
 const config = new Config();
 
 
@@ -18,7 +20,16 @@ const cameraServer = new WebSocket("ws://" + config.camera.host);
 export default class Chair {
     constructor(ip, chair, port = 1312) {
         this.chair = chair;
-        //this.chairSocket = new WebSocket('ws://' + ip + ':' + port);
+        this.chairSocket = new WebSocket('ws://' + ip + ':' + port);
+
+        // Start listening for chair
+        // state changes
+        this.getChairState();
+
+        cameraServer.onmessage = message => {
+            let pos = JSON.parse(message.data)[0];
+            this.setPosition(pos);
+        }
     }
 
     /**
@@ -117,63 +128,96 @@ export default class Chair {
         console.log(`Telling chair ${this.chair.id} to stop`);
     }
 
+    getChairState() {
+        this.chairSocket.onmessage = message => {
+            let messageJSON = JSON.parse(message.data);
+            if (this.chairBusy !== messageJSON.chairBusy)
+                this.goTo(this.target || this.getPosition());
+            this.chairBusy = messageJSON.chairBusy;
+            return this.chairBusy;
+        }
+    }
+
     /**
      *
      * @param target
      */
     goTo(target) {
         /*
-        Make things ready to start the
-        movement process
-        */
-        // Set chair target
-        this.target = target;
-        console.log(`Chair ${this.chair.id} will go to ${this.target.x}|${this.target.y}`);
-
-        // Set chair path
-        this.getPath();
-        console.log(`Chair ${this.chair.id} path: ${this.path}`);
-
-        // Set wanted angle (angle to next node)
-        this.getAngleBetweenPoints({
-            x: this.getNextNode() !== undefined ? ((this.getNextNode().x * 100) - this.chair.x) : null,
-            y: this.getNextNode() !== undefined ? ((this.getNextNode().y * 100) - this.chair.y) : null
-        });
-
-        // Set distance to next grid node
-        this.nextNodeDistance = this.getDistanceBetweenPoints(
-            this.getPosition(),
-            {x: this.nextNode.x, y: this.nextNode.y}
-        );
-        console.log(`Chair ${this.chair.id} wanted angle: ${this.wantedAngle}°`);
-
-        const rotationTolerance = 2; // degrees
-        const positionTolerance = 10; // pixels
-        /*
-        Check if the current rotation angle
-        is close enough to the wanted one
+        Check chair state.
+        Only calculate path if chair
+        is ready
          */
-        if (Math.abs(this.wantedAngle - this.chair.bearing) > rotationTolerance) {
-            // Tell chair to rotate
-            /*this.chairSocket.send(JSON.stringify({
-                motionType: "Rotation",
-                value: this.wantedAngle - this.chair.bearing
-            }));*/
-            console.log(`Telling chair ${this.chair.id} to rotate ${Math.abs(this.wantedAngle - this.chair.bearing)}°`);
-        }
-        /*
-        Check if the current position is
-        close enough to the next node
-         */
-        else if (this.nextNodeDistance > positionTolerance) {
-            // Tell chair to drive
-            /*this.chairSocket.send(JSON.stringify({
-                   motionType: "Straight",
-                   value: this.wantedAngle - this.chair.bearing
-               }));*/
-            console.log(`Telling chair ${this.chair.id} to move ${distance} pixels`);
+        if (!this.chairBusy) {
+            /*
+            Make things ready to start the
+            movement process
+            */
+            // Set chair target
+            this.target = target;
+            console.log(`Chair ${this.chair.id} will go to ${this.target.x}|${this.target.y}`);
+
+            // Set chair path
+            this.getPath();
+            console.log(`Chair ${this.chair.id} path: ${this.path}`);
+
+            // Set wanted angle (angle to next node)
+            this.getAngleBetweenPoints({
+                x: this.getNextNode() !== undefined ? ((this.getNextNode().x * 100) - this.chair.x) : null,
+                y: this.getNextNode() !== undefined ? ((this.getNextNode().y * 100) - this.chair.y) : null
+            });
+
+            // Set distance to next grid node
+            this.nextNodeDistance = this.getDistanceBetweenPoints(
+                this.getPosition(),
+                {x: this.nextNode.x, y: this.nextNode.y}
+            );
+            console.log(`Chair ${this.chair.id} wanted angle: ${this.wantedAngle}°`);
+
+            const rotationTolerance = 2; // degrees
+            const positionTolerance = 10; // pixels
+            /*
+            Check if the current rotation angle
+            is close enough to the wanted one
+             */
+            if (Math.abs(this.wantedAngle - this.chair.bearing) > rotationTolerance) {
+                // Tell chair to rotate
+                this.chairSocket.send(JSON.stringify({
+                    motionType: "Rotation",
+                    value: this.wantedAngle - this.chair.bearing
+                }));
+                console.log(`Telling chair ${this.chair.id} to rotate ${Math.abs(this.wantedAngle - this.chair.bearing)}°`);
+            }
+            /*
+            Check if the current position is
+            close enough to the next node
+             */
+            else if (this.nextNodeDistance > positionTolerance) {
+                // Tell chair to drive
+                /*this.chairSocket.send(JSON.stringify({
+                       motionType: "Straight",
+                       value: this.wantedAngle - this.chair.bearing
+                   }));*/
+                console.log(`Telling chair ${this.chair.id} to move ${distance} pixels`);
+            } else {
+                console.log(`Chair ${this.chair.id} has arrived`);
+            }
         } else {
-            console.log(`Chair ${this.chair.id} has arrived`);
+            console.log("Chair is busy...");
         }
+
+        /*
+            this.chairState = bool
+            wenn message auf steam
+                this.chairState = data
+
+            wenn chair pending
+                goTo als loop intervall
+
+            ODER: immer wenn this.chairState sich ändert
+                gotTo()
+
+            goTo() ausbauen
+         */
     }
 }
