@@ -1,7 +1,6 @@
-//import Simulation from './Simulation_for_chairs';
 const Chair = require('./Chair');
-import {astar, Graph} from './astar';
-import './app.scss';
+const { astar, Graph } = require('./astar');
+// import './app.scss';
 
 const chairs = [];
 const ips = [

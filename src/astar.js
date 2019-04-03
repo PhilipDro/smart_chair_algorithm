@@ -400,5 +400,4 @@
         astar: astar,
         Graph: Graph
     };
-
 });
