@@ -10,7 +10,7 @@ let positionData = [
     }, {
         id: 1,
         x: 144,
-        y: 477,
+        y: 377,
         bearing: 64
     }
 ];
