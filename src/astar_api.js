@@ -1,5 +1,5 @@
 import {astar} from "./astar";
-import Visualisation from "./Visualisation";
+import Visualisation from "./_Visualisation";
 
 let visualisation = new Visualisation();
 
