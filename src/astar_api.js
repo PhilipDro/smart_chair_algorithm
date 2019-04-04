@@ -1,7 +1,4 @@
 const astar = require('./astar');
-const Visualisation = require('./Visualisation');
-
-let visualisation = new Visualisation();
 
 module.exports = class Astar_api {
     path() {
