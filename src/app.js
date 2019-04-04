@@ -8,10 +8,7 @@ const config = new Config();
 console.log("config", config);
 
 const chairs = [];
-const ips = [
-    "localhost",
-    "10.51.5.57"
-];
+const ips = config.chairs;
 
 
 /**

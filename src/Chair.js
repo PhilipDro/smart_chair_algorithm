@@ -211,6 +211,7 @@ export default class Chair {
             wenn message auf steam
                 this.chairState = data
 
+
             wenn chair pending
                 goTo als loop intervall
 
