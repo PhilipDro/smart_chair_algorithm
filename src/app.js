@@ -24,10 +24,10 @@ feServer.onopen = ws => {
         cameraServer.onmessage = cameraEvent => {
             let markers = JSON.parse(cameraEvent.data);
             console.log('> marker:', markers);
-            for (let marker of markers) {
+            for (let marker of [markers]) {
                 /*
                     Add recognized chairs to array.
-                    If already stored, update positions.
+                    If already  stored, update positions.
                  */
                 let found = false;
                 for (let i = 0; i < chairs.length; i++) {
@@ -63,7 +63,7 @@ const cameraServer = new WebSocket("ws://" + config.camera.host);
 cameraServer.onmessage = event => {
     let markers = JSON.parse(event.data);
     console.log('> marker:', markers);
-    for (let marker of markers) {
+    for (let marker of [markers]) {
         /*
             Add recognized chairs to array.
             If already stored, update positions.
@@ -77,7 +77,7 @@ cameraServer.onmessage = event => {
             }
         }
         if (!found) {
-            chairs.push(new Chair(ips[marker.id], marker));
+            chairs.push(new Chair(ips[0], marker));
         }
     }
 };

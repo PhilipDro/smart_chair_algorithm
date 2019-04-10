@@ -7,7 +7,6 @@
 
 </head>
 <body>
-<div id="sim" class="title">Simulation</div>
 <style>
     .chair {
         position: absolute;
@@ -56,7 +55,9 @@
             <th></th>
         </tr>
     </table>
-    <div class="chair"></div>
+
+    <div id="chairs">
+    </div>
 </main>
 <aside>
     <button class="formation-one">Formation 1</button>
@@ -64,13 +65,43 @@
 </aside>
 
 <script>
-    let cam = new WebSocket("ws://10.51.5.64:5678");
+    //let cam = new WebSocket("ws://10.51.5.64:5678");
+    let cam = new WebSocket("ws://10.51.7.228:5678");
     //let cam = new WebSocket("ws://10.51.7.228:5678");
+    const chairs = [];
 
     cam.onmessage = function (event) {
-        let message = JSON.parse(event.data);
-        $('.chair').css({left: message.x + "px", top: message.y + "px"});
+        let marker = JSON.parse(event.data);
+        /*
+            Add recognized chairs to array.
+            If already  stored, update positions.
+         */
+        let found = false;
+        for (let i = 0; i < chairs.length; i++) {
+            if (chairs[i].id === marker.id) {
+                chairs[i] = marker;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            chairs.push(marker);
+        }
+
+        /*
+            Draw all recognized chairs
+         */
+        drawChairs(chairs);
     };
+
+
+    function drawChairs(chairs) {
+        $('#chairs').empty();
+        for (let chair of chairs) {
+            $('#chairs').append('<div class="chair" id="' + chair.id + '">').append(chair.id);
+            $('#' + chair.id).css({left: chair.x + "px", top: chair.y + "px"});
+        }
+    }
 </script>
 </body>
 </html>

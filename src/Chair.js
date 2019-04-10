@@ -27,7 +27,8 @@ export default class Chair {
         this.getChairState();
 
         cameraServer.onmessage = message => {
-            let pos = JSON.parse(message.data)[0];
+            //let pos = JSON.parse(message.data)[0];
+            let pos = JSON.parse(message.data);
             this.setPosition(pos);
         }
     }
@@ -194,10 +195,10 @@ export default class Chair {
              */
             else if (this.nextNodeDistance > positionTolerance) {
                 // Tell chair to drive
-                /*this.chairSocket.send(JSON.stringify({
+                this.chairSocket.send(JSON.stringify({
                        motionType: "Straight",
-                       value: this.wantedAngle - this.chair.bearing
-                   }));*/
+                       value: this.nextNodeDistance
+                   }));
                 console.log(`Telling chair ${this.chair.id} to move ${distance} pixels`);
             } else {
                 console.log(`Chair ${this.chair.id} has arrived`);
@@ -205,20 +206,5 @@ export default class Chair {
         } else {
             console.log("Chair is busy...");
         }
-
-        /*
-            this.chairState = bool
-            wenn message auf steam
-                this.chairState = data
-
-
-            wenn chair pending
-                goTo als loop intervall
-
-            ODER: immer wenn this.chairState sich ändert
-                gotTo()
-
-            goTo() ausbauen
-         */
     }
 }
