@@ -1,6 +1,7 @@
+const WebSocketServer = require('websocket').server;
+const http = require('http');
 const Chair = require('./Chair');
 const { astar, Graph } = require('./astar');
-// import './app.scss';
 
 const chairs = [];
 const ips = [
@@ -14,7 +15,7 @@ const ips = [
  * @type {WebSocket}
  */
 
-let cameraServer = new WebSocket('ws://10.51.5.64:5678');
+let cameraServer = new WebSocketServer('ws://10.51.5.64:5678');
 //let cameraServer = new WebSocket('ws://localhost:3000');
 
 cameraServer.onmessage = event => {
@@ -62,7 +63,7 @@ cameraServer.onmessage = event => {
  * Receive chair targets and send arrived status
  * @type {WebSocket}
  */
-let feServer = new WebSocket('ws://localhost:9898');
+let feServer = new WebSocketServer('ws://localhost:9898');
 feServer.onopen = ws => {
     console.log("Front-end server connected");
     feServer.onmessage = event => {

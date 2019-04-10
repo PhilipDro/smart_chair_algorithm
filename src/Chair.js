@@ -1,5 +1,5 @@
 const Astar_api = require('./astar_api');
-const Graph = require('./astar');
+const { Graph } = require('./astar');
 
 let path = new Astar_api().path();
 
