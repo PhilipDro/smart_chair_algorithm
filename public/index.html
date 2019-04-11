@@ -12,9 +12,10 @@
         position: absolute;
         left: 0;
         top: 0;
-        background-color: red;
+        background-color: aqua;
         width: 20px;
         height: 20px;
+        transform: translate(-50%, -50%);
     }
 </style>
 <main class="simulation">
@@ -62,6 +63,9 @@
 <aside>
     <button class="formation-one">Formation 1</button>
     <button class="formation-two">Formation 2</button>
+    <div id="chair-pos" style="background-color: white; padding: 5px">
+        <!--gets filled automatically by js-->
+    </div>
 </aside>
 
 <script>
@@ -97,9 +101,11 @@
 
     function drawChairs(chairs) {
         $('#chairs').empty();
+        $('#chair-pos').empty();
         for (let chair of chairs) {
-            $('#chairs').append('<div class="chair" id="' + chair.id + '">').append(chair.id);
+            $('#chairs').append('<div class="chair" id="' + chair.id + '">' + chair.id + '</div>');
             $('#' + chair.id).css({left: chair.x + "px", top: chair.y + "px"});
+            $('#chair-pos').append("id: " + chair.id + " bearing: " + Math.round(chair.bearing));
         }
     }
 </script>

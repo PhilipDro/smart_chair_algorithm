@@ -31,6 +31,9 @@ export default class Chair {
             let pos = JSON.parse(message.data);
             this.setPosition(pos);
         }
+
+        this.chairStatusPending = false;
+
     }
 
     /**
@@ -77,6 +80,7 @@ export default class Chair {
         let angle = Math.atan2(y, x);   //radians
         let degrees = 180 * angle / Math.PI;  //degrees
         this.wantedAngle = (360 + Math.round(degrees + 90)) % 360;
+
         return this.wantedAngle;
     }
 
@@ -88,7 +92,7 @@ export default class Chair {
      */
     getDistanceBetweenPoints(pointA, pointB) {
         let a = pointA.x - pointB.x;
-        let b = pointA.y - pointB.y;
+        let b = pointA.y / 2 - pointB.y / 2; // todo: only when rechteckiges Kamerabild
 
         return Math.sqrt(a * a + b * b);
     }
@@ -149,7 +153,7 @@ export default class Chair {
         Only calculate path if chair
         is ready
          */
-        if (!this.chairBusy) {
+        if (!this.chairStatusPending && !this.chairBusy) {
             /*
             Make things ready to start the
             movement process
@@ -175,20 +179,45 @@ export default class Chair {
             );
             console.log(`Chair ${this.chair.id} wanted angle: ${this.wantedAngle}°`);
 
-            const rotationTolerance = 2; // degrees
+            const rotationTolerance = 10; // degrees
             const positionTolerance = 10; // pixels
+
+
             /*
             Check if the current rotation angle
             is close enough to the wanted one
              */
+
+            let left, right, rotateFor;
+            if (this.wantedAngle > this.chair.bearing) {
+                left = this.wantedAngle - this.chair.bearing - 360;
+                right = this.wantedAngle - this.chair.bearing;
+                console.log("wa > bea");
+            } else {
+                left = this.wantedAngle - this.chair.bearing
+                right = 360 - this.chair.bearing - this.wantedAngle;
+                console.log("wa < bea");
+            }
+
+            console.log(left, right);
+
+            if (Math.abs(left) < Math.abs(right))
+                rotateFor = left;
+            else
+                rotateFor = right;
+
             if (Math.abs(this.wantedAngle - this.chair.bearing) > rotationTolerance) {
                 // Tell chair to rotate
                 this.chairSocket.send(JSON.stringify({
                     motionType: "Rotation",
-                    value: this.wantedAngle - this.chair.bearing
+                    value: rotateFor
                 }));
-                console.log(`Telling chair ${this.chair.id} to rotate ${Math.abs(this.wantedAngle - this.chair.bearing)}°`);
+                this.waitForChairAnswer();
+                console.log(`Telling chair ${this.chair.id} to rotate ${rotateFor}°`);
             }
+
+
+
             /*
             Check if the current position is
             close enough to the next node
@@ -196,15 +225,26 @@ export default class Chair {
             else if (this.nextNodeDistance > positionTolerance) {
                 // Tell chair to drive
                 this.chairSocket.send(JSON.stringify({
-                       motionType: "Straight",
-                       value: this.nextNodeDistance
-                   }));
-                console.log(`Telling chair ${this.chair.id} to move ${distance} pixels`);
+                    motionType: "Straight",
+                    value: this.nextNodeDistance
+                }));
+                this.waitForChairAnswer();
+                console.log(`Telling chair ${this.chair.id} to move ${this.nextNodeDistance} pixels`);
+
+
             } else {
                 console.log(`Chair ${this.chair.id} has arrived`);
             }
         } else {
             console.log("Chair is busy...");
         }
+    }
+
+    waitForChairAnswer() {
+        this.chairStatusPending = true;
+        let self = this;
+        setTimeout(function () {
+            self.chairStatusPending = false;
+        }, 1000);
     }
 }

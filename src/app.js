@@ -10,7 +10,6 @@ console.log("config", config);
 const chairs = [];
 const ips = config.chairs;
 
-
 /**
  * Connect to front end server.
  * Receive chair targets and send arrived status
@@ -23,7 +22,7 @@ feServer.onopen = ws => {
         const cameraServer = new WebSocket("ws://" + config.camera.host);
         cameraServer.onmessage = cameraEvent => {
             let markers = JSON.parse(cameraEvent.data);
-            console.log('> marker:', markers);
+            //console.log('> marker:', markers);
             for (let marker of [markers]) {
                 /*
                     Add recognized chairs to array.
@@ -62,7 +61,7 @@ feServer.onopen = ws => {
 const cameraServer = new WebSocket("ws://" + config.camera.host);
 cameraServer.onmessage = event => {
     let markers = JSON.parse(event.data);
-    console.log('> marker:', markers);
+    //console.log('> marker:', markers);
     for (let marker of [markers]) {
         /*
             Add recognized chairs to array.
