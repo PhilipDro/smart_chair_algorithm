@@ -61,8 +61,6 @@
     </div>
 </main>
 <aside>
-    <button class="formation-one">Formation 1</button>
-    <button class="formation-two">Formation 2</button>
     <div id="chair-pos" style="background-color: white; padding: 5px">
         <!--gets filled automatically by js-->
     </div>
@@ -70,7 +68,8 @@
 
 <script>
     //let cam = new WebSocket("ws://10.51.5.64:5678");
-    let cam = new WebSocket("ws://10.51.7.228:5678");
+    let cam = new WebSocket("ws://10.51.4.206:5678");
+    //let cam = new WebSocket("ws://10.51.7.228:5678");
     //let cam = new WebSocket("ws://10.51.7.228:5678");
     const chairs = [];
 
@@ -104,7 +103,11 @@
         $('#chair-pos').empty();
         for (let chair of chairs) {
             $('#chairs').append('<div class="chair" id="' + chair.id + '">' + chair.id + '</div>');
-            $('#' + chair.id).css({left: chair.x + "px", top: chair.y + "px"});
+            $('#' + chair.id).css({
+                left: chair.x + "px",
+                top: chair.y + "px",
+                transform: "rotate(" + chair.bearing + "deg)"
+            });
             $('#chair-pos').append("id: " + chair.id + " bearing: " + Math.round(chair.bearing));
         }
     }

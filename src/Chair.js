@@ -6,6 +6,8 @@ import Config from './Config';
 
 const config = new Config();
 
+const gridScale = 75;
+const distanceMultiplier = 1;
 
 let graph = new Graph([
     [1, 1, 1, 1, 1],
@@ -14,6 +16,7 @@ let graph = new Graph([
     [1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1],
 ]);
+
 
 const cameraServer = new WebSocket("ws://" + config.camera.host);
 
@@ -64,8 +67,8 @@ export default class Chair {
      */
     getGridPosition() {
         let {x, y} = this.getPosition();
-        x = Math.round((x / 100));
-        y = Math.round((y / 100));
+        x = Math.round((x / gridScale));
+        y = Math.round((y / gridScale));
         this.positionInGrid = graph.grid[x][y];
         return this.positionInGrid;
     }
@@ -168,8 +171,8 @@ export default class Chair {
 
             // Set wanted angle (angle to next node)
             this.getAngleBetweenPoints({
-                x: this.getNextNode() !== undefined ? ((this.getNextNode().x * 100) - this.chair.x) : null,
-                y: this.getNextNode() !== undefined ? ((this.getNextNode().y * 100) - this.chair.y) : null
+                x: this.getNextNode() !== undefined ? ((this.getNextNode().x * gridScale) - this.chair.x) : null,
+                y: this.getNextNode() !== undefined ? ((this.getNextNode().y * gridScale) - this.chair.y) : null
             });
 
             // Set distance to next grid node
@@ -179,8 +182,8 @@ export default class Chair {
             );
             console.log(`Chair ${this.chair.id} wanted angle: ${this.wantedAngle}°`);
 
-            const rotationTolerance = 10; // degrees
-            const positionTolerance = 10; // pixels
+            const rotationTolerance = 4; // degrees
+            const positionTolerance = 9; // pixels
 
 
             /*
@@ -194,7 +197,7 @@ export default class Chair {
                 right = this.wantedAngle - this.chair.bearing;
                 console.log("wa > bea");
             } else {
-                left = this.wantedAngle - this.chair.bearing
+                left = this.wantedAngle - this.chair.bearing;
                 right = 360 - this.chair.bearing - this.wantedAngle;
                 console.log("wa < bea");
             }
@@ -206,7 +209,7 @@ export default class Chair {
             else
                 rotateFor = right;
 
-            if (Math.abs(this.wantedAngle - this.chair.bearing) > rotationTolerance) {
+            if (Math.abs(rotateFor) > rotationTolerance) {
                 // Tell chair to rotate
                 this.chairSocket.send(JSON.stringify({
                     motionType: "Rotation",
@@ -226,7 +229,7 @@ export default class Chair {
                 // Tell chair to drive
                 this.chairSocket.send(JSON.stringify({
                     motionType: "Straight",
-                    value: this.nextNodeDistance
+                    value: this.nextNodeDistance * distanceMultiplier
                 }));
                 this.waitForChairAnswer();
                 console.log(`Telling chair ${this.chair.id} to move ${this.nextNodeDistance} pixels`);
@@ -236,7 +239,7 @@ export default class Chair {
                 console.log(`Chair ${this.chair.id} has arrived`);
             }
         } else {
-            console.log("Chair is busy...");
+            console.log(`Chair ${this.chair.id} has arrived 2`);
         }
     }
 
