@@ -8,7 +8,7 @@ const config = new Config();
 console.log("config", config);
 
 const chairs = [];
-const ips = config.chairs;
+const ips = config.chairIps;
 
 /**
  * Connect to front end server.
@@ -37,18 +37,27 @@ feServer.onopen = ws => {
                     }
                 }
                 if (!found) {
-                    chairs.push(new Chair(ips[marker.id], marker));
+                    let chairIpIndex = getItemIndex(marker.id, ips);
+                    chairs.push(new Chair(ips[chairIpIndex].ip, marker));
                 }
             }
 
             let message = JSON.parse(frontEndEvent.data);
             if (message.receiver === "controller") {
                 let targets = message.content; //todo: sync markers and targets array
-                for (let i = 0; i < chairs.length; i++) {
-                    chairs[i].goTo(targets[i].target);
+                for (let i = 0; i < targets.length; i++) {
+                    let chairIndex = getChairIndex(targets[i].id, chairs);
+                    if (chairIndex !== false) {
+                       /* if (checkCollision()) { //todo loop in loop in loop
+                            if (chairs[chairIndex].getId() !== checkCollision().chair.id)
+                                chairs[chairIndex].goTo(targets[i].target);
+                        } else {*/
+                            chairs[chairIndex].goTo(targets[i].target);
+                        /*}*/
+                    }
                 }
             }
-        };
+        }
     }
 };
 
@@ -76,7 +85,70 @@ cameraServer.onmessage = event => {
             }
         }
         if (!found) {
-            chairs.push(new Chair(ips[0], marker));
+            let chairIpIndex = getItemIndex(marker.id, ips);
+            console.log(ips);
+            if (chairIpIndex !== false)
+                chairs.push(new Chair(ips[chairIpIndex].ip, marker));
         }
     }
 };
+
+
+/**
+ * Helper Functions
+ * */
+
+/**
+ *
+ * @returns {Chair}
+ */
+function checkCollision() {
+    for (let chairA of chairs) {
+        for (let chairB of chairs) {
+            if (chairA.getId() !== chairB.getId()) {
+                console.log("comp chair " + chairA.getId() + " and chair " + chairB.getId() + " dist", chairA.getDistanceBetweenPoints(chairA.getPosition(), chairB.getPosition()));
+                if (90 > chairA.getDistanceBetweenPoints(chairA.getPosition(), chairB.getPosition())) {
+                    console.log("chairs are too close", chairA, chairB);
+                    return chairA;
+                } else {
+                    return false;
+                }
+            }
+        }
+    }
+}
+
+/**
+ * @param id
+ * @param array
+ * @returns {boolean|number}
+ */
+function getChairIndex(id, array) {
+    let found = false;
+    for (let i = 0; i < array.length; i++) {
+        if (parseInt(array[i].chair.id) === id) {
+            found = true;
+            return i;
+        }
+    }
+    if (!found)
+        return false;
+}
+
+
+/**
+ * @param id
+ * @param array
+ * @returns {boolean|number}
+ */
+function getItemIndex(id, array) {
+    let found = false;
+    for (let i = 0; i < array.length; i++) {
+        if (parseInt(array[i].id) === parseInt(id)) {
+            found = true;
+            return i;
+        }
+    }
+    if (!found)
+        return false;
+}

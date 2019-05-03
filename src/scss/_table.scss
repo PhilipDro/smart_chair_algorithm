@@ -3,14 +3,15 @@ table {
     top: 0;
     left: 0;
     opacity: 0.7;
+    box-sizing: border-box;
 }
 
 table tr {
-    border: 1px solid white;
-    height: 75px;
+    outline: 1px solid white;
 }
 
 table th {
-    min-width: 75px;
-    border: 1px solid white;
+    width: 100px;
+    height: 100px;
+    outline: 1px solid white;
 }

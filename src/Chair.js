@@ -6,7 +6,7 @@ import Config from './Config';
 
 const config = new Config();
 
-const gridScale = 75;
+const gridScale = 100;
 const distanceMultiplier = 1;
 
 let graph = new Graph([
@@ -22,6 +22,7 @@ const cameraServer = new WebSocket("ws://" + config.camera.host);
 
 export default class Chair {
     constructor(ip, chair, port = 1312) {
+        console.log(ip);
         this.chair = chair;
         this.chairSocket = new WebSocket('ws://' + ip + ':' + port);
 
@@ -95,7 +96,7 @@ export default class Chair {
      */
     getDistanceBetweenPoints(pointA, pointB) {
         let a = pointA.x - pointB.x;
-        let b = pointA.y / 2 - pointB.y / 2; // todo: only when rechteckiges Kamerabild
+        let b = pointA.y - pointB.y; // todo: NOT only when rechteckiges Kamerabild
 
         return Math.sqrt(a * a + b * b);
     }
@@ -123,16 +124,16 @@ export default class Chair {
      */
     getNextNode() {
         this.path = this.getPath();
-        this.nextNode = path.getNextNode(this.path);
+        this.nextNode = path.getNextNode(this.path) ? path.getNextNode(this.path) : false;
         return this.nextNode;
     }
 
     stop() {
         // Tell chair to stop
-        /*this.chairSocket.send(JSON.stringify({
+        this.chairSocket.send(JSON.stringify({
             motionType: "Stop",
             value: 0
-        }));*/
+        }));
         console.log(`Telling chair ${this.chair.id} to stop`);
     }
 
@@ -158,6 +159,9 @@ export default class Chair {
          */
         if (!this.chairStatusPending && !this.chairBusy) {
             /*
+            Update obstacles
+             */
+            /*
             Make things ready to start the
             movement process
             */
@@ -180,7 +184,7 @@ export default class Chair {
                 this.getPosition(),
                 {x: this.nextNode.x, y: this.nextNode.y}
             );
-            console.log(`Chair ${this.chair.id} wanted angle: ${this.wantedAngle}°`);
+            console.log(`Chair ${this.chair.id} wanted angle: ${this.wantedAngle}° (curr: ${this.chair.bearing}°)`);
 
             const rotationTolerance = 4; // degrees
             const positionTolerance = 9; // pixels
@@ -191,6 +195,8 @@ export default class Chair {
             is close enough to the wanted one
              */
 
+
+            //todo looks like this values are wrong some times
             let left, right, rotateFor;
             if (this.wantedAngle > this.chair.bearing) {
                 left = this.wantedAngle - this.chair.bearing - 360;
@@ -202,7 +208,8 @@ export default class Chair {
                 console.log("wa < bea");
             }
 
-            console.log(left, right);
+            let val1 = this.wantedAngle - this.chair.bearing;
+            let val2 = 360 - this.wantedAngle - this.chair.bearing;
 
             if (Math.abs(left) < Math.abs(right))
                 rotateFor = left;
@@ -239,7 +246,7 @@ export default class Chair {
                 console.log(`Chair ${this.chair.id} has arrived`);
             }
         } else {
-            console.log(`Chair ${this.chair.id} has arrived 2`);
+            //console.log(`Chair ${this.chair.id} has arrived 2`);
         }
     }
 

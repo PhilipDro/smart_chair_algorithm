@@ -10,9 +10,15 @@ export default class Config {
                 host: '10.51.4.206:5678'
                 //host: '10.51.7.228:5678'
             },
-            chairs: [
-                "10.51.5.57",
-                //"localhost"
+            chairIps: [
+                {
+                    id: 15,
+                    ip: "10.51.5.57",
+                },
+                {
+                    id: 8,
+                    ip: "localhost",
+                },
             ]
         };
     }

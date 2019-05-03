@@ -12,9 +12,13 @@
         position: absolute;
         left: 0;
         top: 0;
-        background-color: aqua;
-        width: 20px;
-        height: 20px;
+        display: flex;
+        justify-content: center;
+        background-image: url("https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/198/pouting-face_1f621.png");
+        background-size: cover;
+        background-position: center;
+        width: 40px;
+        height: 50px;
         transform: translate(-50%, -50%);
     }
 </style>
@@ -108,7 +112,7 @@
                 top: chair.y + "px",
                 transform: "rotate(" + chair.bearing + "deg)"
             });
-            $('#chair-pos').append("id: " + chair.id + " bearing: " + Math.round(chair.bearing));
+            $('#chair-pos').append("<p>id: " + chair.id + " bearing: " + Math.round(chair.bearing)+"</p>");
         }
     }
 </script>
