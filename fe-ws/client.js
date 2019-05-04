@@ -30,7 +30,7 @@ const message = {
             }
         },
         {
-            id: 6,
+            id: 8,
             target: {
                 x: 1,
                 y: 1

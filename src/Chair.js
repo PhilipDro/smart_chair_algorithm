@@ -1,8 +1,8 @@
 import Astar_api from "./astar_api";
 import {Graph} from "./astar";
+import Config from './Config';
 
 let path = new Astar_api().path();
-import Config from './Config';
 
 const config = new Config();
 
@@ -128,11 +128,11 @@ export default class Chair {
         return this.nextNode;
     }
 
-    stop() {
+    stop(value = 0) {
         // Tell chair to stop
         this.chairSocket.send(JSON.stringify({
             motionType: "Stop",
-            value: 0
+            value: value
         }));
         console.log(`Telling chair ${this.chair.id} to stop`);
     }
@@ -152,101 +152,110 @@ export default class Chair {
      * @param target
      */
     goTo(target) {
-        /*
-        Check chair state.
-        Only calculate path if chair
-        is ready
+        // Set chair target
+        this.target = target;
+        /**
+         * Check if chair has arrived
          */
-        if (!this.chairStatusPending && !this.chairBusy) {
+        console.log("comparing", this.getGridPosition(), this.target);
+        if (this.getGridPosition().x !== this.target.x || this.getGridPosition().y !== this.target.y) {
             /*
-            Update obstacles
-             */
-            /*
-            Make things ready to start the
-            movement process
+            Check chair state.
+            Only calculate path if chair
+            is ready
             */
-            // Set chair target
-            this.target = target;
-            console.log(`Chair ${this.chair.id} will go to ${this.target.x}|${this.target.y}`);
+            if (!this.chairStatusPending && !this.chairBusy) {
+                /*
+                Update obstacles
+                */
+                /*
+                Make things ready to start the
+                movement process
+                */
+                console.log(`Chair ${this.chair.id} will go to ${this.target.x}|${this.target.y}`);
 
-            // Set chair path
-            this.getPath();
-            console.log(`Chair ${this.chair.id} path: ${this.path}`);
+                // Set chair path
+                this.getPath();
+                console.log(`Chair ${this.chair.id} path: ${this.path}`);
 
-            // Set wanted angle (angle to next node)
-            this.getAngleBetweenPoints({
-                x: this.getNextNode() !== undefined ? ((this.getNextNode().x * gridScale) - this.chair.x) : null,
-                y: this.getNextNode() !== undefined ? ((this.getNextNode().y * gridScale) - this.chair.y) : null
-            });
+                // Set wanted angle (angle to next node)
+                this.getAngleBetweenPoints({
+                    x: this.getNextNode() !== undefined ? ((this.getNextNode().x * gridScale) - this.chair.x) : null,
+                    y: this.getNextNode() !== undefined ? ((this.getNextNode().y * gridScale) - this.chair.y) : null
+                });
 
-            // Set distance to next grid node
-            this.nextNodeDistance = this.getDistanceBetweenPoints(
-                this.getPosition(),
-                {x: this.nextNode.x, y: this.nextNode.y}
-            );
-            console.log(`Chair ${this.chair.id} wanted angle: ${this.wantedAngle}° (curr: ${this.chair.bearing}°)`);
+                // Set distance to next grid node
+                this.nextNodeDistance = this.getDistanceBetweenPoints(
+                    this.getPosition(),
+                    {x: this.nextNode.x, y: this.nextNode.y}
+                );
+                console.log(`Chair ${this.chair.id} wanted angle: ${this.wantedAngle}° (curr: ${this.chair.bearing}°)`);
 
-            const rotationTolerance = 4; // degrees
-            const positionTolerance = 9; // pixels
-
-
-            /*
-            Check if the current rotation angle
-            is close enough to the wanted one
-             */
-
-
-            //todo looks like this values are wrong some times
-            let left, right, rotateFor;
-            if (this.wantedAngle > this.chair.bearing) {
-                left = this.wantedAngle - this.chair.bearing - 360;
-                right = this.wantedAngle - this.chair.bearing;
-                console.log("wa > bea");
-            } else {
-                left = this.wantedAngle - this.chair.bearing;
-                right = 360 - this.chair.bearing - this.wantedAngle;
-                console.log("wa < bea");
-            }
-
-            let val1 = this.wantedAngle - this.chair.bearing;
-            let val2 = 360 - this.wantedAngle - this.chair.bearing;
-
-            if (Math.abs(left) < Math.abs(right))
-                rotateFor = left;
-            else
-                rotateFor = right;
-
-            if (Math.abs(rotateFor) > rotationTolerance) {
-                // Tell chair to rotate
-                this.chairSocket.send(JSON.stringify({
-                    motionType: "Rotation",
-                    value: rotateFor
-                }));
-                this.waitForChairAnswer();
-                console.log(`Telling chair ${this.chair.id} to rotate ${rotateFor}°`);
-            }
+                const rotationTolerance = 4; // degrees
+                const positionTolerance = 9; // pixels
 
 
-
-            /*
-            Check if the current position is
-            close enough to the next node
-             */
-            else if (this.nextNodeDistance > positionTolerance) {
-                // Tell chair to drive
-                this.chairSocket.send(JSON.stringify({
-                    motionType: "Straight",
-                    value: this.nextNodeDistance * distanceMultiplier
-                }));
-                this.waitForChairAnswer();
-                console.log(`Telling chair ${this.chair.id} to move ${this.nextNodeDistance} pixels`);
+                /*
+                Check if the current rotation angle
+                is close enough to the wanted one
+                */
 
 
-            } else {
-                console.log(`Chair ${this.chair.id} has arrived`);
+                //todo looks like this values are wrong some times
+                // let left, right, rotateFor;
+                // if (this.wantedAngle > this.chair.bearing) {
+                //     left = this.wantedAngle - this.chair.bearing - 360;
+                //     right = this.wantedAngle - this.chair.bearing;
+                //     console.log("wa > bea");
+                // } else {
+                //     left = this.wantedAngle - this.chair.bearing;
+                //     right = 360 - this.chair.bearing - this.wantedAngle;
+                //     console.log("wa < bea");
+                // }
+
+                // let val1 = this.wantedAngle - this.chair.bearing;
+                // let val2 = 360 - this.wantedAngle - this.chair.bearing;
+
+                // if (Math.abs(left) < Math.abs(right))
+                //     rotateFor = left;
+                // else
+                //     rotateFor = right;
+                let rotateFor = this.wantedAngle - this.chair.bearing;
+
+                if (Math.abs(rotateFor) > rotationTolerance) {
+                    // Tell chair to rotate
+                    this.chairSocket.send(JSON.stringify({
+                        motionType: "Rotation",
+                        value: rotateFor
+                    }));
+                    this.waitForChairAnswer();
+                    console.log(`Telling chair ${this.chair.id} to rotate ${rotateFor}°`);
+                }
+
+
+
+                /*
+                Check if the current position is
+                close enough to the next node
+                */
+                else if (this.nextNodeDistance > positionTolerance) {
+                    // Tell chair to drive
+                    this.chairSocket.send(JSON.stringify({
+                        motionType: "Straight",
+                        value: this.nextNodeDistance * distanceMultiplier
+                    }));
+                    this.waitForChairAnswer();
+                    console.log(`Telling chair ${this.chair.id} to move ${this.nextNodeDistance} pixels`);
+                } else {
+                    console.log(`Chair ${this.chair.id} has arrived at grid node`);
+                }
             }
         } else {
-            //console.log(`Chair ${this.chair.id} has arrived 2`);
+            /**
+             * Chair has arrived
+             */
+            console.log(`Chair ${this.chair.id} has arrived at final position`);
+            this.stop(1);
         }
     }
 

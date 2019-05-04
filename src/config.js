@@ -17,7 +17,7 @@ export default class Config {
                 },
                 {
                     id: 8,
-                    ip: "localhost",
+                    ip: "10.51.4.207",
                 },
             ]
         };
