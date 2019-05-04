@@ -2,30 +2,30 @@ import Astar_api from "./astar_api";
 import {Graph} from "./astar";
 import Config from './Config';
 
-let path = new Astar_api().path();
+let path = new Astar_api();
 
 const config = new Config();
 
 const gridScale = 100;
 const distanceMultiplier = 1;
 
-let graph = new Graph([
+/*let graph = new Graph([
     [1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1],
     [1, 1, 1, 1, 1],
-]);
+]);*/
 
 
 const cameraServer = new WebSocket("ws://" + config.camera.host);
 
 export default class Chair {
-    constructor(ip, chair, port = 1312) {
+    constructor(ip, chair, graph) {
         console.log(ip);
         this.chair = chair;
-        this.chairSocket = new WebSocket('ws://' + ip + ':' + port);
-
+        this.chairSocket = new WebSocket(`ws://${ip}:1312`);
+        this.graph = graph;
         // Start listening for chair
         // state changes
         this.getChairState();
@@ -34,7 +34,7 @@ export default class Chair {
             //let pos = JSON.parse(message.data)[0];
             let pos = JSON.parse(message.data);
             this.setPosition(pos);
-        }
+        };
 
         this.chairStatusPending = false;
 
@@ -60,8 +60,8 @@ export default class Chair {
         this.chair.x = position.x;
         this.chair.y = position.y;
         this.chair.bearing = position.bearing;
-        path.setObstacle(this.getGridPosition());
-        console.log(graph.grid);
+        //path.setObstacle(this.getGridPosition());
+        //console.log(this.graph.grid);
     }
 
     /**
@@ -72,7 +72,7 @@ export default class Chair {
         let {x, y} = this.getPosition();
         x = Math.round((x / gridScale));
         y = Math.round((y / gridScale));
-        this.positionInGrid = graph.grid[x][y];
+        this.positionInGrid = this.graph.grid[x][y];
         return this.positionInGrid;
     }
 
@@ -108,7 +108,7 @@ export default class Chair {
      * @returns {*}
      */
     getPath() {
-        this.path = path.findPath(graph, this.getGridPosition(), graph.grid[this.target.x][this.target.y]);
+        this.path = path.findPath(this.graph, this.getGridPosition(), this.graph.grid[this.target.x][this.target.y]);
         return this.path;
     }
 

@@ -1,11 +1,18 @@
-//import Simulation from './Simulation_for_chairs';
 import Chair from './Chair';
-import {astar, Graph} from './astar';
 import Config from './Config';
 import './app.scss';
+import {Graph} from "./astar";
 
 const config = new Config();
 console.log("config", config);
+
+let graph = new Graph([
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+]);
 
 const chairs = [];
 const ips = config.chairIps;
@@ -26,7 +33,7 @@ feServer.onopen = ws => {
             for (let marker of [markers]) {
                 /*
                     Add recognized chairs to array.
-                    If already  stored, update positions.
+                    If already stored, update positions.
                  */
                 let found = false;
                 for (let i = 0; i < chairs.length; i++) {
@@ -38,7 +45,8 @@ feServer.onopen = ws => {
                 }
                 if (!found) {
                     let chairIpIndex = getItemIndex(marker.id, ips);
-                    chairs.push(new Chair(ips[chairIpIndex].ip, marker));
+                    chairs.push(new Chair(ips[chairIpIndex].ip, marker, graph));
+                    console.log("created chair oben");
                 }
             }
 
@@ -87,9 +95,31 @@ cameraServer.onmessage = event => {
         if (!found) {
             let chairIpIndex = getItemIndex(marker.id, ips);
             console.log(ips);
-            if (chairIpIndex !== false)
-                chairs.push(new Chair(ips[chairIpIndex].ip, marker));
+            if (chairIpIndex !== false) {
+                chairs.push(new Chair(ips[chairIpIndex].ip, marker, graph));
+                console.log("created chair unten");
+            }
         }
+        //console.log(graph);
+        /**
+         * Update obstacle positions and graph
+         */
+        /*removeAllObstacles();
+        for (let chair of chairs) {
+            graph = changeNodeWeight(chair.getGridPosition());
+        }
+
+        if (graph.grid[2][3].weight !== 0){
+            console.log("grid node is not 0");
+        } else {
+            console.log("!!grid node is 0");
+        }
+        /**
+         * Update graph property in every chair
+         */
+        /*for (let chair of chairs) {
+            chair.graph = graph;
+        }*/
     }
 };
 
@@ -151,4 +181,25 @@ function getItemIndex(id, array) {
     }
     if (!found)
         return false;
+}
+
+/**
+ *
+ * @param node
+ * @param weight
+ * @returns {number}
+ */
+function changeNodeWeight(node, weight = 0) {
+    graph.grid[node.y][node.x].weight = 0;
+    return graph;
+}
+
+function removeAllObstacles() {
+    // console.log('removed all');
+    graph.grid.forEach(function (element) {
+        element.forEach(function (elem) {
+            elem.weight = 1;
+        });
+    });
+    return graph;
 }
