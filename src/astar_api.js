@@ -9,6 +9,10 @@ export default class Astar_api {
 
         return {
             findPath(graph, start, end) {
+                console.log("graph", graph);
+                console.log("start", start);
+                console.log("end", end);
+                console.log("astar search", astar.search(graph, start, end));
                 return astar.search(graph, start, end);
             },
             getNextNode(path) {

@@ -48,11 +48,11 @@ feServer.onopen = ws => {
                 for (let i = 0; i < targets.length; i++) {
                     let chairIndex = getChairIndex(targets[i].id, chairs);
                     if (chairIndex !== false) {
-                       /* if (checkCollision()) { //todo loop in loop in loop
-                            if (chairs[chairIndex].getId() !== checkCollision().chair.id)
-                                chairs[chairIndex].goTo(targets[i].target);
-                        } else {*/
-                            chairs[chairIndex].goTo(targets[i].target);
+                        /* if (checkCollision()) { //todo loop in loop in loop
+                             if (chairs[chairIndex].getId() !== checkCollision().chair.id)
+                                 chairs[chairIndex].goTo(targets[i].target);
+                         } else {*/
+                        chairs[chairIndex].goTo(targets[i].target);
                         /*}*/
                     }
                 }

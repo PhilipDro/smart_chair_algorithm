@@ -60,6 +60,8 @@ export default class Chair {
         this.chair.x = position.x;
         this.chair.y = position.y;
         this.chair.bearing = position.bearing;
+        path.setObstacle(this.getGridPosition());
+        console.log(graph.grid);
     }
 
     /**
@@ -157,7 +159,7 @@ export default class Chair {
         /**
          * Check if chair has arrived
          */
-        console.log("comparing", this.getGridPosition(), this.target);
+        //console.log("comparing", this.getGridPosition(), this.target);
         if (this.getGridPosition().x !== this.target.x || this.getGridPosition().y !== this.target.y) {
             /*
             Check chair state.
@@ -231,8 +233,6 @@ export default class Chair {
                     this.waitForChairAnswer();
                     console.log(`Telling chair ${this.chair.id} to rotate ${rotateFor}°`);
                 }
-
-
 
                 /*
                 Check if the current position is
