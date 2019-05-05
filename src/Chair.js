@@ -198,32 +198,33 @@ export default class Chair {
 
 
                 /*
-                Check if the current rotation angle
-                is close enough to the wanted one
+                //todo looks like this values are wrong some times
+                let left, right, rotateFor;
+                 if (this.wantedAngle > this.chair.bearing) {
+                     left = this.wantedAngle - this.chair.bearing - 360;
+                     right = this.wantedAngle - this.chair.bearing;
+                     console.log("wa > bea");
+                 } else {
+                     left = this.wantedAngle - this.chair.bearing;
+                     right = 360 - this.chair.bearing - this.wantedAngle;
+                     console.log("wa < bea");
+                 }
+
+                 let val1 = this.wantedAngle - this.chair.bearing;
+                 let val2 = 360 - this.wantedAngle - this.chair.bearing;
+
+                 if (Math.abs(left) < Math.abs(right))
+                     rotateFor = left;
+                 else
+                     rotateFor = right;
                 */
 
 
-                //todo looks like this values are wrong some times
-                // let left, right, rotateFor;
-                // if (this.wantedAngle > this.chair.bearing) {
-                //     left = this.wantedAngle - this.chair.bearing - 360;
-                //     right = this.wantedAngle - this.chair.bearing;
-                //     console.log("wa > bea");
-                // } else {
-                //     left = this.wantedAngle - this.chair.bearing;
-                //     right = 360 - this.chair.bearing - this.wantedAngle;
-                //     console.log("wa < bea");
-                // }
-
-                // let val1 = this.wantedAngle - this.chair.bearing;
-                // let val2 = 360 - this.wantedAngle - this.chair.bearing;
-
-                // if (Math.abs(left) < Math.abs(right))
-                //     rotateFor = left;
-                // else
-                //     rotateFor = right;
-                let rotateFor = this.wantedAngle - this.chair.bearing;
-
+                /**
+                 * Check if the current rotation angle
+                 * is close enough to the wanted one
+                 */
+                let rotateFor = (this.wantedAngle - this.chair.bearing + 540) % 360 - 180;
                 if (Math.abs(rotateFor) > rotationTolerance) {
                     // Tell chair to rotate
                     this.chairSocket.send(JSON.stringify({
