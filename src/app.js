@@ -1,18 +1,12 @@
 import Chair from './Chair';
 import Config from './Config';
 import './app.scss';
-import {Graph} from "./astar";
+import Astar_api from "./astar_api";
+
+const astarApi = new Astar_api();
 
 const config = new Config();
 console.log("config", config);
-
-let graph = new Graph([
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-]);
 
 const chairs = [];
 const ips = config.chairIps;
@@ -28,27 +22,35 @@ feServer.onopen = ws => {
     feServer.onmessage = frontEndEvent => {
         const cameraServer = new WebSocket("ws://" + config.camera.host);
         cameraServer.onmessage = cameraEvent => {
-            let markers = JSON.parse(cameraEvent.data);
+            let marker = JSON.parse(cameraEvent.data);
             //console.log('> marker:', markers);
-            for (let marker of [markers]) {
-                /*
-                    Add recognized chairs to array.
-                    If already stored, update positions.
-                 */
-                let found = false;
-                for (let i = 0; i < chairs.length; i++) {
-                    if (chairs[i].getId() === marker.id) {
-                        chairs[i].setPosition({x: marker.x, y: marker.y, bearing: marker.bearing});
-                        found = true;
-                        break;
-                    }
-                }
-                if (!found) {
-                    let chairIpIndex = getItemIndex(marker.id, ips);
-                    chairs.push(new Chair(ips[chairIpIndex].ip, marker, graph));
-                    console.log("created chair oben");
+            /*
+                Add recognized chairs to array.
+                If already stored, update positions.
+             */
+            let found = false;
+            for (let i = 0; i < chairs.length; i++) {
+                if (chairs[i].getId() === marker.id) {
+                    chairs[i].setPosition({x: marker.x, y: marker.y, bearing: marker.bearing});
+                    found = true;
+                    break;
                 }
             }
+            if (!found) {
+                let chairIpIndex = getItemIndex(marker.id, ips);
+                chairs.push(new Chair(ips[chairIpIndex].ip, marker));
+                console.log("created chair oben");
+            }
+            /**
+             * Update obstacle positions and graph
+             */
+            astarApi.removeAllObstacles();
+            for (let chair of chairs) {
+                astarApi.setObstacle(chair.getGridPosition());
+                /* if (chair.target !== undefined && chair.getPath() !== undefined)
+                     astarApi.setObstacle(chair.getNextNode());*/
+            }
+            console.debug("current graph situation", astarApi.getGraph().grid);
 
             let message = JSON.parse(frontEndEvent.data);
             if (message.receiver === "controller") {
@@ -56,12 +58,7 @@ feServer.onopen = ws => {
                 for (let i = 0; i < targets.length; i++) {
                     let chairIndex = getChairIndex(targets[i].id, chairs);
                     if (chairIndex !== false) {
-                        /* if (checkCollision()) { //todo loop in loop in loop
-                             if (chairs[chairIndex].getId() !== checkCollision().chair.id)
-                                 chairs[chairIndex].goTo(targets[i].target);
-                         } else {*/
                         chairs[chairIndex].goTo(targets[i].target);
-                        /*}*/
                     }
                 }
             }
@@ -77,56 +74,43 @@ feServer.onopen = ws => {
  */
 const cameraServer = new WebSocket("ws://" + config.camera.host);
 cameraServer.onmessage = event => {
-    let markers = JSON.parse(event.data);
-    //console.log('> marker:', markers);
-    for (let marker of [markers]) {
-        /*
-            Add recognized chairs to array.
-            If already stored, update positions.
-         */
-        let found = false;
-        for (let i = 0; i < chairs.length; i++) {
-            if (chairs[i].getId() === marker.id) {
-                chairs[i].setPosition({x: marker.x, y: marker.y, bearing: marker.bearing});
-                found = true;
-                break;
-            }
+    let marker = JSON.parse(event.data);
+    /*
+        Add recognized chairs to array.
+        If already stored, update positions.
+     */
+    let found = false;
+    for (let i = 0; i < chairs.length; i++) {
+        if (chairs[i].getId() === marker.id) {
+            chairs[i].setPosition({x: marker.x, y: marker.y, bearing: marker.bearing});
+            found = true;
+            break;
         }
-        if (!found) {
-            let chairIpIndex = getItemIndex(marker.id, ips);
-            console.log(ips);
-            if (chairIpIndex !== false) {
-                chairs.push(new Chair(ips[chairIpIndex].ip, marker, graph));
-                console.log("created chair unten");
-            }
-        }
-        //console.log(graph);
-        /**
-         * Update obstacle positions and graph
-         */
-        /*removeAllObstacles();
-        for (let chair of chairs) {
-            graph = changeNodeWeight(chair.getGridPosition());
-        }
-
-        if (graph.grid[2][3].weight !== 0){
-            console.log("grid node is not 0");
-        } else {
-            console.log("!!grid node is 0");
-        }
-        /**
-         * Update graph property in every chair
-         */
-        /*for (let chair of chairs) {
-            chair.graph = graph;
-        }*/
     }
+    if (!found) {
+        let chairIpIndex = getItemIndex(marker.id, ips);
+        console.log(ips);
+        if (chairIpIndex !== false) {
+            chairs.push(new Chair(ips[chairIpIndex].ip, marker));
+            console.log("created chair unten");
+        }
+    }
+    /**
+     * Update obstacle positions and graph
+     */
+    astarApi.removeAllObstacles();
+    for (let chair of chairs) {
+        astarApi.setObstacle(chair.getGridPosition());
+        /* if (chair.target !== undefined && chair.getPath() !== undefined)
+             astarApi.setObstacle(chair.getNextNode());*/
+    }
+    console.debug("current graph situation", astarApi.getGraph().grid);
 };
 
 
-/**
- * Helper Functions
- * */
+/**                **
+ * Helper Functions *
+ *                  */
 
 /**
  *
@@ -165,7 +149,6 @@ function getChairIndex(id, array) {
         return false;
 }
 
-
 /**
  * @param id
  * @param array
@@ -181,25 +164,4 @@ function getItemIndex(id, array) {
     }
     if (!found)
         return false;
-}
-
-/**
- *
- * @param node
- * @param weight
- * @returns {number}
- */
-function changeNodeWeight(node, weight = 0) {
-    graph.grid[node.y][node.x].weight = 0;
-    return graph;
-}
-
-function removeAllObstacles() {
-    // console.log('removed all');
-    graph.grid.forEach(function (element) {
-        element.forEach(function (elem) {
-            elem.weight = 1;
-        });
-    });
-    return graph;
 }

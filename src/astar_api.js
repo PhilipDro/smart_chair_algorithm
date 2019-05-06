@@ -1,15 +1,24 @@
 import {astar} from "./astar";
-import Visualisation from "./_Visualisation";
+import {Graph} from "./astar";
 
-let visualisation = new Visualisation();
+let graph = new Graph([
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+]);
 
 export default class Astar_api {
     findPath(graph, start, end) {
         console.log("graph", graph);
         console.log("start", start);
         console.log("end", end);
-        console.log("astar search", astar.search(graph, start, end));
-        return astar.search(graph, start, end);
+        let path = astar.search(graph, start, end);
+        console.log("astar search", path);
+        if (path === [])
+            console.error("astar search returned empty array (maybe target node is occupied?)");
+        return path;
     }
 
     getNextNode(path) {
@@ -17,27 +26,22 @@ export default class Astar_api {
     }
 
     getLastNode(path) {
-        return
+        return;
     }
 
     setObstacle(node) {
-        // console.log('obstacle set');
-        node.weight = 0;
-        //visualisation.addObstacle({x: node.x, y: node.y});
+        graph.grid[node.x][node.y].weight = 0;
     }
 
     removeObstacle(node) {
-        // console.log('obstacle removed');
-        node.weight = 1;
-        //visualisation.removeObstacle({x: node.x, y: node.y});
+        graph.grid[node.x][node.y].weight = 1;
     }
 
-    removeAllObstacles(graph) {
+    removeAllObstacles() {
         // console.log('removed all');
         graph.grid.forEach(function (element) {
             element.forEach(function (elem) {
                 elem.weight = 1;
-                //visualisation.removeObstacle({x: elem.x, y: elem.y});
             });
         });
     }
@@ -52,6 +56,10 @@ export default class Astar_api {
 
     convertPathToPx(path) {
         return path.map(node => this.convertNodeToPx(node));
+    }
+
+    getGraph() {
+        return graph;
     }
 }
 

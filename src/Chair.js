@@ -1,31 +1,21 @@
 import Astar_api from "./astar_api";
-import {Graph} from "./astar";
 import Config from './Config';
 
-let path = new Astar_api();
+let astarApi = new Astar_api();
 
 const config = new Config();
 
 const gridScale = 100;
 const distanceMultiplier = 1;
 
-/*let graph = new Graph([
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-]);*/
-
 
 const cameraServer = new WebSocket("ws://" + config.camera.host);
 
 export default class Chair {
-    constructor(ip, chair, graph) {
+    constructor(ip, chair) {
         console.log(ip);
         this.chair = chair;
         this.chairSocket = new WebSocket(`ws://${ip}:1312`);
-        this.graph = graph;
         // Start listening for chair
         // state changes
         this.getChairState();
@@ -37,7 +27,7 @@ export default class Chair {
         };
 
         this.chairStatusPending = false;
-
+        this.isArrived = false;
     }
 
     /**
@@ -60,8 +50,7 @@ export default class Chair {
         this.chair.x = position.x;
         this.chair.y = position.y;
         this.chair.bearing = position.bearing;
-        //path.setObstacle(this.getGridPosition());
-        //console.log(this.graph.grid);
+        //astarApi.setObstacle(this.getGridPosition());
     }
 
     /**
@@ -72,7 +61,7 @@ export default class Chair {
         let {x, y} = this.getPosition();
         x = Math.round((x / gridScale));
         y = Math.round((y / gridScale));
-        this.positionInGrid = this.graph.grid[x][y];
+        this.positionInGrid = astarApi.getGraph().grid[x][y];
         return this.positionInGrid;
     }
 
@@ -98,7 +87,7 @@ export default class Chair {
      */
     getDistanceBetweenPoints(pointA, pointB) {
         let a = pointA.x - pointB.x;
-        let b = pointA.y - pointB.y; // todo: NOT only when rechteckiges Kamerabild
+        let b = pointA.y - pointB.y; // todo: check if distance is correct
 
         return Math.sqrt(a * a + b * b);
     }
@@ -108,7 +97,7 @@ export default class Chair {
      * @returns {*}
      */
     getPath() {
-        this.path = path.findPath(this.graph, this.getGridPosition(), this.graph.grid[this.target.x][this.target.y]);
+        this.path = astarApi.findPath(astarApi.getGraph(), this.getGridPosition(), astarApi.getGraph().grid[this.target.x][this.target.y]);
         return this.path;
     }
 
@@ -126,7 +115,7 @@ export default class Chair {
      */
     getNextNode() {
         this.path = this.getPath();
-        this.nextNode = path.getNextNode(this.path) ? path.getNextNode(this.path) : false;
+        this.nextNode = astarApi.getNextNode(this.path) ? astarApi.getNextNode(this.path) : false;
         return this.nextNode;
     }
 
@@ -136,7 +125,7 @@ export default class Chair {
             motionType: "Stop",
             value: value
         }));
-        console.log(`Telling chair ${this.chair.id} to stop`);
+        console.log(`📩 Telling chair ${this.chair.id} to stop`);
     }
 
     getChairState() {
@@ -154,109 +143,110 @@ export default class Chair {
      * @param target
      */
     goTo(target) {
-        // Set chair target
-        this.target = target;
-        /**
-         * Check if chair has arrived
-         */
-        //console.log("comparing", this.getGridPosition(), this.target);
-        if (this.getGridPosition().x !== this.target.x || this.getGridPosition().y !== this.target.y) {
-            /*
-            Check chair state.
-            Only calculate path if chair
-            is ready
-            */
-            if (!this.chairStatusPending && !this.chairBusy) {
-                /*
-                Update obstacles
-                */
-                /*
-                Make things ready to start the
-                movement process
-                */
-                console.log(`Chair ${this.chair.id} will go to ${this.target.x}|${this.target.y}`);
-
-                // Set chair path
-                this.getPath();
-                console.log(`Chair ${this.chair.id} path: ${this.path}`);
-
-                // Set wanted angle (angle to next node)
-                this.getAngleBetweenPoints({
-                    x: this.getNextNode() !== undefined ? ((this.getNextNode().x * gridScale) - this.chair.x) : null,
-                    y: this.getNextNode() !== undefined ? ((this.getNextNode().y * gridScale) - this.chair.y) : null
-                });
-
-                // Set distance to next grid node
-                this.nextNodeDistance = this.getDistanceBetweenPoints(
-                    this.getPosition(),
-                    {x: this.nextNode.x, y: this.nextNode.y}
-                );
-                console.log(`Chair ${this.chair.id} wanted angle: ${this.wantedAngle}° (curr: ${this.chair.bearing}°)`);
-
-                const rotationTolerance = 4; // degrees
-                const positionTolerance = 9; // pixels
-
-
-                /*
-                //todo looks like this values are wrong some times
-                let left, right, rotateFor;
-                 if (this.wantedAngle > this.chair.bearing) {
-                     left = this.wantedAngle - this.chair.bearing - 360;
-                     right = this.wantedAngle - this.chair.bearing;
-                     console.log("wa > bea");
-                 } else {
-                     left = this.wantedAngle - this.chair.bearing;
-                     right = 360 - this.chair.bearing - this.wantedAngle;
-                     console.log("wa < bea");
-                 }
-
-                 let val1 = this.wantedAngle - this.chair.bearing;
-                 let val2 = 360 - this.wantedAngle - this.chair.bearing;
-
-                 if (Math.abs(left) < Math.abs(right))
-                     rotateFor = left;
-                 else
-                     rotateFor = right;
-                */
-
-
-                /**
-                 * Check if the current rotation angle
-                 * is close enough to the wanted one
-                 */
-                let rotateFor = (this.wantedAngle - this.chair.bearing + 540) % 360 - 180;
-                if (Math.abs(rotateFor) > rotationTolerance) {
-                    // Tell chair to rotate
-                    this.chairSocket.send(JSON.stringify({
-                        motionType: "Rotation",
-                        value: rotateFor
-                    }));
-                    this.waitForChairAnswer();
-                    console.log(`Telling chair ${this.chair.id} to rotate ${rotateFor}°`);
-                }
-
-                /*
-                Check if the current position is
-                close enough to the next node
-                */
-                else if (this.nextNodeDistance > positionTolerance) {
-                    // Tell chair to drive
-                    this.chairSocket.send(JSON.stringify({
-                        motionType: "Straight",
-                        value: this.nextNodeDistance * distanceMultiplier
-                    }));
-                    this.waitForChairAnswer();
-                    console.log(`Telling chair ${this.chair.id} to move ${this.nextNodeDistance} pixels`);
-                } else {
-                    console.log(`Chair ${this.chair.id} has arrived at grid node`);
-                }
-            }
-        } else {
+        if (!this.isArrived) {
+            // Set chair target
+            this.target = target;
             /**
-             * Chair has arrived
+             * Check if chair has arrived
              */
-            console.log(`Chair ${this.chair.id} has arrived at final position`);
-            this.stop(1);
+            //console.log("comparing", this.getGridPosition(), this.target);
+            if (this.getGridPosition().x !== this.target.x || this.getGridPosition().y !== this.target.y) {
+                /*
+                Check chair state.
+                Only calculate path if chair
+                is ready
+                */
+                if (!this.chairStatusPending && !this.chairBusy) {
+                    /*
+                    Update obstacles
+                    */
+                    /*
+                    Make things ready to start the
+                    movement process
+                    */
+                    console.log(`Chair ${this.chair.id} will go to ${this.target.x}|${this.target.y}`);
+
+                    // Set chair path
+                    this.getPath();
+                    console.log(`Chair ${this.chair.id} path: ${this.path}`);
+
+                    // Set wanted angle (angle to next node)
+                    this.getAngleBetweenPoints({
+                        x: this.getNextNode() !== undefined ? ((this.getNextNode().x * gridScale) - this.chair.x) : null,
+                        y: this.getNextNode() !== undefined ? ((this.getNextNode().y * gridScale) - this.chair.y) : null
+                    });
+
+                    // Set distance to next grid node
+                    this.nextNodeDistance = this.getDistanceBetweenPoints(
+                        this.getPosition(),
+                        {x: this.nextNode.x, y: this.nextNode.y}
+                    );
+                    console.log(`Chair ${this.chair.id} wanted angle: ${this.wantedAngle}° (curr: ${this.chair.bearing}°)`);
+
+                    const rotationTolerance = 4; // degrees
+                    const positionTolerance = 9; // pixels
+
+
+                    /*
+                    //todo looks like this values are wrong some times
+                    let left, right, rotateFor;
+                     if (this.wantedAngle > this.chair.bearing) {
+                         left = this.wantedAngle - this.chair.bearing - 360;
+                         right = this.wantedAngle - this.chair.bearing;
+                         console.log("wa > bea");
+                     } else {
+                         left = this.wantedAngle - this.chair.bearing;
+                         right = 360 - this.chair.bearing - this.wantedAngle;
+                         console.log("wa < bea");
+                     }
+
+                     let val1 = this.wantedAngle - this.chair.bearing;
+                     let val2 = 360 - this.wantedAngle - this.chair.bearing;
+
+                     if (Math.abs(left) < Math.abs(right))
+                         rotateFor = left;
+                     else
+                         rotateFor = right;
+                    */
+                    /**
+                     * Check if the current rotation angle
+                     * is close enough to the wanted one
+                     */
+                    let rotateFor = (this.wantedAngle - this.chair.bearing + 540) % 360 - 180;
+                    if (Math.abs(rotateFor) > rotationTolerance) {
+                        // Tell chair to rotate
+                        this.chairSocket.send(JSON.stringify({
+                            motionType: "Rotation",
+                            value: rotateFor
+                        }));
+                        this.waitForChairAnswer();
+                        console.log(`📩 Telling chair ${this.chair.id} to rotate ${rotateFor}°`);
+                    }
+
+                    /*
+                    Check if the current position is
+                    close enough to the next node
+                    */
+                    else if (this.nextNodeDistance > positionTolerance) {
+                        // Tell chair to drive
+                        this.chairSocket.send(JSON.stringify({
+                            motionType: "Straight",
+                            value: this.nextNodeDistance * distanceMultiplier
+                        }));
+                        this.waitForChairAnswer();
+                        console.log(`📩 Telling chair ${this.chair.id} to move ${this.nextNodeDistance} pixels`);
+                    } else {
+                        console.log(`Chair ${this.chair.id} has arrived at grid node`);
+                    }
+                }
+            } else {
+                /**
+                 * Chair has arrived
+                 */
+                console.log(`🥳 Chair ${this.chair.id} has arrived at final position`);
+                this.stop(1);
+                this.isArrived = true;
+            }
         }
     }
 
@@ -265,6 +255,6 @@ export default class Chair {
         let self = this;
         setTimeout(function () {
             self.chairStatusPending = false;
-        }, 1000);
+        }, 200);
     }
 }
