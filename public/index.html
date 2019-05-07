@@ -4,64 +4,50 @@
     <meta charset="UTF-8">
     <title>Simulation</title>
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-
 </head>
 <body>
-<style>
-    .chair {
-        position: absolute;
-        left: 0;
-        top: 0;
-        display: flex;
-        justify-content: center;
-        background-image: url("https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/198/pouting-face_1f621.png");
-        background-size: cover;
-        background-position: center;
-        width: 40px;
-        height: 50px;
-        transform: translate(-50%, -50%);
-    }
-</style>
-<main class="simulation">
-    <table class="grid" cellspacing="0">
-        <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tr>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-    </table>
+<main>
+    <div class="table-container">
+        <table class="grid" cellspacing="0">
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+            <tr>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </tr>
+        </table>
 
-    <div id="chairs">
+        <div id="chairs">
+        </div>
     </div>
 </main>
 <aside>
@@ -112,7 +98,7 @@
                 top: chair.y + "px",
                 transform: "rotate(" + chair.bearing + "deg)"
             });
-            $('#chair-pos').append("<p>id: " + chair.id + " bearing: " + Math.round(chair.bearing)+"</p>");
+            $('#chair-pos').append("<p>id: " + chair.id + " bearing: " + Math.round(chair.bearing) + "</p>");
         }
     }
 </script>

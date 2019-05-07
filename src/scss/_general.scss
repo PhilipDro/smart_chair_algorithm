@@ -3,7 +3,7 @@
     padding: 0;
 }
 body {
-    background: $black;
+    background: #1a1a1a;
     font-family: 'Avenir', sans-serif;
 }
 
@@ -13,12 +13,25 @@ main {
     height: 80vh;
 }
 
-.simulation {
-    position: relative;
+aside{
+    position: absolute;
+    right: 20px;
+    top: 20px;
 }
 
-.title {
-    color: $white;
-    margin-bottom: 10px;
-    font-size: 2em;
+.chair {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    /*background-image: url("https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/240/apple/198/white-smiling-face_263a.png");
+    background-size: cover;
+    background-position: center;
+    width: 50px;
+    height: 50px;
+    transform: translate(-50%, -50%);*/
+    width: 1px;
+    height: 1px;
+    background-color: #00ff00;
 }

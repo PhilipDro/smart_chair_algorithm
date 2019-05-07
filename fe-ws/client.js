@@ -25,8 +25,8 @@ const message = {
         {
             id: 15,
             target: {
-                x: 4,
-                y: 4
+                x: 1,
+                y: 1
             }
         },
         {
@@ -52,7 +52,6 @@ const message = {
         },
     ]
 };
-
 
 
 function askForInput() {
