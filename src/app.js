@@ -13,6 +13,7 @@ const cameraServer = new WebSocket("ws://" + config.camera.host);
 
 const chairs = [];
 const ips = config.chairIps;
+let gotTargets = false;
 
 /**
  * Connect to front end server.
@@ -23,6 +24,7 @@ feServer.onopen = ws => {
     console.log("✅ 📱 🔗 Front-end server connected");
 };
 feServer.onmessage = frontEndEvent => {
+    gotTargets = true;
     cameraServer.onmessage = cameraEvent => {
         let marker = JSON.parse(cameraEvent.data);
         //console.log('> marker:', markers);
@@ -48,7 +50,7 @@ feServer.onmessage = frontEndEvent => {
             for (let i = 0; i < targets.length; i++) {
                 let chairIndex = getChairIndex(targets[i].id, chairs);
                 if (chairIndex !== false) {
-                    checkCollision();
+                    //checkCollision();
                     chairs[chairIndex].goTo(targets[i].target);
                 }
             }
@@ -66,22 +68,24 @@ cameraServer.onopen = ws => {
     console.log("✅ 📸 🔗 Camera server connected");
 };
 cameraServer.onmessage = event => {
-    let marker = JSON.parse(event.data);
-    /*
-        Add recognized chairs to array.
-        If already stored, update positions.
-     */
-    registerChair(marker);
-    /**
-     * Update obstacle positions and graph
-     */
-    astarApi.removeAllObstacles();
-    for (let chair of chairs) {
-        astarApi.setObstacle(chair.getGridPosition(), chair.chair.id);
-        /* if (chair.target !== undefined && chair.getPath() !== undefined)
-             astarApi.setObstacle(chair.getNextNode());*/
+    if (!gotTargets) {
+        let marker = JSON.parse(event.data);
+        /*
+            Add recognized chairs to array.
+            If already stored, update positions.
+         */
+        registerChair(marker);
+        /**
+         * Update obstacle positions and graph
+         */
+        astarApi.removeAllObstacles();
+        for (let chair of chairs) {
+            astarApi.setObstacle(chair.getGridPosition(), chair.chair.id);
+            /* if (chair.target !== undefined && chair.getPath() !== undefined)
+                 astarApi.setObstacle(chair.getNextNode());*/
+        }
+        //console.log("🗺️ current graph situation", astarApi.getGraph().grid);
     }
-    //console.log("🗺️ current graph situation", astarApi.getGraph().grid);
 };
 
 

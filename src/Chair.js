@@ -154,8 +154,7 @@ export default class Chair {
             if (this.getGridPosition().x !== this.target.x || this.getGridPosition().y !== this.target.y) {
                 /*
                 Check chair state.
-                Only calculate path if chair
-                is ready
+                Only calculate path if chair is ready
                 */
                 if (!this.chairStatusPending && !this.chairBusy) {
                     /*
