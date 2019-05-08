@@ -10,14 +10,23 @@ let graph = new Graph([
 ]);
 
 export default class Astar_api {
-    findPath(graph, start, end) {
-        console.log("graph", graph);
-        console.log("start", start);
-        console.log("end", end);
+    findPath(chairId, start, end) {
+        /*for (let i = 0; i < graph.grid.length; i++) {
+            for (let j = 0; j < graph.grid[i].length; j++) {
+                let node = graph.grid[i][j];
+                if (node.weight === 1 && node.chairId == chairId) {
+                    this.removeObstacle({x: i, y: j});
+                    console.log("Removed obstacle at", {x: i, y: j});
+                }
+            }
+        }*/
         let path = astar.search(graph, start, end);
-        console.log("astar search", path);
+        /*console.log("graph", graph);
+          console.log("start", start);
+         console.log("end", end);
+        console.log("astar search", path);*/
         if (path === [])
-            console.error("astar search returned empty array (maybe target node is occupied?)");
+            console.error("⚠️ Start search returned empty array (maybe target node is occupied?)");
         return path;
     }
 
@@ -29,8 +38,9 @@ export default class Astar_api {
         return;
     }
 
-    setObstacle(node) {
+    setObstacle(node, chairId) {
         graph.grid[node.x][node.y].weight = 0;
+        graph.grid[node.x][node.y].chairId = chairId;
     }
 
     removeObstacle(node) {
@@ -42,8 +52,21 @@ export default class Astar_api {
         graph.grid.forEach(function (element) {
             element.forEach(function (elem) {
                 elem.weight = 1;
+                //elem.chairId = null;
             });
         });
+    }
+
+    removeOwnObstacles(chairId) {
+        for (let i = 0; i < graph.grid.length; i++) {
+            for (let j = 0; j < graph.grid[i].length; j++) {
+                let node = graph.grid[i][j];
+                if (node.weight === 1 && node.chairId == chairId) {
+                    this.removeObstacle({x: i, y: j});
+                    console.log("Removed obstacle at", {x: i, y: j});
+                }
+            }
+        }
     }
 
     convertNodeToPx(node) {

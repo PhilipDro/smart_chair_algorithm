@@ -25,15 +25,15 @@ const message = {
         {
             id: 15,
             target: {
-                x: 1,
-                y: 1
+                x: 3,
+                y: 4
             }
         },
         {
-            id: 8,
+            id: 19,
             target: {
                 x: 1,
-                y: 1
+                y: 2
             }
         },
         {
