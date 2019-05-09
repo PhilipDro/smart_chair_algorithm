@@ -22,6 +22,10 @@ export default class Config {
                 {
                     id: 19,
                     ip: '10.51.3.65'
+                },
+                {
+                    id: 9,
+                    ip: '10.51.3.65'
                 }
             ]
         };
