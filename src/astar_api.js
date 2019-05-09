@@ -38,7 +38,7 @@ export default class Astar_api {
         return;
     }
 
-    setObstacle(node, chairId) {
+    setObstacle(node, chairId = 999) {
         graph.grid[node.x][node.y].weight = 0;
         graph.grid[node.x][node.y].chairId = chairId;
     }

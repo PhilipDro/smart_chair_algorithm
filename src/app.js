@@ -15,6 +15,36 @@ const chairs = [];
 const ips = config.chairIps;
 let gotTargets = false;
 
+
+function main() {
+
+    const allPromises = [];
+
+    for (let chair of chairs) {
+        let chairClass = chair;
+
+        // Find path
+        let path = astarApi.findPath(chair.id, chairClass.getGridPosition(), astarApi.getGraph().grid[chairClass.target.x][chairClass.target.y]);
+        let nextNode = path[0];
+
+        // Set obstacles
+        //astarApi.setObstacle(chairClass.getGridPosition());
+        //astarApi.setObstacle(nextNode);
+
+        allPromises.push(chairClass.goTo(nextNode));
+    }
+
+
+    Promise.all(allPromises).then(() => {
+        // do it again if  at least one chair is not in target
+        main();
+        console.log("all chairs arrived");
+    }).catch(err => {
+        console.error(err);
+    });
+}
+
+
 /**
  * Connect to front end server.
  * Receive chair targets and send arrived status
@@ -25,6 +55,18 @@ feServer.onopen = ws => {
 };
 feServer.onmessage = frontEndEvent => {
     gotTargets = true;
+    let message = JSON.parse(frontEndEvent.data);
+    if (message.receiver === "controller") {
+        let targets = message.content; //todo: sync markers and targets array
+        for (let i = 0; i < targets.length; i++) {
+            let chairIndex = getChairIndex(targets[i].id, chairs);
+            if (chairIndex !== false) {
+                chairs[chairIndex].target = targets[i].target;
+            }
+        }
+    }
+    main();
+
     cameraServer.onmessage = cameraEvent => {
         let marker = JSON.parse(cameraEvent.data);
         //console.log('> marker:', markers);
@@ -39,22 +81,10 @@ feServer.onmessage = frontEndEvent => {
         astarApi.removeAllObstacles();
         for (let chair of chairs) {
             astarApi.setObstacle(chair.getGridPosition(), chair.chair.id);
-            /* if (chair.target !== undefined && chair.getPath() !== undefined)
+            /* if (chair.target !== undefined && chair.calcPath() !== undefined)
                  astarApi.setObstacle(chair.getNextNode());*/
         }
         //console.log("🗺️ current graph situation", astarApi.getGraph().grid);
-
-        let message = JSON.parse(frontEndEvent.data);
-        if (message.receiver === "controller") {
-            let targets = message.content; //todo: sync markers and targets array
-            for (let i = 0; i < targets.length; i++) {
-                let chairIndex = getChairIndex(targets[i].id, chairs);
-                if (chairIndex !== false) {
-                    //checkCollision();
-                    chairs[chairIndex].goTo(targets[i].target);
-                }
-            }
-        }
     }
 };
 
@@ -81,7 +111,7 @@ cameraServer.onmessage = event => {
         astarApi.removeAllObstacles();
         for (let chair of chairs) {
             astarApi.setObstacle(chair.getGridPosition(), chair.chair.id);
-            /* if (chair.target !== undefined && chair.getPath() !== undefined)
+            /* if (chair.target !== undefined && chair.calcPath() !== undefined)
                  astarApi.setObstacle(chair.getNextNode());*/
         }
         //console.log("🗺️ current graph situation", astarApi.getGraph().grid);

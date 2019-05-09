@@ -30,7 +30,7 @@ Run this command, to start the server
 - `setGridPosition()`
 > sets the current grid Position in `this.positionInGrid`
 
-- `getPath()`
+- `calcPath()`
 > sets the current path and returns `this.path`
 
 - `setPath()`
