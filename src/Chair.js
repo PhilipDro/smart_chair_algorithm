@@ -140,6 +140,7 @@ export default class Chair {
     }
 
     _nextCommand() {
+        console.log("GRID", astarApi.getGraph());
         const rotationTolerance = 10; // Degrees
         const positionTolerance = 15; // 100 = 1 grid node distance
 

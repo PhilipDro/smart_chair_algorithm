@@ -78,12 +78,12 @@ feServer.onmessage = frontEndEvent => {
         /**
          * Update obstacle positions and graph
          */
-        astarApi.removeAllObstacles();
+        /*astarApi.removeAllObstacles();
         for (let chair of chairs) {
             astarApi.setObstacle(chair.getGridPosition(), chair.chair.id);
-            /* if (chair.target !== undefined && chair.calcPath() !== undefined)
-                 astarApi.setObstacle(chair.getNextNode());*/
-        }
+            /!* if (chair.target !== undefined && chair.calcPath() !== undefined)
+                 astarApi.setObstacle(chair.getNextNode());*!/
+        }*/
         //console.log("🗺️ current graph situation", astarApi.getGraph().grid);
     }
 };
@@ -108,12 +108,12 @@ cameraServer.onmessage = event => {
         /**
          * Update obstacle positions and graph
          */
-        astarApi.removeAllObstacles();
+       /* astarApi.removeAllObstacles();
         for (let chair of chairs) {
             astarApi.setObstacle(chair.getGridPosition(), chair.chair.id);
-            /* if (chair.target !== undefined && chair.calcPath() !== undefined)
-                 astarApi.setObstacle(chair.getNextNode());*/
-        }
+            /!* if (chair.target !== undefined && chair.calcPath() !== undefined)
+                 astarApi.setObstacle(chair.getNextNode());*!/
+        }*/
         //console.log("🗺️ current graph situation", astarApi.getGraph().grid);
     }
 };
